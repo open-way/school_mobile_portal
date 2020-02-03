@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/screens/portal/agenda.dart';
 import 'package:school_mobile_portal/screens/portal/asistencia.dart';
 import 'package:school_mobile_portal/screens/portal/estado_cuenta.dart';
+// import 'package:school_mobile_portal/services/portal-padres.dart';
 
 class TabBarMain extends StatelessWidget {
   @override
@@ -24,7 +25,7 @@ class TabBarMain extends StatelessWidget {
           body: TabBarView(
             children: [
               Asistencia(),
-              EstadoCuenta(),
+              EstadoCuentaScreen(),
               Agenda(),
             ],
           ),

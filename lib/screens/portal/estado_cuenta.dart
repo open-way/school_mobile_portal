@@ -1,88 +1,96 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/services/portal-padres.dart';
 
-class Operacion {
-  final String glosa;
-  final String fecha;
-  final double importe;
-  const Operacion({this.glosa, this.fecha, this.importe});
-}
-
-class _OperacionListItem extends ListTile {
-  _OperacionListItem(Operacion operacion)
-      // : super(
-      //       title: Text(operacion.fullName),
-      //       subtitle: Text(operacion.email),
-      //       leading: CircleAvatar(child: Text(operacion.fullName[0])));
-      : super(
-            title: Text(operacion.glosa),
-            subtitle: Text(operacion.fecha),
-            trailing: Text('S/. ${operacion.importe.toString()}'),
-            leading: CircleAvatar(child: Icon(Icons.check_box)));
-            // leading: Icon(Icons.check_box));
-}
-
-class OperacionList extends StatelessWidget {
-  final List<Operacion> _contacts;
-
-  OperacionList(this._contacts);
+class EstadoCuentaScreen extends StatelessWidget {
+  final PortalPadresService portalPadresService = new PortalPadresService();
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        children: _buildOperacionList());
-  }
-
-  List<_OperacionListItem> _buildOperacionList() {
-    return _contacts.map((contact) => _OperacionListItem(contact)).toList();
-  }
-}
-
-class EstadoCuenta extends StatelessWidget {
-  final kContacts = const <Operacion>[
-    const Operacion(glosa: 'Por pensión', fecha: '00/00/0000', importe: 20),
-    const Operacion(
-        glosa: 'Por la compra de matricula', fecha: '00/00/0000', importe: 50)
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    // return Card(
-    //   child: Column(
-    //     mainAxisSize: MainAxisSize.min,
-    //     children: <Widget>[
-    //       const ListTile(
-    //         leading: Icon(Icons.album),
-    //         title: Text('The Enchanted Nightingale'),
-    //         subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-    //       ),
-    //       ButtonBar(
-    //         children: <Widget>[
-    //           FlatButton(
-    //             child: const Text('BUY TICKETS'),
-    //             onPressed: () {/* ... */},
-    //           ),
-    //           FlatButton(
-    //             child: const Text('LISTEN'),
-    //             onPressed: () {/* ... */},
-    //           ),
-    //         ],
-    //       ),
-    //     ],
-    //   ),
-    // );
-    // return Card(
-    //   child: ListTile(
-    //   leading: CircleAvatar(
-    //     child: Text(_contact.fullName[0])
-    //   ),
-    //   title: Text(_contact.fullName),
-    //   subtitle: Text(_contact.email)
-    // ) ,
-    // )
-    return Card(
-      child: OperacionList(kContacts),
+    // child: MyCustomForm(),
+    return Container(
+      child: Card(
+        child: MyCustomForm(),
+      ),
     );
+
+    /*
+    return Container(
+      child: Card(
+        borderOnForeground: true,
+        child: FutureBuilder(
+            future: portalPadresService.getEstadoCuenta(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<OperationModel>> snapshot) {
+              if (snapshot.hasError) print(snapshot.error);
+              if (snapshot.hasData) {
+                List<OperationModel> operations = snapshot.data;
+                return ListView(
+                  children: operations
+                      .map(
+                        (OperationModel operacion) => ListTile(
+                          title: Text(operacion.glosa),
+                          subtitle: Text("${operacion.fecha}"),
+                          trailing: Text('S/. ${operacion.importe.toString()}'),
+                          leading: CircleAvatar(child: Icon(Icons.check_box)),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => OperationDetail(
+                                operation: operacion,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            }),
+      ),
+    );
+    */
+  }
+}
+
+class MyCustomForm extends StatefulWidget {
+  @override
+  MyCustomFormState createState() {
+    return MyCustomFormState();
+  }
+}
+
+class MyCustomFormState extends State<MyCustomForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please enter some text';
+                }
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: RaisedButton(
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text('Processing Data')));
+                  }
+                },
+                child: Text('Submit'),
+              ),
+            ),
+          ],
+        ));
   }
 }
