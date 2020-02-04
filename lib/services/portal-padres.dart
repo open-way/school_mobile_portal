@@ -21,6 +21,7 @@ class PortalPadresService {
     }
   }
 
+  // Promesa
   Future<List<OperationModel>> getAsistencias() async {
     http.Response res = await http.get('$theUrl/asistencias');
     if (res.statusCode == 200) {
@@ -34,8 +35,8 @@ class PortalPadresService {
     }
   }
 
-  Future<List<OperationModel>> get() async {
-    http.Response res = await http.get('$theUrl/asistencias');
+  Future<List<OperationModel>> getAgenda() async {
+    http.Response res = await http.get('$theUrl/agendas');
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       final data = body['data'].cast<Map<String, dynamic>>();

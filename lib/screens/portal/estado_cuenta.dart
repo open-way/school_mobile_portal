@@ -1,20 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/models/operation_model.dart';
+import 'package:school_mobile_portal/screens/portal/operation_detail.dart';
 import 'package:school_mobile_portal/services/portal-padres.dart';
 
 class EstadoCuentaScreen extends StatelessWidget {
   final PortalPadresService portalPadresService = new PortalPadresService();
 
+
+
   @override
   Widget build(BuildContext context) {
     // child: MyCustomForm(),
-    return Container(
-      child: Card(
-        child: MyCustomForm(),
-      ),
-    );
+    // return Container(
+    //   child: Card(
+    //     child: MyCustomForm(),
+    //   ),
+    // );
 
-    /*
     return Container(
       child: Card(
         borderOnForeground: true,
@@ -50,7 +53,6 @@ class EstadoCuentaScreen extends StatelessWidget {
             }),
       ),
     );
-    */
   }
 }
 
