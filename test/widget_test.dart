@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:school_mobile_portal/my_app.dart';
+import 'package:school_mobile_portal/main%20copy.dart';
 
 // import 'package:school_mobile_portal/main.dart';
 
