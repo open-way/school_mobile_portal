@@ -7,9 +7,9 @@ import 'package:school_mobile_portal/services/base.dart';
 // import 'dart:developer' as developer;
 
 class PortalPadresService {
-  final String theUrl = '${baseUrl}portal-padre';
+  final String theUrl = '$baseUrl/portal-padre';
 
-  Future<List<OperationModel>> getEstadoCuenta() async {
+  Future<List<OperationModel>> getEstadoCuenta$() async {
     http.Response res = await http.get('$theUrl/mi-estado-cuenta');
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
