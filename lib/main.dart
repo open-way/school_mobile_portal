@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         Routes.asistencia: (context) => AsistenciaPage(
             // auth: AuthService(),
             ),
+        Routes.agenda: (context) => AgendaPage(),
       },
     );
   }

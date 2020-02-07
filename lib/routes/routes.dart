@@ -2,6 +2,7 @@
 // import 'package:step5/module/events/event_list_view.dart';
 // import 'package:step5/module/notes/note_list_view.dart';
 
+import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
@@ -14,7 +15,7 @@ class Routes {
   static const String login_signup = LoginSignupPage.routeName;
   static const String estado_cuenta = EstadoCuentaPage.routeName;
   static const String asistencia = AsistenciaPage.routeName;
-  static const String agenda = AsistenciaPage.routeName;
+  static const String agenda = AgendaPage.routeName;
   // static const String events = EventsPage.routeName;
   // static const String notes = NotesPage.routeName;
 }
