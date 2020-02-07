@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
-import 'package:school_mobile_portal/services/portal-padres.dart';
+import 'package:school_mobile_portal/services/portal-padres.service.dart';
+import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:animated_dialog_box/animated_dialog_box.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -16,33 +17,28 @@ final Map<DateTime, List> _holidays = {
   DateTime(2020, 4, 22): ['Easter Monday'],
 };
 
-/*class Asistencia extends StatelessWidget {
-  //static const String _title = 'Table Calendar Demo';
-  @override
-  Widget build(BuildContext context) {
-    return MyCalendarPage();
-  }
-}*/
+class AsistenciaPage extends StatefulWidget {
+  static const String routeName = '/asistencia';
 
-class Asistencia extends StatefulWidget {
   @override
-  _MyCalendarPageState createState() => _MyCalendarPageState();
+  _AsistenciaPageState createState() => _AsistenciaPageState();
 }
 
-class _MyCalendarPageState extends State<Asistencia>
+class _AsistenciaPageState extends State<AsistenciaPage>
     with TickerProviderStateMixin {
   final PortalPadresService portalPadresService = new PortalPadresService();
-  List<AsistenciaModel> _listaAsistencias;
+  // List<AsistenciaModel> _listaAsistencias;
+
   final Map<DateTime, List> _asistenciaEventos = new Map();
-  Map<DateTime, List> _events;
+  // Map<DateTime, List> _events;
   AnimationController _animationController;
   CalendarController _calendarController;
 
   List _justificaciones = [
-    "Elegir Excusa",
-    "Tengo trabajo",
-    "No le gusta llegar puntual",
-    "Se quemó la casa"
+    'Elegir Excusa',
+    'Tengo trabajo',
+    'No le gusta llegar puntual',
+    'Se quemó la casa'
   ];
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
@@ -58,31 +54,26 @@ class _MyCalendarPageState extends State<Asistencia>
   }
 
   void _getAsistencias() {
-    _listaAsistencias = [];
-    portalPadresService.getAsistencias().then((onValue) {
-      _listaAsistencias = onValue;
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
+    // _listaAsistencias = [];
+    // portalPadresService.getAsistencias().then((onValue) {
+    //   // _listaAsistencias = onValue;
+    //   setState(() {});
+    // }).catchError((err) {
+    //   print(err);
+    // });
   }
 
   @override
   void initState() {
+    super.initState();
     _dropDownMenuItems = getDropDownMenuItems();
     _currentJustificacion = _dropDownMenuItems[0].value;
     this._getMasters();
-    super.initState();
-    //print(this._events);
-    //print(this._asistenciaEventos);
-
     _calendarController = CalendarController();
-
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-
     _animationController.forward();
   }
 
@@ -98,7 +89,7 @@ class _MyCalendarPageState extends State<Asistencia>
   }
 
   void changedDropDownItem(String selectedPeriodo) {
-    print("Selected city $selectedPeriodo, we are going to refresh the UI");
+    print('Selected city $selectedPeriodo, we are going to refresh the UI');
     setState(() {
       _currentJustificacion = selectedPeriodo;
     });
@@ -106,10 +97,10 @@ class _MyCalendarPageState extends State<Asistencia>
 
   void _onDaySelected(DateTime day, List events) {
     print('CALLBACK: _onDaySelected');
-    print(".......................");
+    print('.......................');
     print(day.toString());
     print(events.toString());
-    print(".......................");
+    print('.......................');
     var getEstado;
     var colorEstado;
     var getResponsable;
@@ -117,22 +108,22 @@ class _MyCalendarPageState extends State<Asistencia>
     var getButtonJustificar;
     if (events.isNotEmpty) {
       switch (events[0]) {
-        case "P":
-          getEstado = "Puntual";
+        case 'P':
+          getEstado = 'Puntual';
           colorEstado = Colors.lightBlue;
           break;
-        case "T":
-          getEstado = "Tardanza";
+        case 'T':
+          getEstado = 'Tardanza';
           colorEstado = Colors.yellow[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case "F":
-          getEstado = "Falta";
+        case 'F':
+          getEstado = 'Falta';
           colorEstado = Colors.red[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case "J":
-          getEstado = "Justificación";
+        case 'J':
+          getEstado = 'Justificación';
           colorEstado = Colors.lime;
           break;
         default:
@@ -179,10 +170,11 @@ class _MyCalendarPageState extends State<Asistencia>
         yourWidget: Column(
           children: <Widget>[
             Container(
-              child: Text('Responsable: ' + 'Fernandez Aguilar, Ana Carina'),
+              // child: Text('Responsable: ' + 'Fernandez Aguilar, Ana Carina'),
+              child: Text('Responsable: ' + getResponsable),
             ),
             Container(
-              child: Text('Lugar de entrada: ' + 'Puerta N°1'),
+              child: Text('Lugar de entrada: ' + getPuerta),
             ),
           ],
         ),
@@ -191,6 +183,7 @@ class _MyCalendarPageState extends State<Asistencia>
   }
 
   Widget _getButtonJustificar() {
+    print('_getButtonJustificar');
     return MaterialButton(
       // FIRST BUTTON IS REQUIRED
       shape: RoundedRectangleBorder(
@@ -203,9 +196,9 @@ class _MyCalendarPageState extends State<Asistencia>
           Navigator.of(context).pop();
         });
 
-        Alert(
+        new Alert(
             context: context,
-            title: "Justificación",
+            title: 'Justificación',
             content: Column(
               children: <Widget>[
                 DropdownButton(
@@ -228,7 +221,7 @@ class _MyCalendarPageState extends State<Asistencia>
                   Navigator.of(context).pop();
                 }),
                 child: Text(
-                  "ENVIAR",
+                  'ENVIAR',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               )
@@ -239,14 +232,21 @@ class _MyCalendarPageState extends State<Asistencia>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        futureBuild(context),
-        const SizedBox(height: 8.0),
-        const SizedBox(height: 8.0),
-        _buildButtons(),
-      ],
+    return Scaffold(
+      drawer: AppDrawer(),
+      appBar: AppBar(
+        title: Text('Asistencia'),
+      ),
+      // body: ContactList());
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          futureBuild(context),
+          // const SizedBox(height: 8.0),
+          // const SizedBox(height: 8.0),
+          // _buildButtons(),
+        ],
+      ),
     );
   }
 
@@ -258,7 +258,7 @@ class _MyCalendarPageState extends State<Asistencia>
           if (snapshot.hasData) {
             List<AsistenciaModel> asistencias = snapshot.data;
             for (var i = 0; i < asistencias.length; i++) {
-              DateTime newDateTimeObj = new DateFormat("dd/MM/yyyy HH:mm")
+              DateTime newDateTimeObj = new DateFormat('dd/MM/yyyy HH:mm')
                   .parse(asistencias[i].fecha);
               _asistenciaEventos[newDateTimeObj] = [
                 asistencias[i].estado,
@@ -275,7 +275,7 @@ class _MyCalendarPageState extends State<Asistencia>
                   .map(
                     (AsistenciaModel asistencia) => ListTile(
                       title: Text(asistencia.periodoNombre),
-                      subtitle: Text("${asistencia.fecha}"),
+                      subtitle: Text('${asistencia.fecha}'),
                     ),
                   )
                   .toList(),
@@ -289,14 +289,14 @@ class _MyCalendarPageState extends State<Asistencia>
   Widget _buildTableCalendar(Map<DateTime, List> asistenciaEventos) {
     //var map =
     //asistencias.map((date, item) => (DateTime.parse(date), ));
-    //print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     //print(this._asistenciaEventos);
-    //print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     //_events = this._asistenciaEventos;
     //print(asistenciaEventos);
-    print("----------------------------");
+    print('----------------------------');
     print(asistenciaEventos);
-    print("----------------------------");
+    print('----------------------------');
     return TableCalendar(
       calendarController: _calendarController,
       events: asistenciaEventos,
@@ -311,12 +311,12 @@ class _MyCalendarPageState extends State<Asistencia>
       ),
       builders: CalendarBuilders(
         dayBuilder: (context, date, events) {
-          print("datedateadtedatedatedatedatedate");
+          print('datedateadtedatedatedatedatedate');
           print(date);
-          print("datedateadtedatedatedatedatedate");
-          print("eventseventseventseventseventsevents");
+          print('datedateadtedatedatedatedatedate');
+          print('eventseventseventseventseventsevents');
           print(events);
-          print("eventseventseventseventseventsevents");
+          print('eventseventseventseventseventsevents');
           return _dayBuilder(date, events, Colors.black);
         },
         weekendDayBuilder: (context, date, events) {
@@ -338,9 +338,9 @@ class _MyCalendarPageState extends State<Asistencia>
   Widget _dayBuilder(DateTime date, List events, Color txtColor) {
     var asisColor;
     var getEventEstado = events.toString().substring(1, 2);
-    print("////////////////////");
+    print('////////////////////');
     print(events.toString().substring(1, 2));
-    print("////////////////////");
+    print('////////////////////');
     if (getEventEstado == 'T') {
       asisColor = Colors.yellow[300];
     }

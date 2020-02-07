@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/periodo_contable_model.dart';
-import 'package:school_mobile_portal/screens/portal/operation_detail.dart';
+import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/periodos-contables.service.dart';
-import 'package:school_mobile_portal/services/portal-padres.dart';
+import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 
 class EstadoCuentaPage extends StatefulWidget {
@@ -18,7 +18,6 @@ class EstadoCuentaPage extends StatefulWidget {
 enum DialogActions { SEARCH, CANCEL }
 
 class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
-  // GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final PortalPadresService portalPadresService = new PortalPadresService();
 
   List<OperationModel> _listaOperations;
@@ -104,12 +103,10 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       ),
     )) {
       case DialogActions.SEARCH:
-        print('SEARCH');
         this._getOperations();
         break;
       case DialogActions.CANCEL:
         // _setValue('Cancel');
-        print('CANCEL');
         break;
       // case Answers.MAYBE:
       //   _setValue('Maybe');

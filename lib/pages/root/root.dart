@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:school_mobile_portal/module/dashboard/dashboard.dart';
-import 'package:school_mobile_portal/module/login_signup_page/login_signup_page.dart';
-import 'package:school_mobile_portal/services/authentication.dart';
+import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
+import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
+import 'package:school_mobile_portal/services/auth.service.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -10,9 +10,9 @@ enum AuthStatus {
 }
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
+  RootPage({this.authService});
 
-  final AuthenticationService auth;
+  final AuthService authService;
 
   @override
   _RootPageState createState() => _RootPageState();
@@ -40,7 +40,7 @@ class _RootPageState extends State<RootPage> {
   }
 
   void loginCallback() {
-    widget.auth.getCurrentUser().then((user) {
+    widget.authService.getCurrentUser().then((user) {
       setState(() {
         _userId = user.uid.toString();
       });
@@ -74,7 +74,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         return new LoginSignupPage(
-          auth: widget.auth,
+          authService: widget.authService,
           // loginCallback: loginCallback,
         );
         break;
@@ -82,7 +82,7 @@ class _RootPageState extends State<RootPage> {
         if (_userId.length > 0 && _userId != null) {
           return new DashboardPage(
             userId: _userId,
-            auth: widget.auth,
+            authService: widget.authService,
             logoutCallback: logoutCallback,
           );
         } else

@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/services/auth.service.dart';
 // import 'package:school_mobile_portal/routes/routes.dart';
-import 'package:school_mobile_portal/services/authentication.dart';
 
 class LoginSignupPage extends StatefulWidget {
   // LoginSignupPage({this.auth, this.loginCallback});
-  LoginSignupPage({@required this.auth});
+  LoginSignupPage({@required this.authService});
 
   static const String routeName = '/login_signup';
-  final AuthenticationService auth;
+  final AuthService authService;
   // final VoidCallback loginCallback;
 
   @override
@@ -94,9 +94,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       UserSignInModel userSignIn;
       try {
         if (_isLoginForm) {
-          userSignIn = await widget.auth.signIn(_email, _password);
+          userSignIn = await widget.authService.signIn(_email, _password);
         } else {
-          userSignIn = await widget.auth.signUp(_email, _password);
+          userSignIn = await widget.authService.signUp(_email, _password);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
           // print('Signed up user: $userId');

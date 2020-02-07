@@ -2,7 +2,7 @@ import 'dart:convert';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/user_signin_model.dart';
-import 'package:school_mobile_portal/services/base.dart';
+import 'package:school_mobile_portal/enviroment.dev.dart';
 
 abstract class BaseAuth {
   Future<UserSignInModel> signIn(String email, String password);
@@ -19,7 +19,7 @@ abstract class BaseAuth {
   Future<bool> isEmailVerified();
 }
 
-class AuthenticationService implements BaseAuth {
+class AuthService implements BaseAuth {
   final String theUrl = '$baseUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {

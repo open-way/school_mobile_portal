@@ -84,7 +84,6 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          // createHeader(),
           new DrawerHeader(),
           createDrawerItem(
               icon: Icons.dashboard,
@@ -93,19 +92,19 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pushReplacementNamed(context, Routes.dashboard)),
           createDrawerItem(
               icon: Icons.view_agenda,
-              text: 'Portal padre',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.portal_padre)),
-          createDrawerItem(
-              icon: Icons.view_agenda,
               text: 'Estado de cuenta',
               onTap: () => Navigator.pushReplacementNamed(
                   context, Routes.estado_cuenta)),
-          // createDrawerItem(
-          //     icon: Icons.note,
-          //     text: 'Notes',
-          //     onTap: () =>
-          //         Navigator.pushReplacementNamed(context, Routes.notes)),
+          createDrawerItem(
+              icon: Icons.view_agenda,
+              text: 'Asistencia',
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, Routes.asistencia)),
+          createDrawerItem(
+              icon: Icons.note,
+              text: 'Agenda',
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, Routes.agenda)),
           Divider(),
           createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
           createDrawerItem(icon: Icons.info, text: 'Acerca'),

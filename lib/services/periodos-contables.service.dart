@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/periodo_contable_model.dart';
-import 'package:school_mobile_portal/services/base.dart';
+import 'package:school_mobile_portal/enviroment.dev.dart';
 
 class PeriodosContablesService {
   final String theUrl = '$baseUrl/setup/periodos-contables';

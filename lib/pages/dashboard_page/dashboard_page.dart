@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:school_mobile_portal/services/authentication.dart';
+import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 
 class DashboardPage extends StatefulWidget {
-  DashboardPage({Key key, this.auth, this.userId, this.logoutCallback})
+  DashboardPage({Key key, this.authService, this.userId, this.logoutCallback})
       : super(key: key);
 
   static const String routeName = '/dashboard';
-  final AuthenticationService auth;
+  final AuthService authService;
   final VoidCallback logoutCallback;
   final String userId;
 
