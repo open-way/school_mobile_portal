@@ -1,19 +1,81 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 
-// class AppDrawer extends StatefulWidget {
-//   @override
-//   _AppDrawerState createState() => _AppDrawerState();
-// }
+class DrawerHeader extends StatefulWidget {
+  @override
+  _DrawerHeaderState createState() => _DrawerHeaderState();
+}
 
-// class _AppDrawerState extends State<AppDrawer> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
+class _DrawerHeaderState extends State<DrawerHeader> {
+  String strUserSignIn = '';
+  UserSignInModel userSignInModel;
 
-//     );
-//   }
-// }
+  String token = '';
+  String fullname = '';
+  String oauthFullname = '';
+  String oauthEmail = '';
+  String imagenUrl = '';
+
+  @override
+  void initState() {
+    super.initState();
+    this._readToken();
+    // this._getMasters();
+  }
+
+  void _readToken() async {
+    final storage = new FlutterSecureStorage();
+    this.strUserSignIn = await storage.read(key: 'user_sign_in');
+    this.userSignInModel =
+        UserSignInModel.fromJson(jsonDecode(this.strUserSignIn));
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: new UserAccountsDrawerHeader(
+        accountName: Text(this.userSignInModel.oauthFullname),
+        accountEmail: Text(this.userSignInModel.oauthEmail),
+        onDetailsPressed: () {},
+        decoration: new BoxDecoration(
+          image: new DecorationImage(
+            image:
+                new ExactAssetImage('assets/images/oauth-school.jpg', scale: 1),
+            fit: BoxFit.cover,
+          ),
+        ),
+        currentAccountPicture: CircleAvatar(
+          // backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/46.jpg'),
+          // backgroundImage: NetworkImage('https://api-lamb.upeu.edu.pe/setup_files/users/7677.JPEG'),
+          backgroundImage: ExactAssetImage('assets/images/man.png'),
+          // backgroundColor: Color.
+          // backgroundColor: Color.blue,
+          // Theme.of(context).platform == TargetPlatform.iOS
+          //     ? Colors.blue
+          //     : Colors.white,
+          // child: Text(
+          //   "A",
+          //   style: TextStyle(fontSize: 40.0),
+          // ),
+        ),
+        otherAccountsPictures: <Widget>[
+          new CircleAvatar(
+            backgroundImage: new ExactAssetImage('assets/images/man.png'),
+            // backgroundImage: new ExactAssetImage('assets/images/girl.png'),
+          ),
+          new CircleAvatar(
+            backgroundImage: new ExactAssetImage('assets/images/girl.png'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -22,7 +84,8 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          createHeader(),
+          // createHeader(),
+          new DrawerHeader(),
           createDrawerItem(
               icon: Icons.dashboard,
               text: 'Dashboard',
@@ -60,43 +123,37 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget createHeader() {
-    return UserAccountsDrawerHeader(
-      accountName: Text('Vitmar J. Aliaga Cruz'),
-      accountEmail: Text('vitmar.aliaga@adventistas.org'),
-      onDetailsPressed: () {},
-      decoration: new BoxDecoration(
-        image: new DecorationImage(
-          image:
-              new ExactAssetImage('assets/images/oauth-school.jpg', scale: 1),
-          fit: BoxFit.cover,
-        ),
-      ),
-      currentAccountPicture: CircleAvatar(
-        // // backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/46.jpg'),
-        backgroundImage: ExactAssetImage('assets/images/man.png'),
+  void getNameUser() async {
+    final storage = new FlutterSecureStorage();
 
-        // backgroundColor: Color.
-        // backgroundColor: Color.blue,
-        // Theme.of(context).platform == TargetPlatform.iOS
-        //     ? Colors.blue
-        //     : Colors.white,
-        // child: Text(
-        //   "A",
-        //   style: TextStyle(fontSize: 40.0),
-        // ),
-      ),
-      otherAccountsPictures: <Widget>[
-        new CircleAvatar(
-          backgroundImage: new ExactAssetImage('assets/images/man.png'),
-          // backgroundImage: new ExactAssetImage('assets/images/girl.png'),
-        ),
-        new CircleAvatar(
-          backgroundImage: new ExactAssetImage('assets/images/girl.png'),
-        ),
-      ],
-    );
+// Store password
+    // await storage.write(key: "password", value: "my-secret-password");
+
+// Read value
+    String myPassword = await storage.read(key: 'token');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print(myPassword);
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
+    print('');
   }
+
+  // Widget createHeader() {
+  //   return
+  // }
 
   Widget createDrawerItem(
       {IconData icon, String text, GestureTapCallback onTap}) {

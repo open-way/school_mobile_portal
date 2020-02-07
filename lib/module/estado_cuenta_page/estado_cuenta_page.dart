@@ -79,7 +79,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
             child: new OperationsList(
               listaOperations: this._listaOperations,
             ),
-          )
+          ),
+
         ],
       ),
     );
@@ -210,6 +211,14 @@ class _FilterFormState extends State<FilterForm> {
               },
               items: _misHijos,
             ),
+            // new Expanded(
+            //   child:
+            // new TextField(
+            //   decoration: new InputDecoration(
+            //       labelText: 'Team Name', hintText: 'eg. Juventus F.C.'),
+            //   onChanged: (String newValue) {},
+            // ),
+            // ),
             new DropdownButton(
               hint: new Text('Seleccione un periodo'),
               value: this._idAnho,

@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
+// import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/authentication.dart';
 
 class LoginSignupPage extends StatefulWidget {
   // LoginSignupPage({this.auth, this.loginCallback});
-  LoginSignupPage({this.auth});
-  // LoginSignupPage({this.auth});
+  LoginSignupPage({@required this.auth});
 
   static const String routeName = '/login_signup';
   final AuthenticationService auth;
@@ -21,14 +23,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   String _email;
   String _password;
+  String _passwordConfirm;
+  String _idTipodocumento;
   String _errorMessage;
 
-  // bool _isLoginForm;
+  bool _isLoginForm;
   bool _isLoading;
 
   // Check if form is valid before perform login or signup
   bool validateAndSave() {
     final form = _formKey.currentState;
+    // print('form.toString()');
+    // print(form.toString());
     if (form.validate()) {
       form.save();
       return true;
@@ -36,33 +42,78 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return false;
   }
 
+  void _saveData(UserSignInModel userSignIn) async {
+    final storage = new FlutterSecureStorage();
+    // storage.deleteAll();
+    print('______________');
+    print('______________');
+    print(userSignIn.toString());
+    print('______________');
+    await storage.write(key: 'user_sign_in', value: userSignIn.toString());
+    // await storage.write(key: 'token', value: userSignIn.token);
+    // await storage.write(key: 'oauth_fullname', value: userSignIn.oauthFullname);
+    // await storage.write(key: 'oauth_email', value: userSignIn.oauthEmail);
+    // await storage.write(key: 'imagen_url', value: userSignIn.imagenUrl);
+
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    // print(await storage.read(key: 'token'));
+    // print(await storage.read(key: 'oauth_fullname'));
+    // print(await storage.read(key: 'oauth_email'));
+    // print(await storage.read(key: 'imagen_url'));
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+    print('______________');
+  }
+
   // Perform login or signup
   void validateAndSubmit() async {
     setState(() {
-      // _errorMessage = "";
-      // _isLoading = true;
+      _errorMessage = '';
+      _isLoading = true;
     });
+    // print(_email);
+    // print(_password);
     // widget.loginCallback();
-    Navigator.pushReplacementNamed(context, Routes.dashboard);
-    /*
+    // Navigator.pushReplacementNamed(context, Routes.dashboard);
+
+    // String userId = "";
     if (validateAndSave()) {
-      String userId = "";
+      UserSignInModel userSignIn;
       try {
         if (_isLoginForm) {
-          userId = await widget.auth.signIn(_email, _password);
-          print('Signed in: $userId');
+          userSignIn = await widget.auth.signIn(_email, _password);
         } else {
-          userId = await widget.auth.signUp(_email, _password);
-          print('Signed up user: $userId');
+          userSignIn = await widget.auth.signUp(_email, _password);
+          //widget.auth.sendEmailVerification();
+          //_showVerifyEmailSentDialog();
+          // print('Signed up user: $userId');
         }
+
+        // print(userSignIn.fullname);
         setState(() {
           _isLoading = false;
         });
-
-        // if (userId.length > 0 && userId != null && _isLoginForm) {
-        if (userId.length > 0 && userId != null) {
-          widget.loginCallback();
+        if (userSignIn.accessToken.isNotEmpty && _isLoginForm) {
+          _saveData(userSignIn);
+          Navigator.pushReplacementNamed(context, Routes.dashboard);
+          // widget.loginCallback();
         }
+        // if (userSignIn.length > 0 && userSignIn != null) {
+        //   // widget.loginCallback();
+        // }
       } catch (e) {
         print('Error: $e');
         setState(() {
@@ -72,6 +123,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         });
       }
     }
+
+    /*
+        if (_isLoginForm) {
+        } else {
+          userId = await widget.auth.signUp(_email, _password);
+          print('Signed up user: $userId');
+        }
+        // if (userId.length > 0 && userId != null && _isLoginForm) { }
     */
   }
 
@@ -79,7 +138,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void initState() {
     _errorMessage = "";
     _isLoading = false;
-    // _isLoginForm = true;
+    _isLoginForm = true;
     super.initState();
   }
 
@@ -90,9 +149,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   void toggleFormMode() {
     resetForm();
-    // setState(() {
-    //   _isLoginForm = !_isLoginForm;
-    // });
+    setState(() {
+      _isLoginForm = !_isLoginForm;
+    });
   }
 
   @override
@@ -146,20 +205,33 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 //  }
 
   Widget _showForm() {
+    List<Widget> widgetsSignIn = [
+      showLogo(),
+      showDniInput(),
+      showPasswordInput(),
+      showPrimaryButton(),
+      showSecondaryButton(),
+      showErrorMessage(),
+    ];
+    List<Widget> widgetsSignUp = [
+      showLogo(),
+      showTipoDocumentoDropdownButton(),
+      showDniInput(),
+      showPasswordInput(),
+      showPasswordConfirmInput(),
+      showPrimaryButton(),
+      showSecondaryButton(),
+      showErrorMessage(),
+    ];
+    List<Widget> widgets = _isLoginForm ? widgetsSignIn : widgetsSignUp;
+
     return new Container(
         padding: EdgeInsets.all(16.0),
         child: new Form(
           key: _formKey,
           child: new ListView(
             shrinkWrap: true,
-            children: <Widget>[
-              showLogo(),
-              showEmailInput(),
-              showPasswordInput(),
-              showPrimaryButton(),
-              // showSecondaryButton(),
-              showErrorMessage(),
-            ],
+            children: widgets,
           ),
         ));
   }
@@ -195,20 +267,64 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  Widget showEmailInput() {
+  Widget showTipoDocumentoDropdownButton() {
+    var cons = EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+      // padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+      padding: cons,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          icon: Icon(Icons.credit_card),
+          labelText: 'Seleccione tipo documento',
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            // hint: new Text('Seleccione tipo documento'),
+            value: this._idTipodocumento,
+            // isExpanded: true,
+            isDense: true,
+            onChanged: (String newValue) {
+              setState(() {
+                this._idTipodocumento = newValue;
+              });
+            },
+            items: [
+              new DropdownMenuItem(
+                value: '1',
+                child: Text('DNI'),
+              ),
+              new DropdownMenuItem(
+                value: '4',
+                child: Text('CarEx'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget showDniInput() {
+    var opc = EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0);
+    var opc2 = EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0);
+
+    return Padding(
+      padding: _isLoginForm ? opc : opc2,
       child: new TextFormField(
         maxLines: 1,
-        keyboardType: TextInputType.emailAddress,
+        // keyboardType: TextInputType.emailAddress,
+        // keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Email',
+            // hintText: 'DNI',
+            labelText: 'DNI',
             icon: new Icon(
-              Icons.mail,
+              Icons.perm_identity,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        // validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        validator: (value) =>
+            value.isEmpty ? 'El número de DNI no puede estar vacío.' : null,
         onSaved: (value) => _email = value.trim(),
       ),
     );
@@ -222,24 +338,49 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         obscureText: true,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Password',
+            labelText: 'Contraseña',
             icon: new Icon(
               Icons.lock,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        // validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        validator: (value) =>
+            value.isEmpty ? 'La contraseña no puede estar vacío.' : null,
         onSaved: (value) => _password = value.trim(),
       ),
     );
   }
 
-  // Widget showSecondaryButton() {
-  //   return new FlatButton(
-  //       child: new Text(
-  //           _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
-  //           style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
-  //       onPressed: toggleFormMode);
-  // }
+  Widget showPasswordConfirmInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        obscureText: true,
+        autofocus: false,
+        decoration: new InputDecoration(
+            labelText: 'Confirmar contraseña',
+            icon: new Icon(
+              Icons.lock,
+              color: Colors.grey,
+            )),
+        // validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        validator: (value) =>
+            value.isEmpty ? 'Debe confirmar la contraseña.' : null,
+        onSaved: (value) => _passwordConfirm = value.trim(),
+      ),
+    );
+  }
+
+  Widget showSecondaryButton() {
+    return new FlatButton(
+        child: new Text(
+            _isLoginForm
+                ? 'Crear un usuario'
+                : '¿Ya tienes un usuario? Iniciar sesión',
+            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+        onPressed: toggleFormMode);
+  }
 
   Widget showPrimaryButton() {
     return new Padding(
@@ -252,8 +393,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 borderRadius: new BorderRadius.circular(30.0)),
             color: Colors.blue,
             child: new Text(
-              // _isLoginForm ? 'Iniciar sesión' : 'Create account',
-              'Iniciar sesión',
+              _isLoginForm ? 'Iniciar sesión' : 'Crear un usuario',
+              // semanticsLabel: 'Iniciar sesión',
               style: new TextStyle(fontSize: 20.0, color: Colors.white),
             ),
             onPressed: validateAndSubmit,
