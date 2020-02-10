@@ -30,8 +30,10 @@ class _DrawerHeaderState extends State<DrawerHeader> {
   void _readToken() async {
     final storage = new FlutterSecureStorage();
     this.strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
-    this.userSignInModel =
-        UserSignInModel.fromJson(jsonDecode(this.strUserSignIn));
+    if (this.strUserSignIn.isNotEmpty) {
+      this.userSignInModel =
+          UserSignInModel.fromJson(jsonDecode(this.strUserSignIn));
+    }
     setState(() {});
   }
 
@@ -39,8 +41,8 @@ class _DrawerHeaderState extends State<DrawerHeader> {
   Widget build(BuildContext context) {
     return Container(
       child: new UserAccountsDrawerHeader(
-        accountName: Text(this.userSignInModel.oauthFullname),
-        accountEmail: Text(this.userSignInModel.oauthEmail),
+        accountName: Text(this.userSignInModel?.oauthFullname ?? ''),
+        accountEmail: Text(this.userSignInModel?.oauthEmail ?? ''),
         onDetailsPressed: () {},
         decoration: new BoxDecoration(
           image: new DecorationImage(
