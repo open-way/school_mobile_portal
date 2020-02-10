@@ -29,7 +29,7 @@ class _DrawerHeaderState extends State<DrawerHeader> {
 
   void _readToken() async {
     final storage = new FlutterSecureStorage();
-    this.strUserSignIn = await storage.read(key: 'user_sign_in');
+    this.strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
     this.userSignInModel =
         UserSignInModel.fromJson(jsonDecode(this.strUserSignIn));
     setState(() {});
