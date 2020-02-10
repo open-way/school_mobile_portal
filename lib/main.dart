@@ -7,8 +7,10 @@ import 'package:school_mobile_portal/pages/portal_padre_page/portal_padre_page.d
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 
 import 'package:school_mobile_portal/pages/root/root.dart';
+import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
+import 'package:school_mobile_portal/services/test-https.service.dart';
 
 void main() {
   // Injector.configure(Flavor.PRO);
@@ -36,6 +38,9 @@ class MyApp extends StatelessWidget {
             // auth: AuthService(),
             ),
         Routes.agenda: (context) => AgendaPage(),
+        Routes.test_https: (context) => TestHttpsPage(
+              testHttpsService: TestHttpsService(),
+            ),
       },
     );
   }
