@@ -108,6 +108,11 @@ class AppDrawer extends StatelessWidget {
               onTap: () =>
                   Navigator.pushReplacementNamed(context, Routes.agenda)),
           Divider(),
+          createDrawerItem(
+              icon: Icons.note,
+              text: 'Test https',
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, Routes.test_https)),
           createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
           createDrawerItem(icon: Icons.info, text: 'Acerca'),
           createDrawerItem(
