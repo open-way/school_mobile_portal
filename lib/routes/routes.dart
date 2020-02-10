@@ -8,6 +8,7 @@ import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/pages/portal_padre_page/portal_padre_page.dart';
+import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 
 class Routes {
   static const String dashboard = DashboardPage.routeName;
@@ -16,6 +17,7 @@ class Routes {
   static const String estado_cuenta = EstadoCuentaPage.routeName;
   static const String asistencia = AsistenciaPage.routeName;
   static const String agenda = AgendaPage.routeName;
+  static const String test_https = TestHttpsPage.routeName;
   // static const String events = EventsPage.routeName;
   // static const String notes = NotesPage.routeName;
 }
