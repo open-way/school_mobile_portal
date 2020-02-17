@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:school_mobile_portal/models/agenda_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/enviroment.dev.dart';
@@ -42,16 +43,22 @@ class PortalPadresService {
     }
   }
 
-  Future<List<OperationModel>> getAgenda() async {
-    http.Response res = await http.get('$theUrl/agendas');
-    if (res.statusCode == 200) {
-      final body = jsonDecode(res.body);
+  Future<List<AgendaModel>> getAgenda() async {
+    //http.Response res = await http.get('$theUrl/asistencias');
+    String pres =
+        '{"data":[{"id_actividad":1,"fecha_inicio":"2020-02-09 13:02:00","fecha_final":"2020-02-10 14:03:00","nombre":"Exa Comu","descripcion":"examen de gramática","nivel":"Primaria","grado":"1ro","seccion":"Daniel","curso":"Comunicación","categoria_nombre":"Examen","categoria_color":"#eb4034"},{"id_actividad":2,"fecha_inicio":"2020-02-08 15:15:00","fecha_final":"2020-02-09 17:45:00","nombre":"Exa Mate","descripcion":"examen de integrales","nivel":"Secundaria","grado":"2do","seccion":"José","curso":"Matemáticas","categoria_nombre":"Parcial","categoria_color":"#41e06c"},{"id_actividad":3,"fecha_inicio":"2020-02-07 09:16:00","fecha_final":"2020-02-07 10:47:00","nombre":"Deporte","descripcion":"Mini olimpiadas","nivel":"Inicial","grado":"4 años","seccion":"A","curso":"Educacación física","categoria_nombre":"Juegos","categoria_color":"#d041e0"}]}';
+    Map<String, dynamic> res = await jsonDecode(pres);
+    //if (res.statusCode == 200) {
+    if (jsonEncode(res) != null) {
+      final body = res;
+      //final body = jsonDecode(res.body);
+      //print(body);
       final data = body['data'].cast<Map<String, dynamic>>();
       return data
-          .map<OperationModel>((json) => OperationModel.fromJson(json))
+          .map<AgendaModel>((json) => AgendaModel.fromJson(json))
           .toList();
     } else {
-      throw "Can't get operations.";
+      throw "Can't get agenda.";
     }
   }
 }
