@@ -20,7 +20,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-
+    print('ESTOY EN DASHBOARD');
     //_checkEmailVerification();
 
     // _todoList = new List();

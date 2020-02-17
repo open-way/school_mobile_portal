@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:school_mobile_portal/services/auth.service.dart';
+import 'package:school_mobile_portal/models/test_https_model.dart';
 import 'package:school_mobile_portal/services/test-https.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 
@@ -35,7 +34,8 @@ class _TestHttpsPageState extends State<TestHttpsPage> {
       body: Card(
         child: FutureBuilder(
             future: widget.testHttpsService.testHttps$(),
-            builder: (context, snapshot) {
+            builder: (BuildContext context,
+                AsyncSnapshot<List<TestHttpsModel>> snapshot) {
               if (snapshot.hasError) {
                 print(snapshot.error);
                 print('Has errors');

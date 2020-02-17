@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
@@ -20,18 +24,20 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  String _userId = "";
+  String _userToken = "";
+  UserSignInModel userSignInModel;
+  final storage = new FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    _userId = '21222121dds21';
-    authStatus = AuthStatus.LOGGED_IN;
-
-    // widget.auth.getCurrentUser().then((user) {
+    this._readToken();
+    // _userToken = '21222121dds21';
+    // authStatus = AuthStatus.LOGGED_IN;
+    // widget.authService.getCurrentUser().then((user) {
     //   setState(() {
     //     if (user != null) {
-    //       _userId = user?.uid;
+    //       _userToken = user?.uid;
     //     }
     //     authStatus =
     //         user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
@@ -39,21 +45,37 @@ class _RootPageState extends State<RootPage> {
     // });
   }
 
+  void _readToken() async {
+    final strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
+    if (strUserSignIn.isNotEmpty) {
+      this.userSignInModel =
+          UserSignInModel.fromJson(jsonDecode(strUserSignIn));
+      // this._userToken = this.userSignInModel.token;
+      if (this.userSignInModel.token != null) {
+        _userToken = this.userSignInModel?.token;
+      }
+      authStatus = this.userSignInModel?.token == null
+          ? AuthStatus.NOT_LOGGED_IN
+          : AuthStatus.LOGGED_IN;
+    }
+    setState(() {});
+  }
+
   void loginCallback() {
-    widget.authService.getCurrentUser().then((user) {
-      setState(() {
-        _userId = user.uid.toString();
-      });
-    });
-    setState(() {
-      authStatus = AuthStatus.LOGGED_IN;
-    });
+    // widget.authService.getCurrentUser().then((user) {
+    //   setState(() {
+    //     _userToken = user.uid.toString();
+    //   });
+    // });
+    // setState(() {
+    //   authStatus = AuthStatus.LOGGED_IN;
+    // });
   }
 
   void logoutCallback() {
     setState(() {
       authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userId = '';
+      _userToken = '';
     });
   }
 
@@ -73,15 +95,16 @@ class _RootPageState extends State<RootPage> {
         return buildWaitingScreen();
         break;
       case AuthStatus.NOT_LOGGED_IN:
+        // storage.deleteAll();
         return new LoginSignupPage(
           authService: widget.authService,
           // loginCallback: loginCallback,
         );
         break;
       case AuthStatus.LOGGED_IN:
-        if (_userId.length > 0 && _userId != null) {
+        if (_userToken.length > 0 && _userToken != null) {
           return new DashboardPage(
-            userId: _userId,
+            userId: _userToken,
             authService: widget.authService,
             logoutCallback: logoutCallback,
           );
