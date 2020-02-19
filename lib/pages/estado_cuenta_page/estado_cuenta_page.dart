@@ -34,7 +34,10 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   void _getOperations() {
     _listaOperations = [];
-    portalPadresService.getEstadoCuenta$().then((onValue) {
+    var queryParameters = {
+      'estado': 'S',
+    };
+    portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
       _listaOperations = onValue;
       setState(() {});
     }).catchError((err) {
@@ -79,15 +82,10 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
               listaOperations: this._listaOperations,
             ),
           ),
-
         ],
       ),
     );
   }
-
-  // String _value = '';
-
-  // void _setValue(String value) => setState(() => _value = value);
 
   Future _showDialog() async {
     switch (await showDialog(
@@ -103,6 +101,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       ),
     )) {
       case DialogActions.SEARCH:
+      // this.estado = 
         this._getOperations();
         break;
       case DialogActions.CANCEL:
@@ -324,39 +323,6 @@ class _OperationsListState extends State<OperationsList> {
                 )
                 .toList(),
           ),
-          /*
-          child: FutureBuilder(
-            future: portalPadresService.getEstadoCuenta(),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<OperationModel>> snapshot) {
-              if (snapshot.hasError) print(snapshot.error);
-              if (snapshot.hasData) {
-                List<OperationModel> operations = snapshot.data;
-                return ListView(
-                  children: operations
-                      .map(
-                        (OperationModel operacion) => ListTile(
-                          title: Text(operacion.glosa),
-                          subtitle: Text("${operacion.fecha}"),
-                          trailing: Text('S/. ${operacion.importe.toString()}'),
-                          leading: CircleAvatar(child: Icon(Icons.check_box)),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => OperationDetail(
-                                operation: operacion,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                );
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-          */
         ),
       ),
     );

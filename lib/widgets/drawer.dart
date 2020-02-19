@@ -208,6 +208,11 @@ class _AppDrawerState extends State<AppDrawer> {
         text: '${res.nombre} ${res.paterno} ${res.materno}',
         onTap: () {
           this._chilSelected = res;
+          print(this._chilSelected);
+          // Guardar en el localstorage
+          final storage = new FlutterSecureStorage();
+          storage.write(key: 'child_selected', value: res.toString());
+
           this.changeMenu();
         },
       );

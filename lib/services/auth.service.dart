@@ -22,7 +22,7 @@ abstract class BaseAuth {
 }
 
 class AuthService implements BaseAuth {
-  final String theUrl = '$baseUrl/auth';
+  final String theUrl = '$baseAllUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {
     http.Response res = await http.post(
