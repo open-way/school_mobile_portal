@@ -24,6 +24,7 @@ dependencies:
   table_calendar: ^2.2.2 # add by Julio
   animated_dialog_box: ^0.0.2 # add by Julio
   rflutter_alert: ^1.0.3 # add by Julio
+  pie_chart: ^3.1.1 # add by Julio
   http_interceptor: any # add by Vitmar
   barcode_flutter: ^1.1.0 # add by Vitmar
 

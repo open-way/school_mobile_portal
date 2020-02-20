@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:school_mobile_portal/models/agenda_model.dart';
@@ -5,15 +6,6 @@ import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-
-// Example holidays
-final Map<DateTime, List> _holidays = {
-  DateTime(2019, 1, 1): ['New Year\'s Day'],
-  DateTime(2019, 1, 6): ['Epiphany'],
-  DateTime(2019, 2, 14): ['Valentine\'s Day'],
-  DateTime(2019, 4, 21): ['Easter Sunday'],
-  DateTime(2019, 4, 22): ['Easter Monday'],
-};
 
 class AgendaPage extends StatefulWidget {
   static const String routeName = '/agenda';
@@ -28,12 +20,10 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
-  List<AgendaModel> _listaActividades;
 
   @override
   void initState() {
     super.initState();
-    this._getMasters();
     final _selectedDay = DateTime.now();
 
     _selectedEvents = _agendaEventos[_selectedDay] ?? [];
@@ -47,20 +37,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     _animationController.forward();
   }
 
-  void _getMasters() {
-    this._getActividades();
-  }
-
-  void _getActividades() {
-    _listaActividades = [];
-    portalPadresService.getAgenda({}).then((onValue) {
-      _listaActividades = onValue;
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -69,35 +45,43 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   void _onDaySelected(DateTime day, List events) {
-    print('CALLBACK: _onDaySelected');
     setState(() {
       _selectedEvents = events;
     });
-    print(events.toString() + '----------------_onDaySelected------------');
-  }
-
-  void _onVisibleDaysChanged(
-      DateTime first, DateTime last, CalendarFormat format) {
-    print('CALLBACK: _onVisibleDaysChanged');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('a ver q sale aqui build build buildbuild ');
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
         title: Text('Agenda'),
       ),
       body: Column(
-        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          futureBuild(context),
-          const SizedBox(height: 8.0),
+          scrollWidget(),
           const SizedBox(height: 8.0),
           Expanded(child: _buildEventList()),
         ],
       ),
+    );
+  }
+
+  final ScrollController _controllerOne = ScrollController();
+
+  Widget scrollWidget() {
+    return new Container(
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      child: CupertinoScrollbar(
+          controller: _controllerOne,
+          child: ListView.builder(
+            controller: _controllerOne,
+            itemCount: 1,
+            itemBuilder: (BuildContext context, int index) => Column(
+              children: <Widget>[futureBuildCalendar(context)],
+            ),
+          )),
     );
   }
 
@@ -114,7 +98,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     for (var i = 0; i < agenda.length; i++) {
       var listDays = [];
       listDays.clear();
-      listDays = getDates(i);
+      listDays = getDates(i, agenda);
       var days = calculateDaysInterval(listDays[0], listDays[1]);
       for (var c = 0; c < days.length; c++) {
         if (_agendaEventos[days[c]] != null) {
@@ -122,14 +106,12 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         } else {
           _agendaEventos[days[c]] = [agenda[i].idActividad];
         }
-
-        print(_agendaEventos.toString() + 'aqui agenda eventos!!!!!!');
       }
     }
     return _agendaEventos;
   }
 
-  Widget futureBuild(BuildContext context) {
+  Widget futureBuildCalendar(BuildContext context) {
     return new FutureBuilder(
         future: portalPadresService.getAgenda({}),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
@@ -149,7 +131,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
       calendarController: _calendarController,
       events: _getEventosDays(agenda),
       initialSelectedDay: DateTime.now(),
-      holidays: _holidays,
       calendarStyle: CalendarStyle(
         outsideDaysVisible: false,
       ),
@@ -168,8 +149,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
           final children = <Widget>[];
 
           var childWidget = <Widget>[];
-          print(events.toList().toString() +
-              'markersBuildermarkersBuildermarkersBuilder');
           if (events.isNotEmpty) {
             var eventsList = events.toList();
             for (var i = 0; i < agenda.length; i++) {
@@ -193,7 +172,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         },
       ),
       onDaySelected: _onDaySelected,
-      onVisibleDaysChanged: _onVisibleDaysChanged,
     );
   }
 
@@ -229,38 +207,16 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget _buildEventsMarker(List events, String color) {
     if (events.isNotEmpty) {
-      var coroc = new Color(hexStringToHexInt(color));
       return AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: coroc),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle, color: Color(hexStringToHexInt(color))),
         width: 10.0,
         height: 10.0,
       );
     } else {
       return null;
     }
-  }
-
-  Widget _buildButtons() {
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            new RaisedButton(
-              onPressed: () {
-                _calendarController.setSelectedDay(
-                  DateTime.now(),
-                  runCallback: true,
-                );
-              },
-              child: new Text('Hoy'),
-            )
-          ],
-        ),
-      ],
-    );
   }
 
   _getDetalleActividad(int idActividad, List<AgendaModel> listaActividades) {
@@ -274,9 +230,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     }
   }
 
-  List getDates(int i) {
-    DateTime startParseDate = DateTime.parse(_listaActividades[i].fechaInicio);
-    DateTime endParseDate = DateTime.parse(_listaActividades[i].fechaFinal);
+  List getDates(int i, List<AgendaModel> listaActividades) {
+    DateTime startParseDate = DateTime.parse(listaActividades[i].fechaInicio);
+    DateTime endParseDate = DateTime.parse(listaActividades[i].fechaFinal);
     DateTime startDate = DateTime(startParseDate.year, startParseDate.month,
         startParseDate.day, 0, 0, 0, 0, 0);
     DateTime endDate = DateTime(
@@ -292,7 +248,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         getId = i;
       }
     }
-    var dayList = getDates(getId);
+    var dayList = getDates(getId, listaActividades);
     var rangoFechas;
     var rangoHoras;
     final formatoFecha = new DateFormat('EE dd, MM');
@@ -355,27 +311,33 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Widget _buildEventList() {
-    print('_selectedEvents _buildEventList' +
-        _selectedEvents.toString() +
-        '_selectedEvents _buildEventList');
-    return ListView(
-      children: _selectedEvents
-          .map((event) => Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.8),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: ListTile(
-                  title: Text(_getDetalleActividad(event, _listaActividades)),
-                  onTap: () => {
-                    print('$event tapped!'),
-                    _showDetalleActividadAlert(event, _listaActividades),
-                  },
-                ),
-              ))
-          .toList(),
-    );
+
+    return new FutureBuilder(
+        future: portalPadresService.getAgenda({}),
+        builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasData) {
+            List<AgendaModel> agenda = snapshot.data;
+            return ListView(
+              children: _selectedEvents
+                  .map((event) => Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 0.8),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 4.0),
+                        child: ListTile(
+                          title: Text(_getDetalleActividad(event, agenda)),
+                          onTap: () =>
+                              {_showDetalleActividadAlert(event, agenda)},
+                        ),
+                      ))
+                  .toList(),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
   }
 }
