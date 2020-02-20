@@ -3,24 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 
-class DashboardPage extends StatefulWidget {
-  DashboardPage({Key key, this.authService, this.userId, this.logoutCallback})
+class GenerateBarcodePage extends StatefulWidget {
+  GenerateBarcodePage({Key key, this.authService, this.userId, this.logoutCallback})
       : super(key: key);
 
-  static const String routeName = '/dashboard';
+  static const String routeName = '/generate_barcode';
   final AuthService authService;
   final VoidCallback logoutCallback;
   final String userId;
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  _GenerateBarcodePageState createState() => _GenerateBarcodePageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
   @override
   void initState() {
     super.initState();
-    print('ESTOY EN DASHBOARD');
+    print('ESTOY EN GenerateBarcode');
   }
 
   @override
@@ -28,10 +28,10 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Text('GenerateBarcode'),
       ),
       body: Card(
-        child: Text('Dashboard page'),
+        child: Text('GenerateBarcode page'),
       ),
     );
   }

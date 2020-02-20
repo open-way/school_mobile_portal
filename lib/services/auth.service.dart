@@ -25,11 +25,29 @@ class AuthService implements BaseAuth {
   final String theUrl = '$baseAllUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {
+    print('-------');
+    print('-------');
+    print('-------');
+    print(username);
+    print(password);
     http.Response res = await http.post(
       '$theUrl/sign-in',
       body: {'username': username, 'password': password, 'no_caduca': 'true'},
     );
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
     final body = jsonDecode(res.body);
+    print(body.toString());
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
     if (res.statusCode == 200) {
       final data = new UserSignInModel.fromJson(body['data']);
       return data;
@@ -47,8 +65,24 @@ class AuthService implements BaseAuth {
       'password': password,
       'password_confirmation': passwordConfirm,
     };
+    print(data.toString());
     http.Response res = await http.post('$theUrl/sign-up', body: data);
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+    print(res.body.toString());
+
     final body = jsonDecode(res.body);
+    print('-------');
+    print('-------');
+    print(body.toString());
+    print('-------');
+    print('-------');
+    print('-------');
+    print('-------');
+
     if (res.statusCode == 200) {
       final data = new UserSignInModel.fromJson(body['data']);
       return data;

@@ -184,6 +184,11 @@ class _AppDrawerState extends State<AppDrawer> {
         text: 'Agenda',
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
       ),
+      createDrawerItem(
+        icon: Icons.note,
+        text: 'Generar barcode',
+        onTap: () => Navigator.pushReplacementNamed(context, Routes.generate_barcode),
+      ),
       Divider(),
       createDrawerItem(
           icon: Icons.note,

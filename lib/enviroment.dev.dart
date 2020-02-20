@@ -1,4 +1,14 @@
 final baseAllUrl = 'http://app08.vitmar.lamb-dev.upeu/lamb-financial-school-api/public/mobile-api';
 final baseApiGeneral = 'app08.vitmar.lamb-dev.upeu';
 final intermediateApiGeneral = '/lamb-financial-school-api/public/mobile-api';
-// final baseUrl = 'https://api-lamb.upeu.edu.pe/setup/user-data';
+
+
+// final baseAllUrl = 'http://10.174.11.4:80/lamb-financial-school-api/public/mobile-api';
+// final baseApiGeneral = '10.174.11.4:80';
+// final intermediateApiGeneral = '/lamb-financial-school-api/public/mobile-api';
+
+
+// final baseAllUrl = 'https://api-lamb-school-financial.upeu.edu.pe/mobile-api';
+// final baseApiGeneral = 'api-lamb-school-financial.upeu.edu.pe';
+// final intermediateApiGeneral = '/mobile-api';
+

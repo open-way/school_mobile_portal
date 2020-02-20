@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
+import 'package:school_mobile_portal/theme/dark.theme.dart';
 // import 'package:school_mobile_portal/routes/routes.dart';
 
 class LoginSignupPage extends StatefulWidget {
@@ -118,11 +119,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         //   // widget.loginCallback();
         // }
       } catch (e) {
+        print('Hola munof');
         print("Error: ${e.message}");
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
-          _formKey.currentState.reset();
+          // _formKey.currentState.reset();
         });
       }
     }
@@ -394,7 +396,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
-            color: Colors.blue,
+            // color: Colors.blue,
             child: new Text(
               _isLoginForm ? 'Iniciar sesión' : 'Crear usuario',
               // semanticsLabel: 'Iniciar sesión',

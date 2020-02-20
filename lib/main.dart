@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
+import 'package:school_mobile_portal/pages/generate_barcode_page/generate_barcode_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/pages/portal_padre_page/portal_padre_page.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
@@ -11,9 +12,9 @@ import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart'
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/test-https.service.dart';
+import 'package:school_mobile_portal/theme/dark.theme.dart';
 
 void main() {
-  // Injector.configure(Flavor.PRO);
   return runApp(MyApp());
 }
 
@@ -22,8 +23,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Lamb school app',
-      // debugShowCheckedModeBanner: false,
-      theme: new ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
+      theme: darkTheme,
       // home: new DashboardPage(),
       home: new RootPage(
         authService: AuthService(),
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
             // auth: AuthService(),
             ),
         Routes.agenda: (context) => AgendaPage(),
+        Routes.generate_barcode: (context) => GenerateBarcodePage(),
         Routes.test_https: (context) => TestHttpsPage(
               testHttpsService: TestHttpsService(),
             ),

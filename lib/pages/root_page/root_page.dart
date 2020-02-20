@@ -24,7 +24,7 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  String _userToken = "";
+  String _userToken = '';
   UserSignInModel userSignInModel;
   final storage = new FlutterSecureStorage();
 
@@ -32,21 +32,11 @@ class _RootPageState extends State<RootPage> {
   void initState() {
     super.initState();
     this._readToken();
-    // _userToken = '21222121dds21';
-    // authStatus = AuthStatus.LOGGED_IN;
-    // widget.authService.getCurrentUser().then((user) {
-    //   setState(() {
-    //     if (user != null) {
-    //       _userToken = user?.uid;
-    //     }
-    //     authStatus =
-    //         user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
-    //   });
-    // });
   }
 
   void _readToken() async {
     final strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
+    // await storage.deleteAll();
     if (strUserSignIn.isNotEmpty) {
       this.userSignInModel =
           UserSignInModel.fromJson(jsonDecode(strUserSignIn));
@@ -57,6 +47,12 @@ class _RootPageState extends State<RootPage> {
       authStatus = this.userSignInModel?.token == null
           ? AuthStatus.NOT_LOGGED_IN
           : AuthStatus.LOGGED_IN;
+    }
+     else {
+      print('hola');
+      print('hola');
+      print('hola');
+      authStatus = AuthStatus.NOT_LOGGED_IN;
     }
     setState(() {});
   }
