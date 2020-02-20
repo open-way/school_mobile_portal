@@ -1,15 +1,14 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:school_mobile_portal/enviroment.dev.dart';
 import 'package:school_mobile_portal/models/test_https_model.dart';
+import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 // import 'dart:developer' as developer;
 
-class TestHttpsService {
-  final String theUrl = '$baseUrl/test-https';
+class TestHttpsService extends VitHttpService  {
 
   Future<List<TestHttpsModel>> testHttps$() async {
-    http.Response res = await http.get(
+    http.Response res = await lambHttp.get(
         'https://api-lamb-school-financial.upeu.edu.pe/api/matricula/test_connect');
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);

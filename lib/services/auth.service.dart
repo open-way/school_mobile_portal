@@ -1,13 +1,15 @@
 import 'dart:convert';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:school_mobile_portal/models/response_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/enviroment.dev.dart';
 
 abstract class BaseAuth {
   Future<UserSignInModel> signIn(String email, String password);
 
-  Future<UserSignInModel> signUp(String email, String password);
+  Future<UserSignInModel> signUp(String idTipodocumento, String username,
+      String password, String passwordConfirm);
 
   // Future<FirebaseUser> getCurrentUser();
   Future<dynamic> getCurrentUser();
@@ -20,37 +22,39 @@ abstract class BaseAuth {
 }
 
 class AuthService implements BaseAuth {
-  final String theUrl = '$baseUrl/auth';
+  final String theUrl = '$baseAllUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {
     http.Response res = await http.post(
       '$theUrl/sign-in',
       body: {'username': username, 'password': password, 'no_caduca': 'true'},
     );
+    final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
-      final body = jsonDecode(res.body);
-      // print(body.toString());
       final data = new UserSignInModel.fromJson(body['data']);
       return data;
     } else {
-      throw 'No es posible iniciar sesión.';
+      throw new ResponseModel.fromJson(body['error']);
+      // throw 'No es posible iniciar sesión.';
     }
   }
 
-  Future<UserSignInModel> signUp(String username, String password) async {
-    http.Response res = await http.post('$theUrl/sign-up', body: {
+  Future<UserSignInModel> signUp(String idTipodocumento, String username,
+      String password, String passwordConfirm) async {
+    var data = {
+      'id_tipodocumento': idTipodocumento,
       'username': username,
       'password': password,
-    });
+      'password_confirmation': passwordConfirm,
+    };
+    http.Response res = await http.post('$theUrl/sign-up', body: data);
+    final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
-      final body = jsonDecode(res.body);
-      // print(body.toString());
       final data = new UserSignInModel.fromJson(body['data']);
       return data;
     } else {
-      throw 'No es posible crear al usuario sesión.';
+      throw new ResponseModel.fromJson(body['error']);
     }
-
     // AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
     //     email: email, password: password);
     // FirebaseUser user = result.user;

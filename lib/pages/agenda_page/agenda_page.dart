@@ -113,7 +113,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget futureBuildCalendar(BuildContext context) {
     return new FutureBuilder(
-        future: portalPadresService.getAgenda(),
+        future: portalPadresService.getAgenda({}),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -311,8 +311,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Widget _buildEventList() {
+
     return new FutureBuilder(
-        future: portalPadresService.getAgenda(),
+        future: portalPadresService.getAgenda({}),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {

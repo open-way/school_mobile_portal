@@ -1,17 +1,27 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/services/mis-hijos.service.dart';
+
+enum MENUS { MENU_PRINCIPAL, MENU_SECUNDARIO }
 
 class DrawerHeader extends StatefulWidget {
+  final VoidCallback onChangeMenu;
+  final HijoModel chilSelected;
+
+  DrawerHeader({@required this.onChangeMenu, @required this.chilSelected});
+
   @override
   _DrawerHeaderState createState() => _DrawerHeaderState();
 }
 
 class _DrawerHeaderState extends State<DrawerHeader> {
-  String strUserSignIn = '';
+  // String strUserSignIn = '';
   UserSignInModel userSignInModel;
 
   String token = '';
@@ -24,15 +34,14 @@ class _DrawerHeaderState extends State<DrawerHeader> {
   void initState() {
     super.initState();
     this._readToken();
-    // this._getMasters();
   }
 
   void _readToken() async {
     final storage = new FlutterSecureStorage();
-    this.strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
-    if (this.strUserSignIn.isNotEmpty) {
+    final strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
+    if (strUserSignIn.isNotEmpty) {
       this.userSignInModel =
-          UserSignInModel.fromJson(jsonDecode(this.strUserSignIn));
+          UserSignInModel.fromJson(jsonDecode(strUserSignIn));
     }
     setState(() {});
   }
@@ -43,7 +52,9 @@ class _DrawerHeaderState extends State<DrawerHeader> {
       child: new UserAccountsDrawerHeader(
         accountName: Text(this.userSignInModel?.oauthFullname ?? ''),
         accountEmail: Text(this.userSignInModel?.oauthEmail ?? ''),
-        onDetailsPressed: () {},
+        onDetailsPressed: () {
+          widget.onChangeMenu();
+        },
         decoration: new BoxDecoration(
           image: new DecorationImage(
             image:
@@ -52,9 +63,15 @@ class _DrawerHeaderState extends State<DrawerHeader> {
           ),
         ),
         currentAccountPicture: CircleAvatar(
+          child: InkWell(
+            onTap: () {
+              print('Click en principal');
+            },
+          ),
           // backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/46.jpg'),
           // backgroundImage: NetworkImage('https://api-lamb.upeu.edu.pe/setup_files/users/7677.JPEG'),
           backgroundImage: ExactAssetImage('assets/images/man.png'),
+
           // backgroundColor: Color.
           // backgroundColor: Color.blue,
           // Theme.of(context).platform == TargetPlatform.iOS
@@ -66,11 +83,13 @@ class _DrawerHeaderState extends State<DrawerHeader> {
           // ),
         ),
         otherAccountsPictures: <Widget>[
+          // widget?.chilSelected ??
           new CircleAvatar(
-            backgroundImage: new ExactAssetImage('assets/images/man.png'),
-            // backgroundImage: new ExactAssetImage('assets/images/girl.png'),
-          ),
-          new CircleAvatar(
+            child: InkWell(
+              onTap: () {
+                print(widget?.chilSelected?.nombre);
+              },
+            ),
             backgroundImage: new ExactAssetImage('assets/images/girl.png'),
           ),
         ],
@@ -79,87 +98,126 @@ class _DrawerHeaderState extends State<DrawerHeader> {
   }
 }
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
+  @override
+  _AppDrawerState createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  MENUS myMenu = MENUS.MENU_PRINCIPAL;
+  List<HijoModel> _misHijos = [];
+
+  HijoModel _chilSelected;
+
+  MisHijosService misHijosService = new MisHijosService();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          new DrawerHeader(),
-          createDrawerItem(
-              icon: Icons.dashboard,
-              text: 'Dashboard',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.dashboard)),
-          createDrawerItem(
-              icon: Icons.view_agenda,
-              text: 'Estado de cuenta',
-              onTap: () => Navigator.pushReplacementNamed(
-                  context, Routes.estado_cuenta)),
-          createDrawerItem(
-              icon: Icons.view_agenda,
-              text: 'Asistencia',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.asistencia)),
-          createDrawerItem(
-              icon: Icons.note,
-              text: 'Agenda',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.agenda)),
-          Divider(),
-          createDrawerItem(
-              icon: Icons.note,
-              text: 'Test https',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.test_https)),
-          createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
-          createDrawerItem(icon: Icons.info, text: 'Acerca'),
-          createDrawerItem(
-              icon: Icons.power_settings_new,
-              text: 'Cerrar sesión',
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.login_signup)),
-          // ListTile(
-          //   title: Text('0.0.1'),
-          //   onTap: () {},
-          // ),
-        ],
-      ),
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+                new DrawerHeader(
+                  onChangeMenu: () {
+                    this.changeMenu();
+                  },
+                  chilSelected: this._chilSelected,
+                ),
+              ] +
+              this.configMenu(context)),
     );
   }
 
-  void getNameUser() async {
-    final storage = new FlutterSecureStorage();
-
-// Store password
-    // await storage.write(key: "password", value: "my-secret-password");
-
-// Read value
-    String myPassword = await storage.read(key: 'token');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print(myPassword);
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
-    print('');
+  @override
+  void initState() {
+    super.initState();
+    this._getHijos();
   }
 
-  // Widget createHeader() {
-  //   return
-  // }
+  void _getHijos() async {
+    _misHijos = [];
+    misHijosService.getAll$().then((onValue) {
+      _misHijos = onValue;
+      if (_misHijos.length > 0) {
+        this._chilSelected = _misHijos[0];
+      }
+      _misHijos = onValue;
+      setState(() {});
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  void changeMenu() {
+    myMenu = myMenu == MENUS.MENU_PRINCIPAL
+        ? MENUS.MENU_SECUNDARIO
+        : MENUS.MENU_PRINCIPAL;
+    setState(() {});
+  }
+
+  List<Widget> configMenu(BuildContext context) {
+    return this.myMenu == MENUS.MENU_PRINCIPAL
+        ? this.getMenuPrincipal(context)
+        : this.getMenuChildrens(context);
+  }
+
+  List<Widget> getMenuPrincipal(BuildContext context) {
+    return [
+      createDrawerItem(
+        icon: Icons.dashboard,
+        text: 'Dashboard',
+        onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
+      ),
+      createDrawerItem(
+        icon: Icons.view_agenda,
+        text: 'Estado de cuenta',
+        onTap: () =>
+            Navigator.pushReplacementNamed(context, Routes.estado_cuenta),
+      ),
+      createDrawerItem(
+        icon: Icons.view_agenda,
+        text: 'Asistencia',
+        onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
+      ),
+      createDrawerItem(
+        icon: Icons.note,
+        text: 'Agenda',
+        onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
+      ),
+      Divider(),
+      createDrawerItem(
+          icon: Icons.note,
+          text: 'Test https',
+          onTap: () =>
+              Navigator.pushReplacementNamed(context, Routes.test_https)),
+      createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
+      createDrawerItem(icon: Icons.info, text: 'Acerca'),
+      createDrawerItem(
+        icon: Icons.power_settings_new,
+        text: 'Cerrar sesión',
+        onTap: () =>
+            Navigator.pushReplacementNamed(context, Routes.login_signup),
+      ),
+    ];
+  }
+
+  List<Widget> getMenuChildrens(BuildContext context) {
+    return this._misHijos.map((HijoModel res) {
+      return createDrawerItem(
+        icon: Icons.person,
+        text: '${res.nombre} ${res.paterno} ${res.materno}',
+        onTap: () {
+          this._chilSelected = res;
+          print(this._chilSelected);
+          // Guardar en el localstorage
+          final storage = new FlutterSecureStorage();
+          storage.write(key: 'child_selected', value: res.toString());
+
+          this.changeMenu();
+        },
+      );
+    }).toList();
+  }
 
   Widget createDrawerItem(
       {IconData icon, String text, GestureTapCallback onTap}) {

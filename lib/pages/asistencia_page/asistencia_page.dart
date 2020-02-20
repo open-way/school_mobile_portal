@@ -64,7 +64,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   void _getAsistencias() {
     _listaAsistencias = [];
-    portalPadresService.getAsistencias().then((onValue) {
+    portalPadresService.getAsistencias({}).then((onValue) {
       _listaAsistencias = onValue;
       setState(() {});
     }).catchError((err) {
@@ -204,7 +204,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget futureBuild(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getAsistencias(),
+        future: portalPadresService.getAsistencias({}),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -258,7 +258,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget detalleAsistenciasDia(DateTime day) {
     return new FutureBuilder(
-        future: portalPadresService.getAsistencias(),
+        future: portalPadresService.getAsistencias({}),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {

@@ -50,6 +50,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     print(userSignIn.toString());
     print('______________');
     await storage.write(key: 'user_sign_in', value: userSignIn.toString());
+    await storage.write(key: 'token', value: userSignIn.token);
     // await storage.write(key: 'token', value: userSignIn.token);
     // await storage.write(key: 'oauth_fullname', value: userSignIn.oauthFullname);
     // await storage.write(key: 'oauth_email', value: userSignIn.oauthEmail);
@@ -80,23 +81,25 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   // Perform login or signup
   void validateAndSubmit() async {
-    setState(() {
-      _errorMessage = '';
-      _isLoading = true;
-    });
-    // print(_email);
-    // print(_password);
     // widget.loginCallback();
     // Navigator.pushReplacementNamed(context, Routes.dashboard);
-
     // String userId = "";
     if (validateAndSave()) {
+      setState(() {
+        _errorMessage = '';
+        _isLoading = true;
+      });
       UserSignInModel userSignIn;
       try {
         if (_isLoginForm) {
           userSignIn = await widget.authService.signIn(_email, _password);
         } else {
-          userSignIn = await widget.authService.signUp(_email, _password);
+          userSignIn = await widget.authService.signUp(
+            _idTipodocumento,
+            _email,
+            _password,
+            _passwordConfirm,
+          );
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
           // print('Signed up user: $userId');
@@ -115,7 +118,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         //   // widget.loginCallback();
         // }
       } catch (e) {
-        print('Error: $e');
+        print("Error: ${e.message}");
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
@@ -317,7 +320,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         autofocus: false,
         decoration: new InputDecoration(
             // hintText: 'DNI',
-            labelText: 'DNI',
+            labelText: 'Usuario(DNI)',
             icon: new Icon(
               Icons.perm_identity,
               color: Colors.grey,
@@ -376,7 +379,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return new FlatButton(
         child: new Text(
             _isLoginForm
-                ? 'Crear un usuario'
+                ? 'Solicitar acceso'
                 : '¿Ya tienes un usuario? Iniciar sesión',
             style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: toggleFormMode);
@@ -393,7 +396,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 borderRadius: new BorderRadius.circular(30.0)),
             color: Colors.blue,
             child: new Text(
-              _isLoginForm ? 'Iniciar sesión' : 'Crear un usuario',
+              _isLoginForm ? 'Iniciar sesión' : 'Crear usuario',
               // semanticsLabel: 'Iniciar sesión',
               style: new TextStyle(fontSize: 20.0, color: Colors.white),
             ),

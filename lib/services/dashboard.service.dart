@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/dashboard_model.dart';
-import 'package:school_mobile_portal/enviroment.dev.dart';
+//import 'package:school_mobile_portal/enviroment.dev.dart';
+//import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 // import 'dart:developer' as developer;
 
 class DashboardService {
-  final String theUrl = '$baseUrl/dashboard';
+  //final String theUrl = httpGetAll('/dashboard');
 
   Future<List<DashboardModel>> getDashboard() async {
     //http.Response res = await http.get('$theUrl');

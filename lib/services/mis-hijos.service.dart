@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/enviroment.dev.dart';
+import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
-class MisHijosService {
-  final String theUrl = '$baseUrl/setup/mis-hijos';
+class MisHijosService extends VitHttpService {
 
   Future<List<HijoModel>> getAll$() async {
-    http.Response res = await http.get(this.theUrl);
+    http.Response res = await httpGetAll('/setup/mis-hijos');
+
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       final data = body['data'].cast<Map<String, dynamic>>();

@@ -6,7 +6,7 @@ import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.d
 import 'package:school_mobile_portal/pages/portal_padre_page/portal_padre_page.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 
-import 'package:school_mobile_portal/pages/root/root.dart';
+import 'package:school_mobile_portal/pages/root_page/root_page.dart';
 import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Lamb school app',
-      debugShowCheckedModeBanner: false,
+      // debugShowCheckedModeBanner: false,
       theme: new ThemeData(primarySwatch: Colors.blue),
       // home: new DashboardPage(),
       home: new RootPage(
