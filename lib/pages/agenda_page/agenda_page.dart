@@ -219,7 +219,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     }
   }
 
-  _getDetalleActividad(int idActividad, List<AgendaModel> listaActividades) {
+  _getDetalleActividad(String idActividad, List<AgendaModel> listaActividades) {
     for (var i = 0; i < listaActividades.length; i++) {
       if (idActividad == listaActividades[i].idActividad) {
         return '"' +
@@ -241,7 +241,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   _showDetalleActividadAlert(
-      int idActividad, List<AgendaModel> listaActividades) {
+      String idActividad, List<AgendaModel> listaActividades) {
     int getId;
     for (var i = 0; i < listaActividades.length; i++) {
       if (idActividad == listaActividades[i].idActividad) {
@@ -281,6 +281,16 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         color: Colors.red,
       ),
     );
+    var nivel = listaActividades[getId].nivel ?? '';
+    var grado = listaActividades[getId].grado ?? '';
+    var nivelGrado;
+    if (grado != '') {
+      nivelGrado = nivel + ': ' + grado;
+    } else {
+      nivelGrado = '';
+    }
+    var seccion = listaActividades[getId].seccion ?? '';
+    var curso = listaActividades[getId].curso ?? '';
     return new Alert(
         context: context,
         style: alertStyle,
@@ -291,12 +301,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
             Text(rangoHoras),
             Text(listaActividades[getId].nombre),
             Text(listaActividades[getId].descripcion),
-            Text(listaActividades[getId].nivel +
-                ': ' +
-                listaActividades[getId].grado +
-                ' ' +
-                listaActividades[getId].seccion),
-            Text(listaActividades[getId].curso),
+            Text(nivelGrado + ' ' + seccion),
+            Text(curso),
           ],
         ),
         buttons: [
@@ -311,7 +317,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Widget _buildEventList() {
-
     return new FutureBuilder(
         future: portalPadresService.getAgenda({}),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {

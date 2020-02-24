@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class DashboardModel {
   final List<dynamic> estadoCuentaResumen;
   final String eventos;
-  final List<dynamic> asistencias;
+  final Map<String, dynamic> asistencias;
 
   DashboardModel({
     @required this.estadoCuentaResumen,
@@ -15,7 +15,7 @@ class DashboardModel {
     return DashboardModel(
       estadoCuentaResumen: json['estado_cuenta_resumen'] as List<dynamic>,
       eventos: json['eventos'] as String,
-      asistencias: json['asistencias'] as List<dynamic>,
+      asistencias: json['asistencias'] as Map<String, dynamic>,
     );
   }
 }

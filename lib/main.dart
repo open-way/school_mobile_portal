@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
@@ -12,7 +13,7 @@ import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart'
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/test-https.service.dart';
-import 'package:school_mobile_portal/theme/default.theme.dart';
+import 'package:school_mobile_portal/theme/lamb_themes.dart';
 
 void main() {
   return runApp(MyApp());
@@ -21,10 +22,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: LambThemes.light.appBarTheme.color));
     return new MaterialApp(
       title: 'Lamb school app',
       debugShowCheckedModeBanner: false,
-      theme: dafaultTheme,
+      theme: LambThemes.light,
       // home: new DashboardPage(),
       home: new RootPage(
         authService: AuthService(),
