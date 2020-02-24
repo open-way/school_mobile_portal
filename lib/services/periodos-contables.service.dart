@@ -6,7 +6,7 @@ import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart'
 
 class PeriodosContablesService extends VitHttpService {
   Future<List<PeriodoContableModel>> getAll$() async {
-    http.Response res = await httpGetAll('/portal-padre/asistencias');
+    http.Response res = await httpGetAll('/setup/periodos-contables');
 
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);

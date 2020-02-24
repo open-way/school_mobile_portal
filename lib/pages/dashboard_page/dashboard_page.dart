@@ -64,13 +64,13 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget futureBuildEstadoCuenta(BuildContext context) {
     return FutureBuilder(
         future: dashboardService.getDashboard$({}),
-        builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
+        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
-            List<DashboardModel> dashboard = snapshot.data;
-            var importe = dashboard[0].estadoCuentaResumen[0]['importe'];
-            var texto = dashboard[0].estadoCuentaResumen[0]['texto'];
-            var color = dashboard[0].estadoCuentaResumen[0]['color'];
+            DashboardModel dashboard = snapshot.data;
+            var importe = dashboard.estadoCuentaResumen[0]['importe'];
+            var texto = dashboard.estadoCuentaResumen[0]['texto'];
+            var color = dashboard.estadoCuentaResumen[0]['color'];
 
             return _circle(importe, texto, Color(int.parse(color)));
           } else {
@@ -82,11 +82,11 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget futureBuildEventos(BuildContext context) {
     return FutureBuilder(
         future: dashboardService.getDashboard$({}),
-        builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
+        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
-            List<DashboardModel> dashboard = snapshot.data;
-            var cantEventos = dashboard[0].eventos;
+            DashboardModel dashboard = snapshot.data;
+            var cantEventos = dashboard.eventos;
 
             return _cardEventos(cantEventos);
           } else {
@@ -98,11 +98,11 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget futureBuildAsistencias(BuildContext context) {
     return FutureBuilder(
         future: dashboardService.getDashboard$({}),
-        builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
+        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
-            List<DashboardModel> dashboard = snapshot.data;
-            var listaAsistencia = dashboard[0].asistencias;
+            DashboardModel dashboard = snapshot.data;
+            var listaAsistencia = dashboard.asistencias;
 
             return _cardAsistencias(listaAsistencia);
           } else {

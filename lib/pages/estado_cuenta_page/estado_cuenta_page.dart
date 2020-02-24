@@ -135,8 +135,8 @@ class _FilterFormState extends State<FilterForm> {
 
   @override
   void initState() {
-    this._idAlumno = '1';
-    this._idAnho = '1';
+    //this._idAlumno = '203708';
+    //this._idAnho = '1';
     super.initState();
     this._getMasters();
   }
