@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/dashboard_model.dart';
 import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
+import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -22,7 +23,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final DashboardService portalPadresService = new DashboardService();
+  final DashboardService dashboardService = new DashboardService();
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildEstadoCuenta(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: dashboardService.getDashboard(),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -71,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
             var texto = dashboard[0].estadoCuentaResumen[0]['texto'];
             var color = dashboard[0].estadoCuentaResumen[0]['color'];
 
-            return _circle(importe, texto, Color(hexStringToHexInt(color)));
+            return _circle(importe, texto, Color(int.parse(color)));
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -80,7 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildEventos(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: dashboardService.getDashboard(),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -96,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildAsistencias(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: dashboardService.getDashboard(),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -110,20 +111,21 @@ class _DashboardPageState extends State<DashboardPage> {
         });
   }
 
-  hexStringToHexInt(String hex) {
+  /*hexStringToHexInt(String hex) {
     hex = hex.replaceFirst('#', '');
     hex = hex.length == 6 ? 'ff' + hex : hex;
     int val = int.parse(hex, radix: 16);
     return val;
-  }
+  }*/
 
   Widget _circle(String importe, String texto, Color color) => new Card(
+        elevation: 0,
         child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AsistenciaPage()),
+                MaterialPageRoute(builder: (context) => EstadoCuentaPage()),
               );
             },
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -140,7 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ])),
       );
 
-  Widget _cardEsdadoCuenta(String saldo, Color color) => new Card(
+  /*Widget _cardEsdadoCuenta(String saldo, Color color) => new Card(
         color: color,
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
@@ -160,9 +162,10 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
         ),
-      );
+      );*/
 
   Widget _cardEventos(String cantEventos) => new Card(
+        elevation: 0,
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
@@ -181,17 +184,19 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );
 
-  Widget _cardAsistencias(List listaAsistencia) {
+  Widget _cardAsistencias(Map<String, dynamic> listaAsistencia) {
     var children = <Widget>[];
     var card = Column(children: <Widget>[
       ListTile(title: Text('Asistencias', style: TextStyle(fontSize: 19))),
       Row(children: children)
     ]);
-    for (var i = 0; i < listaAsistencia.length; i++) {
+    Map<String, dynamic> colores = listaAsistencia['colores'];
+    List<dynamic> alumnos = listaAsistencia['alumnos'];
+    for (var i = 0; i < alumnos.length; i++) {
       children.add(LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         var localWidth;
-        if (listaAsistencia.length > 1) {
+        if (alumnos.length > 1) {
           localWidth = MediaQuery.of(context).size.width / 2;
         } else {
           localWidth = MediaQuery.of(context).size.width / 1;
@@ -199,7 +204,7 @@ class _DashboardPageState extends State<DashboardPage> {
         return Container(
             width: localWidth,
             child: Card(
-                elevation: 2,
+                elevation: 0,
                 child: InkWell(
                     splashColor: Colors.blue.withAlpha(30),
                     onTap: () {
@@ -210,26 +215,20 @@ class _DashboardPageState extends State<DashboardPage> {
                     },
                     child: PieChartAsistencia(
                         colorList: [
-                          Color(hexStringToHexInt(
-                              listaAsistencia[i]['puntual_color'])),
-                          Color(hexStringToHexInt(
-                              listaAsistencia[i]['tarde_color'])),
-                          Color(hexStringToHexInt(
-                              listaAsistencia[i]['falta_color'])),
-                          Color(hexStringToHexInt(
-                              listaAsistencia[i]['justificada_color']))
+                          Color(int.parse(colores['puntual_color'])),
+                          Color(int.parse(colores['tarde_color'])),
+                          Color(int.parse(colores['falta_color'])),
+                          Color(int.parse(colores['justificado_color']))
                         ],
                         dataMap: {
-                          'P':
-                              double.parse(listaAsistencia[i]['puntual_valor']),
-                          'T': double.parse(listaAsistencia[i]['tarde_valor']),
-                          'F': double.parse(listaAsistencia[i]['falta_valor']),
-                          'J': double.parse(
-                              listaAsistencia[i]['justificada_valor'])
+                          'P': double.parse(alumnos[i]['puntual_valor']),
+                          'T': double.parse(alumnos[i]['tarde_valor']),
+                          'F': double.parse(alumnos[i]['falta_valor']),
+                          'J': double.parse(alumnos[i]['justificada_valor'])
                         },
                         fontSize: 14,
                         size: 180,
-                        text: Text(listaAsistencia[i]['nombre'],
+                        text: Text(alumnos[i]['nombre'],
                             style: TextStyle(fontSize: 14))))));
       }));
     }

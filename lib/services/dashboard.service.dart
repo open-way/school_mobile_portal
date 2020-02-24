@@ -12,7 +12,7 @@ class DashboardService {
   Future<List<DashboardModel>> getDashboard() async {
     //http.Response res = await http.get('$theUrl');
     String pres =
-        '{"data":[{"estado_cuenta_resumen":[{"importe":"00,00","texto":"USTED DEBE SETENTA Y OCHO MIL DOSCIENTOS NOVENTA Y SIENTE Y 93/100 SOLES","color":"#FFD54F"}],"eventos":"5","asistencias":[{"id_alumno":"1","nombre":"Juan David","puntual_valor":"24","tarde_valor":"21","falta_valor":"23","justificada_valor":"22","puntual_color":"#CDDC39","tarde_color":"#FFD54F","falta_color":"#E57373","justificada_color":"#03A9F4"},{"id_alumno":"2","nombre":"Pepito Pancho","puntual_valor":"44","tarde_valor":"11","falta_valor":"33","justificada_valor":"12","puntual_color":"#CDDC39","tarde_color":"#FFD54F","falta_color":"#E57373","justificada_color":"#03A9F4"}]}]}';
+        '{"data":[{"estado_cuenta_resumen":[{"importe":"78 297,93","texto":"USTED DEBE SETENTA Y OCHO MIL DOSCIENTOS NOVENTA Y SIENTE Y 93/100 SOLES","color":"0xFFFFCD32"}],"eventos":"5","asistencias":{"colores":{"puntual_color":"0xFF91CD32","tarde_color":"0xFFFFCD32","falta_color":"0xFFD22800","justificado_color":"0xFF0067B1"},"alumnos":[{"id_alumno":"1","nombre":"Juan David","puntual_valor":"24","tarde_valor":"21","falta_valor":"23","justificada_valor":"22"},{"id_alumno":"2","nombre":"Pepito Pancho","puntual_valor":"44","tarde_valor":"11","falta_valor":"33","justificada_valor":"12"}]}}]}';
     Map<String, dynamic> res = await jsonDecode(pres);
     //if (res.statusCode == 200) {
     if (jsonEncode(res) != null) {

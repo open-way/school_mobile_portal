@@ -210,10 +210,11 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           if (snapshot.hasData) {
             List<AsistenciaModel> asistencias = snapshot.data;
             for (var i = 0; i < asistencias.length; i++) {
-              DateTime newDateTimeObj = new DateFormat('dd/MM/yyyy HH:mm')
-                  .parse(asistencias[i].fecha);
+              DateTime newDateTimeObj =
+                  DateTime.parse(asistencias[i].fechaRegistro);
               _asistenciaEventos[newDateTimeObj] = [
-                asistencias[i].estado,
+                asistencias[i].estadoNombre,
+                asistencias[i].estadoColor,
                 asistencias[i].periodoNombre,
                 asistencias[i].responsable,
                 asistencias[i].puerta
@@ -266,8 +267,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
             final f = new DateFormat('dd/MM/yyyy');
             final children = <Widget>[];
             for (var i = 0; i < asistencias.length; i++) {
-              if (f.format(DateFormat('dd/MM/yyyy HH:mm')
-                      .parse(asistencias[i].fecha)) ==
+              if (f.format(DateTime.parse(asistencias[i].fechaRegistro)) ==
                   f.format(day)) {
                 children.add(buildDetalleAsistencias(asistencias[i]));
               }
@@ -281,7 +281,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget buildDetalleAsistencias(AsistenciaModel asistencia) {
     var getEstado = getEstadoColor(asistencia);
-    String periodoNombre = asistencia.periodoNombre;
+    String periodoNombre = asistencia.periodoNombre ?? '';
     String estado = getEstado[0];
     Color color = getEstado[1];
     Widget buttonJustificar = getEstado[2];
@@ -296,7 +296,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         subtitle: Text(estado),
       ),
       Text(DateFormat('HH:mm')
-          .format(DateFormat('dd/MM/yyyy HH:mm').parse(asistencia.fecha))
+          .format(DateTime.parse(asistencia.fechaRegistro))
           .toString()),
       Text(responsable),
       Text(puerta),
@@ -306,14 +306,14 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   //Retorna estado, color y solo si es de estado tarde o falta tambien el botonJustificar [Puntual, green, null]
   getEstadoColor(AsistenciaModel listaAsistencia) {
-    String estado = listaAsistencia.estado;
-    String jutificacionEstado = listaAsistencia.jutificacionEstado;
+    String estado = listaAsistencia.estadoNombre;
+    String jutificacionEstado = listaAsistencia.jutificacionEstado ?? '';
     var getEstado;
     var colorEstado;
     var getButtonJustificar;
 
     var nameButton;
-    switch (listaAsistencia.jutificacionEstado) {
+    switch (jutificacionEstado) {
       case '':
         nameButton = 'Justificar';
         break;
@@ -338,41 +338,41 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
     if (estado.isNotEmpty || estado != null) {
       switch (estado + '|' + jutificacionEstado) {
-        case 'P|':
+        case 'Puntual|':
           getEstado = 'Puntual';
           colorEstado = Colors.green[600];
           break;
-        case 'T|':
+        case 'Tarde|':
           getEstado = 'Tardanza';
           colorEstado = Colors.orange[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'F|':
+        case 'Falta|':
           getEstado = 'Falta';
           colorEstado = Colors.red[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'J|1':
+        case 'Justificación|1':
           getEstado = 'Justificación';
           colorEstado = Colors.lightBlue;
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'T|0':
+        case 'Tarde|0':
           getEstado = 'Tardanza';
           colorEstado = Colors.orange[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'F|0':
+        case 'Falta|0':
           getEstado = 'Falta';
           colorEstado = Colors.red[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'T|2':
+        case 'Tarde|2':
           getEstado = 'Tardanza';
           colorEstado = Colors.orange[300];
           getButtonJustificar = _getButtonJustificar();
           break;
-        case 'F|2':
+        case 'Falta|2':
           getEstado = 'Falta';
           colorEstado = Colors.red[300];
           getButtonJustificar = _getButtonJustificar();
