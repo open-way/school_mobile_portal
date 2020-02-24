@@ -10,6 +10,7 @@ class UserSignInModel {
   final String oauthFullname;
   final String oauthEmail;
 
+
   UserSignInModel({
     @required this.token,
     @required this.idPersona,

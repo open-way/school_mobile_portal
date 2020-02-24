@@ -12,7 +12,7 @@ import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart'
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/test-https.service.dart';
-import 'package:school_mobile_portal/theme/dark.theme.dart';
+import 'package:school_mobile_portal/theme/default.theme.dart';
 
 void main() {
   return runApp(MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Lamb school app',
       debugShowCheckedModeBanner: false,
-      theme: darkTheme,
+      theme: dafaultTheme,
       // home: new DashboardPage(),
       home: new RootPage(
         authService: AuthService(),

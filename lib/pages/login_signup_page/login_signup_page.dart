@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
+import 'package:school_mobile_portal/models/user_signup_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/theme/dark.theme.dart';
@@ -90,41 +91,39 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         _errorMessage = '';
         _isLoading = true;
       });
-      UserSignInModel userSignIn;
+      // UserSignInModel userSignIn;
+      // UserSignUpModel userSignUp;
       try {
         if (_isLoginForm) {
-          userSignIn = await widget.authService.signIn(_email, _password);
+          UserSignInModel userSignIn =
+              await widget.authService.signIn(_email, _password);
+          if (userSignIn.accessToken.isNotEmpty && _isLoginForm) {
+            _saveData(userSignIn);
+            Navigator.pushReplacementNamed(context, Routes.dashboard);
+            // widget.loginCallback();
+          }
         } else {
-          userSignIn = await widget.authService.signUp(
+          UserSignUpModel userSignUp = await widget.authService.signUp(
             _idTipodocumento,
             _email,
             _password,
             _passwordConfirm,
           );
+          this.toggleFormMode();
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
-          // print('Signed up user: $userId');
         }
 
         // print(userSignIn.fullname);
         setState(() {
           _isLoading = false;
         });
-        if (userSignIn.accessToken.isNotEmpty && _isLoginForm) {
-          _saveData(userSignIn);
-          Navigator.pushReplacementNamed(context, Routes.dashboard);
-          // widget.loginCallback();
-        }
-        // if (userSignIn.length > 0 && userSignIn != null) {
-        //   // widget.loginCallback();
-        // }
       } catch (e) {
-        print('Hola munof');
         print("Error: ${e.message}");
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
-          // _formKey.currentState.reset();
+          _formKey.currentState.reset();
         });
       }
     }

@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
+import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/models/periodo_contable_model.dart';
+import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/periodos-contables.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
@@ -24,42 +26,68 @@ enum DialogActions { SEARCH, CANCEL }
 class _AsistenciaPageState extends State<AsistenciaPage>
     with TickerProviderStateMixin {
   final PortalPadresService portalPadresService = new PortalPadresService();
+  final JustificacionMotivosService justificacionMotivosService =
+      new JustificacionMotivosService();
   List<AsistenciaModel> _listaAsistencias;
 
   final Map<DateTime, List> _asistenciaEventos = new Map();
   AnimationController _animationController;
   CalendarController _calendarController;
 
-  List _justificaciones = [
-    'Elegir Motivo',
-    'Tengo trabajo',
-    'No le gusta llegar puntual',
-    'Se quemó la casa'
-  ];
+  List<JustificacionMotivoModel> _justificacionMotivos;
+  // List _justificaciones = [
+  //   'Elegir Motivo',
+  //   'Tengo trabajo',
+  //   'No le gusta llegar puntual',
+  //   'Se quemó la casa'
+  // ];
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
 
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (String justificacion in _justificaciones) {
-      items.add(new DropdownMenuItem(
-          value: justificacion, child: new Text(justificacion)));
-    }
-    return items;
-  }
+  // List<DropdownMenuItem<String>> getDropDownMenuItems() {
+  //   List<DropdownMenuItem<String>> items = new List();
+  //   for (JustificacionMotivoModel justificacion in _justificacionMotivos) {
+  //     items.add(new DropdownMenuItem(
+  //         value: justificacion.idJmotivo,
+  //         child: new Text(justificacion.nombre)));
+  //   }
+  //   return items;
+  // }
 
   @override
   void initState() {
     super.initState();
-    _dropDownMenuItems = getDropDownMenuItems();
-    _currentJustificacion = _dropDownMenuItems[0].value;
+    this._getJustificacionMotivos();
+    // _dropDownMenuItems = getDropDownMenuItems();
+    // _currentJustificacion = _dropDownMenuItems ?? _dropDownMenuItems[0].value;
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+  }
+
+  void _getJustificacionMotivos() {
+    _justificacionMotivos = [];
+    justificacionMotivosService.getAll$().then((onValue) {
+      _justificacionMotivos = onValue;
+      // _dropDownMenuItems
+      _dropDownMenuItems = [];
+      for (JustificacionMotivoModel justificacion in _justificacionMotivos) {
+        _dropDownMenuItems.add(new DropdownMenuItem(
+            value: justificacion.idJmotivo,
+            child: new Text(justificacion.nombre)));
+      }
+      _currentJustificacion = (_dropDownMenuItems.length > 0)
+          ? _justificacionMotivos[0].idJmotivo
+          : null;
+
+      setState(() {});
+    }).catchError((err) {
+      print(err);
+    });
   }
 
   void _getAsistencias() {

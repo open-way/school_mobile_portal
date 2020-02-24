@@ -62,7 +62,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildEstadoCuenta(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: portalPadresService.getDashboard$({}),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -80,7 +80,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildEventos(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: portalPadresService.getDashboard$({}),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -96,7 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget futureBuildAsistencias(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getDashboard(),
+        future: portalPadresService.getDashboard$({}),
         builder: (context, AsyncSnapshot<List<DashboardModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {

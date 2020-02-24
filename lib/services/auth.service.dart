@@ -4,11 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/response_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/enviroment.dev.dart';
+import 'package:school_mobile_portal/models/user_signup_model.dart';
 
 abstract class BaseAuth {
   Future<UserSignInModel> signIn(String email, String password);
 
-  Future<UserSignInModel> signUp(String idTipodocumento, String username,
+  Future<UserSignUpModel> signUp(String idTipodocumento, String username,
       String password, String passwordConfirm);
 
   // Future<FirebaseUser> getCurrentUser();
@@ -25,30 +26,11 @@ class AuthService implements BaseAuth {
   final String theUrl = '$baseAllUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {
-    print('-------');
-    print('-------');
-    print('-------');
-    print(username);
-    print(password);
     http.Response res = await http.post(
       '$theUrl/sign-in',
       body: {'username': username, 'password': password, 'no_caduca': 'true'},
     );
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
     final body = jsonDecode(res.body);
-    print(body.toString());
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
     if (res.statusCode == 200) {
       final data = new UserSignInModel.fromJson(body['data']);
       return data;
@@ -58,7 +40,7 @@ class AuthService implements BaseAuth {
     }
   }
 
-  Future<UserSignInModel> signUp(String idTipodocumento, String username,
+  Future<UserSignUpModel> signUp(String idTipodocumento, String username,
       String password, String passwordConfirm) async {
     var data = {
       'id_tipodocumento': idTipodocumento,
@@ -73,19 +55,15 @@ class AuthService implements BaseAuth {
     print('-------');
     print('-------');
     print('-------');
-    print(res.body.toString());
 
     final body = jsonDecode(res.body);
-    print('-------');
-    print('-------');
-    print(body.toString());
     print('-------');
     print('-------');
     print('-------');
     print('-------');
 
     if (res.statusCode == 200) {
-      final data = new UserSignInModel.fromJson(body['data']);
+      final data = new UserSignUpModel.fromJson(body['data']);
       return data;
     } else {
       throw new ResponseModel.fromJson(body['error']);

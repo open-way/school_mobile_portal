@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class AgendaModel {
-  final int idActividad;
+  final String idActividad;
   final String fechaInicio;
   final String fechaFinal;
   final String nombre;
@@ -29,7 +29,7 @@ class AgendaModel {
 
   factory AgendaModel.fromJson(Map<String, dynamic> json) {
     return AgendaModel(
-      idActividad: json['id_actividad'] as int,
+      idActividad: json['id_actividad'] as String,
       fechaInicio: json['fecha_inicio'] as String,
       fechaFinal: json['fecha_final'] as String,
       nombre: json['nombre'] as String,
