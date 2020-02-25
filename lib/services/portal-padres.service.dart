@@ -7,25 +7,32 @@ import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
 class PortalPadresService extends VitHttpService {
-  Future<List<OperationModel>> getEstadoCuenta$(Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
+  Future<EstadoCuentaModel> getEstadoCuenta$(
+      Map<String, String> queryParams) async {
+    http.Response res =
+        await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
 
     final body = jsonDecode(res.body);
-    // print(body.toString());
+    print(res.body.toString());
+    print(body.toString());
+
     if (res.statusCode == 200) {
-      final data = body['data'].cast<Map<String, dynamic>>();
-      return data
-          .map<OperationModel>((json) => OperationModel.fromJson(json))
-          .toList();
+      final data = EstadoCuentaModel.fromJson(body['data']);
+      return data;
+      // final data = body['data'].cast<Map<String, dynamic>>();
+      // return data
+      //     .map<OperationModel>((json) => OperationModel.fromJson(json))
+      //     .toList();
     } else {
-      throw "Can't get operations.";
+      throw "Can't get estado de cuenta.";
     }
   }
 
   // Promesa
   Future<List<AsistenciaModel>> getAsistencias(
       Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/asistencias', queryParams);
+    http.Response res =
+        await httpGetByQuery('/portal-padre/asistencias', queryParams);
 
     final body = jsonDecode(res.body);
     print(res.body.toString());
@@ -46,7 +53,8 @@ class PortalPadresService extends VitHttpService {
   }
 
   Future<List<AgendaModel>> getAgenda(Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/agendas', queryParams);
+    http.Response res =
+        await httpGetByQuery('/portal-padre/agendas', queryParams);
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = body['data'].cast<Map<String, dynamic>>();

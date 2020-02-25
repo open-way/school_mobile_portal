@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
-import 'package:school_mobile_portal/models/periodo_contable_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
+import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
-import 'package:school_mobile_portal/services/periodos-contables.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 
@@ -21,6 +21,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
 
   List<OperationModel> _listaOperations;
+  OperationTotalModel _operationsTotal;
 
   @override
   void initState() {
@@ -35,10 +36,13 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   void _getOperations() {
     _listaOperations = [];
     var queryParameters = {
-      'estado': 'S',
+      // 'estado': 'S',
+      'id_anho': '2020',
+      'id_cliente': '7677',
     };
     portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
-      _listaOperations = onValue;
+      _listaOperations = onValue.movements;
+      _operationsTotal = onValue.movementsTotal;
       setState(() {});
     }).catchError((err) {
       print(err);
@@ -48,16 +52,10 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      // key: _scaffoldKey,
-      // endDrawer: new DrawerFilters(
-      //   child: new FilterForm(),
-      //   onClose: () {
-      //     print('Se cerro');
-      //   },
-      // ),
       drawer: new AppDrawer(),
       appBar: AppBar(
         title: Text('Estado cuenta'),
+        centerTitle: true,
         // leading: IconButton(
         //   icon: Icon(Icons.menu),
         //   onPressed: () {
@@ -101,7 +99,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       ),
     )) {
       case DialogActions.SEARCH:
-      // this.estado = 
+        // this.estado =
         this._getOperations();
         break;
       case DialogActions.CANCEL:
@@ -122,8 +120,8 @@ class FilterForm extends StatefulWidget {
 class _FilterFormState extends State<FilterForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final PeriodosContablesService _periodosContablesService =
-      new PeriodosContablesService();
+  final AnhosService _anhosService =
+      new AnhosService();
 
   final MisHijosService _misHijosService = new MisHijosService();
 
@@ -154,11 +152,11 @@ class _FilterFormState extends State<FilterForm> {
   }
 
   void _getPeriodos() {
-    _periodosContablesService.getAll$().then((listSnap) {
-      _listaPeriodosContables = listSnap.map((PeriodoContableModel snap) {
+    _anhosService.getAll$().then((listSnap) {
+      _listaPeriodosContables = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,
-          child: Text(snap.nombre),
+          child: Text(snap.idAnho),
         );
       }).toList();
       setState(() {});
@@ -310,7 +308,7 @@ class _OperationsListState extends State<OperationsList> {
                   (OperationModel operacion) => ListTile(
                     title: Text(operacion.glosa),
                     subtitle: Text("${operacion.fecha}"),
-                    trailing: Text('S/. ${operacion.importe.toString()}'),
+                    trailing: Text('S/. ${operacion.total.toString()}'),
                     leading: CircleAvatar(child: Icon(Icons.check_box)),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(

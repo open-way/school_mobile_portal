@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
-import 'package:school_mobile_portal/models/periodo_contable_model.dart';
+import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
-import 'package:school_mobile_portal/services/periodos-contables.service.dart';
+import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -464,12 +465,13 @@ class FilterForm extends StatefulWidget {
 class _FilterFormState extends State<FilterForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final PeriodosContablesService _periodosContablesService =
-      new PeriodosContablesService();
+  // final PeriodosAcademicosService _periodosAcademicosService =
+  //     new PeriodosAcademicosService();
+  final AnhosService _anhosService= new AnhosService();
 
   final MisHijosService _misHijosService = new MisHijosService();
 
-  List<DropdownMenuItem<String>> _listaPeriodosContables;
+  List<DropdownMenuItem<String>> _listaAnhos;
   List<DropdownMenuItem<String>> _misHijos;
 
   String _idAlumno;
@@ -491,16 +493,16 @@ class _FilterFormState extends State<FilterForm> {
   }
 
   void _getMasters() {
-    this._getPeriodos();
+    this._getMyAnhos();
     this._getMisHijos();
   }
 
-  void _getPeriodos() {
-    _periodosContablesService.getAllLocal().then((listSnap) {
-      _listaPeriodosContables = listSnap.map((PeriodoContableModel snap) {
+  void _getMyAnhos() {
+    _anhosService.getAllLocal().then((listSnap) {
+      _listaAnhos = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,
-          child: Text(snap.nombre),
+          child: Text(snap.idAnho),
         );
       }).toList();
       setState(() {});
@@ -553,7 +555,7 @@ class _FilterFormState extends State<FilterForm> {
                   this._idAnho = newValue;
                 });
               },
-              items: _listaPeriodosContables,
+              items: _listaAnhos,
             ),
             new SizedBox(
                 width: double.infinity, // match_parent

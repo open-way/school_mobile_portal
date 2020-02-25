@@ -111,13 +111,6 @@ class _DashboardPageState extends State<DashboardPage> {
         });
   }
 
-  /*hexStringToHexInt(String hex) {
-    hex = hex.replaceFirst('#', '');
-    hex = hex.length == 6 ? 'ff' + hex : hex;
-    int val = int.parse(hex, radix: 16);
-    return val;
-  }*/
-
   Widget _circle(String importe, String texto, Color color) => new Card(
         elevation: 0,
         child: InkWell(

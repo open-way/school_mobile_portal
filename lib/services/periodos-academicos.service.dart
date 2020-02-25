@@ -1,26 +1,27 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:school_mobile_portal/models/periodo_contable_model.dart';
+import 'package:school_mobile_portal/models/periodo_academico_model.dart';
 import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
-class PeriodosContablesService extends VitHttpService {
-  Future<List<PeriodoContableModel>> getAll$() async {
+class PeriodosAcademicosService extends VitHttpService {
+  Future<List<PeriodoAcademicoModel>> getAll$() async {
     http.Response res = await httpGetAll('/setup/periodos-contables');
 
+    print(res.body.toString());
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       final data = body['data'].cast<Map<String, dynamic>>();
       return data
-          .map<PeriodoContableModel>(
-              (json) => PeriodoContableModel.fromJson(json))
+          .map<PeriodoAcademicoModel>(
+              (json) => PeriodoAcademicoModel.fromJson(json))
           .toList();
     } else {
       throw "Can't get periodos contables.";
     }
   }
 
-  Future<List<PeriodoContableModel>> getAllLocal() async {
+  Future<List<PeriodoAcademicoModel>> getAllLocal() async {
     String pres =
         '{"data":[{"id_anho":"1","nombre":"2020"},{"id_anho":"2","nombre":"2019"},{"id_anho":"3","nombre":"2018"}]}';
     Map<String, dynamic> res = await jsonDecode(pres);
@@ -31,8 +32,8 @@ class PeriodosContablesService extends VitHttpService {
       //final body = jsonDecode(res.body);
       final data = body['data'].cast<Map<String, dynamic>>();
       return data
-          .map<PeriodoContableModel>(
-              (json) => PeriodoContableModel.fromJson(json))
+          .map<PeriodoAcademicoModel>(
+              (json) => PeriodoAcademicoModel.fromJson(json))
           .toList();
     } else {
       throw "Can't get periodos contables.";

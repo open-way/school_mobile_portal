@@ -36,7 +36,7 @@ class OperationDetail extends StatelessWidget {
                       ),
                       ListTile(
                         title: Text("Importe"),
-                        subtitle: Text("${operation.importe}"),
+                        subtitle: Text("${operation.total}"),
                       ),
                     ],
                   ),
