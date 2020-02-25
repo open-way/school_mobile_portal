@@ -91,9 +91,9 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     });
   }
 
-  void _getAsistencias() {
+  void _getAsistencias(Map<String, String> result) {
     _listaAsistencias = [];
-    portalPadresService.getAsistencias({}).then((onValue) {
+    portalPadresService.getAsistencias(result).then((onValue) {
       _listaAsistencias = onValue;
       setState(() {});
     }).catchError((err) {
@@ -439,7 +439,20 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    switch (await showDialog(
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SimpleDialog(
+                title: new Text('Filtrar'),
+                children: <Widget>[
+                  new FilterForm(),
+                ],
+              )),
+    );
+    print(result.toString() +
+        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!1');
+    this._getAsistencias(result);
+    /*switch (await showDialog(
       context: context,
       child: new SimpleDialog(
         title: new Text('Filtrar'),
@@ -449,11 +462,11 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       ),
     )) {
       case DialogActions.SEARCH:
-        this._getAsistencias();
+        this._getAsistencias({});
         break;
       case DialogActions.CANCEL:
         break;
-    }
+    }*/
   }
 }
 
@@ -479,8 +492,8 @@ class _FilterFormState extends State<FilterForm> {
 
   @override
   void initState() {
-    this._idAlumno = '1';
-    this._idAnho = '1';
+    //this._idAlumno = '1';
+    //this._idAnho = '1';
     super.initState();
     this._getMasters();
   }
@@ -535,7 +548,7 @@ class _FilterFormState extends State<FilterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new DropdownButton(
+            DropdownButton(
               hint: new Text('Seleccione alumno'),
               value: this._idAlumno,
               isExpanded: true,
@@ -546,7 +559,7 @@ class _FilterFormState extends State<FilterForm> {
               },
               items: _misHijos,
             ),
-            new DropdownButton(
+            DropdownButton(
               hint: new Text('Seleccione un periodo'),
               value: this._idAnho,
               isExpanded: true,
@@ -564,8 +577,14 @@ class _FilterFormState extends State<FilterForm> {
                   child: Text('Filtrar'),
                   onPressed: () {
                     if (this._idAlumno.isNotEmpty && this._idAnho.isNotEmpty) {
-                      Navigator.pop(context, DialogActions.SEARCH);
-                      _AsistenciaPageState().reassemble();
+                      Map<String, String> params = {
+                        'id_alumno': _idAlumno,
+                        'id_anho': _idAnho
+                      };
+                      print(params.toString() +
+                          'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!2');
+                      Navigator.pop(context, params);
+                      //_AsistenciaPageState().reassemble();
                     }
                   },
                 )),
