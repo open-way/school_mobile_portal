@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,7 +10,6 @@ import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
-import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -53,7 +54,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
-  
+
   String _currentIdChildSelected;
 
   // List<DropdownMenuItem<String>> getDropDownMenuItems() {
@@ -222,6 +223,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   final ScrollController _controllerOne = ScrollController();
+  final ScrollController _controllerTwo = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,14 +243,26 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(7),
-        scrollDirection: Axis.vertical,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            futureBuild(context),
-          ],
+      // body: SingleChildScrollView(
+      //   padding: EdgeInsets.all(7),
+      //   scrollDirection: Axis.vertical,
+      //   child: Column(
+      //     mainAxisSize: MainAxisSize.max,
+      //     children: <Widget>[
+      //       futureBuild(context),
+      //     ],
+      //   ),
+      body: FractionallySizedBox(
+        widthFactor: 1,
+        child: SingleChildScrollView(
+          controller: _controllerTwo,
+          child: Column(
+            children: <Widget>[
+              Container(
+                  width: MediaQuery.of(context).size.height,
+                  child: futureBuild(context))
+            ],
+          ),
         ),
       ),
     );
