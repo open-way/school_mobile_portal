@@ -20,7 +20,7 @@ final ThemeData lightTheme = new ThemeData(
         //AppBar
         color: Color(0xFF1973FF),
         //icon
-        actionsIconTheme: IconThemeData(color: Color(0xFFB9BABA))),
+        actionsIconTheme: IconThemeData(color: Colors.white)),
     //tabBarTheme: TabBarTheme(labelColor: Color(0xFF003366)),
 
     primarySwatch: Colors.blue,
