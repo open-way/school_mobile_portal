@@ -7,6 +7,7 @@ import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
+import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
@@ -39,6 +40,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final JustificacionMotivosService justificacionMotivosService =
       new JustificacionMotivosService();
   List<AsistenciaModel> _listaAsistencias;
+  GlobalKey<RefreshIndicatorState> refreshKey;
 
   final Map<DateTime, List> _asistenciaEventos = new Map();
   AnimationController _animationController;
@@ -70,6 +72,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   @override
   void initState() {
     super.initState();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
     this._getJustificacionMotivos();
     // _dropDownMenuItems = getDropDownMenuItems();
     // _currentJustificacion = _dropDownMenuItems ?? _dropDownMenuItems[0].value;
@@ -252,20 +255,38 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       //       futureBuild(context),
       //     ],
       //   ),
-      body: FractionallySizedBox(
-        widthFactor: 1,
-        child: SingleChildScrollView(
-          controller: _controllerTwo,
-          child: Column(
-            children: <Widget>[
-              Container(
-                  width: MediaQuery.of(context).size.height,
-                  child: futureBuild(context))
-            ],
-          ),
+      body: RefreshIndicator(
+        key: refreshKey,
+        onRefresh: () async {
+          await refreshList();
+        },
+        child: _calendarBox(),
+      ),
+    );
+  }
+
+  Widget _calendarBox() {
+    return FractionallySizedBox(
+      heightFactor: 1,
+      widthFactor: 1,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+        controller: _controllerTwo,
+        child: Column(
+          children: <Widget>[
+            Container(
+                width: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height,
+                child: futureBuild(context)),
+          ],
         ),
       ),
     );
+  }
+
+  Future<Widget> refreshList() async {
+    await Future.delayed(Duration(seconds: 0));
+    return _calendarBox();
   }
 
   Widget futureBuild(BuildContext context) {
