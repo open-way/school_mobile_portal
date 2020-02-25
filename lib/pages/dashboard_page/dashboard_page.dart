@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/dashboard_model.dart';
-import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
-import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
+import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -52,9 +50,9 @@ class _DashboardPageState extends State<DashboardPage> {
             itemCount: 1,
             itemBuilder: (BuildContext context, int index) => Column(
               children: <Widget>[
-                futureBuildEstadoCuenta(context),
-                futureBuildEventos(context),
-                futureBuildAsistencias(context),
+                _cardEstadaCuenta(),
+                _cardEventos(),
+                _cardAsistencias(),
               ],
             ),
           )),
@@ -88,7 +86,17 @@ class _DashboardPageState extends State<DashboardPage> {
             DashboardModel dashboard = snapshot.data;
             var cantEventos = dashboard.eventos;
 
-            return _cardEventos(cantEventos);
+            return Card(
+                elevation: 0,
+                child: InkWell(
+                    splashColor: Colors.blue.withAlpha(30),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, Routes.agenda);
+                    },
+                    child: Container(
+                        child: ListTile(
+                            title: Text('Hoy hay $cantEventos evento(s)',
+                                style: TextStyle(fontSize: 17))))));
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -103,8 +111,51 @@ class _DashboardPageState extends State<DashboardPage> {
           if (snapshot.hasData) {
             DashboardModel dashboard = snapshot.data;
             var listaAsistencia = dashboard.asistencias;
+            var children = <Widget>[];
 
-            return _cardAsistencias(listaAsistencia);
+            Map<String, dynamic> colores = listaAsistencia['colores'];
+            List<dynamic> alumnos = listaAsistencia['alumnos'];
+            for (var i = 0; i < alumnos.length; i++) {
+              children.add(LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                var localWidth;
+                if (alumnos.length > 1) {
+                  localWidth = MediaQuery.of(context).size.width / 2;
+                } else {
+                  localWidth = MediaQuery.of(context).size.width / 1;
+                }
+                return Container(
+                    width: localWidth,
+                    child: Card(
+                        elevation: 0,
+                        child: InkWell(
+                            splashColor: Colors.blue.withAlpha(30),
+                            onTap: () {
+                              Navigator.pushReplacementNamed(
+                                  context, Routes.asistencia);
+                            },
+                            child: PieChartAsistencia(
+                                colorList: [
+                                  Color(int.parse(colores['puntual_color'])),
+                                  Color(int.parse(colores['tarde_color'])),
+                                  Color(int.parse(colores['falta_color'])),
+                                  Color(int.parse(colores['justificado_color']))
+                                ],
+                                dataMap: {
+                                  'P':
+                                      double.parse(alumnos[i]['puntual_valor']),
+                                  'T': double.parse(alumnos[i]['tarde_valor']),
+                                  'F': double.parse(alumnos[i]['falta_valor']),
+                                  'J': double.parse(
+                                      alumnos[i]['justificada_valor'])
+                                },
+                                fontSize: 14,
+                                size: 180,
+                                text: Text(alumnos[i]['nombre'],
+                                    style: TextStyle(fontSize: 14))))));
+              }));
+            }
+            return Row(children: children);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -117,30 +168,32 @@ class _DashboardPageState extends State<DashboardPage> {
     int val = int.parse(hex, radix: 16);
     return val;
   }*/
+  Widget _cardEstadaCuenta() =>
+      new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        ListTile(
+            title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19))),
+        futureBuildEstadoCuenta(context)
+      ]);
 
   Widget _circle(String importe, String texto, Color color) => new Card(
-        elevation: 0,
-        child: InkWell(
-            splashColor: Colors.blue.withAlpha(30),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EstadoCuentaPage()),
-              );
-            },
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              ListTile(
-                  title:
-                      Text('Estado de Cuenta', style: TextStyle(fontSize: 19))),
-              CircleButton(
-                  color: color,
-                  size: 150,
-                  circleWidth: 11,
-                  txt: Text('$importe', style: TextStyle(fontSize: 26))),
-              ListTile(subtitle: Text('$texto')),
-              ButtonBar(children: <Widget>[])
-            ])),
-      );
+      elevation: 0,
+      child: InkWell(
+          splashColor: Colors.blue.withAlpha(30),
+          onTap: () {
+            Navigator.pushReplacementNamed(context, Routes.estado_cuenta);
+          },
+          child: Column(
+            children: <Widget>[
+              Container(
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                  child: CircleButton(
+                      color: color,
+                      size: 150,
+                      circleWidth: 7,
+                      txt: Text('$importe', style: TextStyle(fontSize: 26)))),
+              ListTile(subtitle: Text('$texto'))
+            ],
+          )));
 
   /*Widget _cardEsdadoCuenta(String saldo, Color color) => new Card(
         color: color,
@@ -164,74 +217,16 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );*/
 
-  Widget _cardEventos(String cantEventos) => new Card(
-        elevation: 0,
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AgendaPage()),
-            );
-          },
-          child: Container(
-            child: ListTile(
-              title: Text('Eventos', style: TextStyle(fontSize: 19)),
-              subtitle: Text('Hoy hay $cantEventos evento(s)',
-                  style: TextStyle(fontSize: 17)),
-            ),
-          ),
-        ),
-      );
+  Widget _cardEventos() => new Column(children: <Widget>[
+        ListTile(title: Text('Eventos', style: TextStyle(fontSize: 19))),
+        futureBuildEventos(context)
+      ]);
 
-  Widget _cardAsistencias(Map<String, dynamic> listaAsistencia) {
-    var children = <Widget>[];
+  Widget _cardAsistencias() {
     var card = Column(children: <Widget>[
       ListTile(title: Text('Asistencias', style: TextStyle(fontSize: 19))),
-      Row(children: children)
+      futureBuildAsistencias(context)
     ]);
-    Map<String, dynamic> colores = listaAsistencia['colores'];
-    List<dynamic> alumnos = listaAsistencia['alumnos'];
-    for (var i = 0; i < alumnos.length; i++) {
-      children.add(LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-        var localWidth;
-        if (alumnos.length > 1) {
-          localWidth = MediaQuery.of(context).size.width / 2;
-        } else {
-          localWidth = MediaQuery.of(context).size.width / 1;
-        }
-        return Container(
-            width: localWidth,
-            child: Card(
-                elevation: 0,
-                child: InkWell(
-                    splashColor: Colors.blue.withAlpha(30),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AsistenciaPage()));
-                    },
-                    child: PieChartAsistencia(
-                        colorList: [
-                          Color(int.parse(colores['puntual_color'])),
-                          Color(int.parse(colores['tarde_color'])),
-                          Color(int.parse(colores['falta_color'])),
-                          Color(int.parse(colores['justificado_color']))
-                        ],
-                        dataMap: {
-                          'P': double.parse(alumnos[i]['puntual_valor']),
-                          'T': double.parse(alumnos[i]['tarde_valor']),
-                          'F': double.parse(alumnos[i]['falta_valor']),
-                          'J': double.parse(alumnos[i]['justificada_valor'])
-                        },
-                        fontSize: 14,
-                        size: 180,
-                        text: Text(alumnos[i]['nombre'],
-                            style: TextStyle(fontSize: 14))))));
-      }));
-    }
     return card;
   }
 }
@@ -304,7 +299,7 @@ class PieChartAsistencia extends StatelessWidget {
               animationDuration: Duration(milliseconds: 800),
               chartLegendSpacing: 0,
               chartRadius: constraints.maxHeight / 1.8,
-              showChartValuesInPercentage: true,
+              showChartValuesInPercentage: false,
               showChartValues: true,
               showChartValuesOutside: true,
               chartValueBackgroundColor: Colors.grey[900],

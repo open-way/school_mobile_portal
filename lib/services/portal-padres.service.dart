@@ -7,8 +7,10 @@ import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
 class PortalPadresService extends VitHttpService {
-  Future<List<OperationModel>> getEstadoCuenta$(Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
+  Future<List<OperationModel>> getEstadoCuenta$(
+      Map<String, String> queryParams) async {
+    http.Response res =
+        await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
 
     final body = jsonDecode(res.body);
     // print(body.toString());
@@ -25,7 +27,10 @@ class PortalPadresService extends VitHttpService {
   // Promesa
   Future<List<AsistenciaModel>> getAsistencias(
       Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/asistencias', queryParams);
+    print(queryParams.toString() +
+        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!3');
+    http.Response res =
+        await httpGetByQuery('/portal-padre/asistencias', {});
 
     final body = jsonDecode(res.body);
     print(res.body.toString());
@@ -46,7 +51,8 @@ class PortalPadresService extends VitHttpService {
   }
 
   Future<List<AgendaModel>> getAgenda(Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/agendas', queryParams);
+    http.Response res =
+        await httpGetByQuery('/portal-padre/agendas', queryParams);
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = body['data'].cast<Map<String, dynamic>>();
