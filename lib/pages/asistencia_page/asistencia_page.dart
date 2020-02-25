@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
@@ -205,30 +207,29 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   final ScrollController _controllerOne = ScrollController();
+  final ScrollController _controllerTwo = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
-      appBar: AppBar(
-        title: Text('Asistencia'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: _showDialog,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(7),
-        scrollDirection: Axis.vertical,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            futureBuild(context),
+        drawer: AppDrawer(),
+        appBar: AppBar(
+          title: Text('Asistencia'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.filter_list),
+              onPressed: _showDialog,
+            ),
           ],
         ),
-      ),
-    );
+        body: FractionallySizedBox(
+            widthFactor: 1,
+            child: SingleChildScrollView(
+                controller: _controllerTwo,
+                child: Column(children: <Widget>[
+                  Container(
+                      width: MediaQuery.of(context).size.height,
+                      child: futureBuild(context))
+                ]))));
   }
 
   Widget futureBuild(BuildContext context) {
@@ -480,7 +481,7 @@ class _FilterFormState extends State<FilterForm> {
 
   // final PeriodosAcademicosService _periodosAcademicosService =
   //     new PeriodosAcademicosService();
-  final AnhosService _anhosService= new AnhosService();
+  final AnhosService _anhosService = new AnhosService();
 
   final MisHijosService _misHijosService = new MisHijosService();
 
