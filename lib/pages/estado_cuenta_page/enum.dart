@@ -1,0 +1,1 @@
+enum DialogActions { SEARCH, CANCEL }

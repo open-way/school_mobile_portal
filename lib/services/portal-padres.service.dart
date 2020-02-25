@@ -11,24 +11,15 @@ class PortalPadresService extends VitHttpService {
       Map<String, String> queryParams) async {
     http.Response res =
         await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
-
     final body = jsonDecode(res.body);
-    print(res.body.toString());
-    print(body.toString());
-
     if (res.statusCode == 200) {
       final data = EstadoCuentaModel.fromJson(body['data']);
       return data;
-      // final data = body['data'].cast<Map<String, dynamic>>();
-      // return data
-      //     .map<OperationModel>((json) => OperationModel.fromJson(json))
-      //     .toList();
     } else {
       throw "Can't get estado de cuenta.";
     }
   }
 
-  // Promesa
   Future<List<AsistenciaModel>> getAsistencias(
       Map<String, String> queryParams) async {
     http.Response res =
