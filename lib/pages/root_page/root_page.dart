@@ -6,6 +6,7 @@ import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
+import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -14,9 +15,14 @@ enum AuthStatus {
 }
 
 class RootPage extends StatefulWidget {
-  RootPage({this.authService});
+  RootPage(
+      {@required this.authService,
+      @required this.storage,
+      @required this.misHijosService});
 
   final AuthService authService;
+  final FlutterSecureStorage storage;
+  final MisHijosService misHijosService;
 
   @override
   _RootPageState createState() => _RootPageState();
@@ -24,9 +30,9 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  String _userToken = '';
+  // String _userToken = '';
   UserSignInModel userSignInModel;
-  final storage = new FlutterSecureStorage();
+  // final storage = new FlutterSecureStorage();
 
   @override
   void initState() {
@@ -35,23 +41,19 @@ class _RootPageState extends State<RootPage> {
   }
 
   void _readToken() async {
-    final strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
+    final strUserSignIn = await widget.storage.read(key: 'user_sign_in') ?? '';
     // await storage.deleteAll();
     if (strUserSignIn.isNotEmpty) {
       this.userSignInModel =
           UserSignInModel.fromJson(jsonDecode(strUserSignIn));
       // this._userToken = this.userSignInModel.token;
       if (this.userSignInModel.token != null) {
-        _userToken = this.userSignInModel?.token;
+        // _userToken = this.userSignInModel?.token;
       }
       authStatus = this.userSignInModel?.token == null
           ? AuthStatus.NOT_LOGGED_IN
           : AuthStatus.LOGGED_IN;
-    }
-     else {
-      print('hola');
-      print('hola');
-      print('hola');
+    } else {
       authStatus = AuthStatus.NOT_LOGGED_IN;
     }
     setState(() {});
@@ -71,7 +73,7 @@ class _RootPageState extends State<RootPage> {
   void logoutCallback() {
     setState(() {
       authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userToken = '';
+      // _userToken = '';
     });
   }
 
@@ -94,19 +96,22 @@ class _RootPageState extends State<RootPage> {
         // storage.deleteAll();
         return new LoginSignupPage(
           authService: widget.authService,
+          storage: widget.storage,
+          misHijosService: widget.misHijosService,
           // loginCallback: loginCallback,
         );
         break;
       case AuthStatus.LOGGED_IN:
-        if (_userToken.length > 0 && _userToken != null) {
-          return new DashboardPage(
-            userId: _userToken,
-            authService: widget.authService,
-            logoutCallback: logoutCallback,
-          );
-        } else
-          return buildWaitingScreen();
-        break;
+        // if (_userToken.length > 0 && _userToken != null) {
+        return new DashboardPage(
+          // userId: _userToken,
+          // authService: widget.authService,
+          storage: widget.storage,
+          // logoutCallback: logoutCallback,
+        );
+      // } else
+      //   return buildWaitingScreen();
+      // break;
       default:
         return buildWaitingScreen();
     }

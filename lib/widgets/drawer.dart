@@ -1,20 +1,24 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
-import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
 enum MENUS { MENU_PRINCIPAL, MENU_SECUNDARIO }
 
 class DrawerHeader extends StatefulWidget {
   final VoidCallback onChangeMenu;
   final HijoModel chilSelected;
+  DrawerHeader(
+      {Key key,
+      @required this.onChangeMenu,
+      @required this.chilSelected,
+      @required this.storage})
+      : super(key: key);
 
-  DrawerHeader({@required this.onChangeMenu, @required this.chilSelected});
+  final FlutterSecureStorage storage;
 
   @override
   _DrawerHeaderState createState() => _DrawerHeaderState();
@@ -37,8 +41,7 @@ class _DrawerHeaderState extends State<DrawerHeader> {
   }
 
   void _readToken() async {
-    final storage = new FlutterSecureStorage();
-    final strUserSignIn = await storage.read(key: 'user_sign_in') ?? '';
+    final strUserSignIn = await widget.storage.read(key: 'user_sign_in') ?? '';
     if (strUserSignIn.isNotEmpty) {
       this.userSignInModel =
           UserSignInModel.fromJson(jsonDecode(strUserSignIn));
@@ -99,6 +102,17 @@ class _DrawerHeaderState extends State<DrawerHeader> {
 }
 
 class AppDrawer extends StatefulWidget {
+  // final void Function({@required dynamic childSelected})
+  //     onChangeNewChildSelected;
+  final void Function(HijoModel childSelected) onChangeNewChildSelected;
+  final FlutterSecureStorage storage;
+
+  AppDrawer(
+      {Key key,
+      @required this.storage,
+      @required this.onChangeNewChildSelected})
+      : super(key: key);
+
   @override
   _AppDrawerState createState() => _AppDrawerState();
 }
@@ -109,7 +123,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   HijoModel _chilSelected;
 
-  MisHijosService misHijosService = new MisHijosService();
+  // MisHijosService misHijosService = new MisHijosService();
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +136,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     this.changeMenu();
                   },
                   chilSelected: this._chilSelected,
+                  storage: widget.storage,
                 ),
               ] +
               this.configMenu(context)),
@@ -135,17 +150,24 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   void _getHijos() async {
-    _misHijos = [];
-    misHijosService.getAll$().then((onValue) {
-      _misHijos = onValue;
-      if (_misHijos.length > 0) {
-        this._chilSelected = _misHijos[0];
-      }
-      _misHijos = onValue;
+    this._misHijos = [];
+    final hijosString = await widget.storage.read(key: 'hijos') ?? '';
+    if (hijosString.isNotEmpty) {
+      final body = jsonDecode(hijosString);
+      final hijos =
+          body.map<HijoModel>((json) => HijoModel.fromJson(json)).toList();
+      this._misHijos = hijos;
       setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
+    }
+  }
+
+  void onChangeSeleted(newSelected) async {
+    // Enviar al los hijos el hijo seleccionado y guardar en el storage.
+    this._chilSelected = newSelected;
+    widget.onChangeNewChildSelected(newSelected);
+    await widget.storage.delete(key: 'id_child_selected');
+    await widget.storage
+        .write(key: 'id_child_selected', value: newSelected.idAlumno);
   }
 
   void changeMenu() {
@@ -187,7 +209,8 @@ class _AppDrawerState extends State<AppDrawer> {
       createDrawerItem(
         icon: Icons.note,
         text: 'Generar barcode',
-        onTap: () => Navigator.pushReplacementNamed(context, Routes.generate_barcode),
+        onTap: () =>
+            Navigator.pushReplacementNamed(context, Routes.generate_barcode),
       ),
       Divider(),
       createDrawerItem(
@@ -212,12 +235,7 @@ class _AppDrawerState extends State<AppDrawer> {
         icon: Icons.person,
         text: '${res.nombre} ${res.paterno} ${res.materno}',
         onTap: () {
-          this._chilSelected = res;
-          print(this._chilSelected);
-          // Guardar en el localstorage
-          final storage = new FlutterSecureStorage();
-          storage.write(key: 'child_selected', value: res.toString());
-
+          this.onChangeSeleted(res);
           this.changeMenu();
         },
       );

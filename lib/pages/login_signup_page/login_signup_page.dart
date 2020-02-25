@@ -1,19 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/models/user_signup_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
-import 'package:school_mobile_portal/theme/dark.theme.dart';
-// import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
 class LoginSignupPage extends StatefulWidget {
   // LoginSignupPage({this.auth, this.loginCallback});
-  LoginSignupPage({@required this.authService});
+  LoginSignupPage(
+      {@required this.authService,
+      @required this.storage,
+      @required this.misHijosService});
 
   static const String routeName = '/login_signup';
   final AuthService authService;
+  final MisHijosService misHijosService;
+  final FlutterSecureStorage storage;
   // final VoidCallback loginCallback;
 
   @override
@@ -32,6 +37,31 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   bool _isLoginForm;
   bool _isLoading;
 
+  void _deleteAllStorage() {
+    widget.storage.deleteAll();
+  }
+
+  @override
+  void initState() {
+    _errorMessage = "";
+    _isLoading = false;
+    _isLoginForm = true;
+    this._deleteAllStorage();
+    super.initState();
+  }
+
+  void resetForm() {
+    _formKey.currentState.reset();
+    _errorMessage = "";
+  }
+
+  void toggleFormMode() {
+    resetForm();
+    setState(() {
+      _isLoginForm = !_isLoginForm;
+    });
+  }
+
   // Check if form is valid before perform login or signup
   bool validateAndSave() {
     final form = _formKey.currentState;
@@ -44,41 +74,24 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return false;
   }
 
-  void _saveData(UserSignInModel userSignIn) async {
-    final storage = new FlutterSecureStorage();
-    // storage.deleteAll();
-    print('______________');
-    print('______________');
-    print(userSignIn.toString());
-    print('______________');
-    await storage.write(key: 'user_sign_in', value: userSignIn.toString());
-    await storage.write(key: 'token', value: userSignIn.token);
-    // await storage.write(key: 'token', value: userSignIn.token);
-    // await storage.write(key: 'oauth_fullname', value: userSignIn.oauthFullname);
-    // await storage.write(key: 'oauth_email', value: userSignIn.oauthEmail);
-    // await storage.write(key: 'imagen_url', value: userSignIn.imagenUrl);
+  _saveInfoUserLogged(UserSignInModel userSignIn) async {
+    await widget.storage
+        .write(key: 'user_sign_in', value: userSignIn.toString());
+    await widget.storage.write(key: 'token', value: userSignIn.token);
+  }
 
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    // print(await storage.read(key: 'token'));
-    // print(await storage.read(key: 'oauth_fullname'));
-    // print(await storage.read(key: 'oauth_email'));
-    // print(await storage.read(key: 'imagen_url'));
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
-    print('______________');
+  _saveChildsUserLogged(List<HijoModel> hijos) async {
+    if (hijos.length > 0) {
+      // var idchildSelected = await widget.storage.read(key: 'id_child_selected');
+      // if (idchildSelected == null) {
+      // this._chilSelected = newSelected;
+      // widget.onChangeNewChildSelected(this._chilSelected);
+      await widget.storage
+          .write(key: 'id_child_selected', value: hijos[0].idAlumno);
+      // }
+    }
+
+    await widget.storage.write(key: 'hijos', value: hijos.toString());
   }
 
   // Perform login or signup
@@ -97,8 +110,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         if (_isLoginForm) {
           UserSignInModel userSignIn =
               await widget.authService.signIn(_email, _password);
+
           if (userSignIn.accessToken.isNotEmpty && _isLoginForm) {
-            _saveData(userSignIn);
+            await _saveInfoUserLogged(userSignIn);
+            List<HijoModel> hijos = await widget.misHijosService.getAll$();
+            await _saveChildsUserLogged(hijos);
             Navigator.pushReplacementNamed(context, Routes.dashboard);
             // widget.loginCallback();
           }
@@ -136,26 +152,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         }
         // if (userId.length > 0 && userId != null && _isLoginForm) { }
     */
-  }
-
-  @override
-  void initState() {
-    _errorMessage = "";
-    _isLoading = false;
-    _isLoginForm = true;
-    super.initState();
-  }
-
-  void resetForm() {
-    _formKey.currentState.reset();
-    _errorMessage = "";
-  }
-
-  void toggleFormMode() {
-    resetForm();
-    setState(() {
-      _isLoginForm = !_isLoginForm;
-    });
   }
 
   @override

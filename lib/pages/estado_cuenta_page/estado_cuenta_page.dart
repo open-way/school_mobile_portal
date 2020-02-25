@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
@@ -10,6 +11,9 @@ import 'package:school_mobile_portal/widgets/drawer.dart';
 
 class EstadoCuentaPage extends StatefulWidget {
   static const String routeName = '/estado_cuenta';
+
+  EstadoCuentaPage({Key key, @required this.storage}) : super(key: key);
+  final FlutterSecureStorage storage;
 
   @override
   _EstadoCuentaPageState createState() => _EstadoCuentaPageState();
@@ -23,10 +27,13 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   List<OperationModel> _listaOperations;
   OperationTotalModel _operationsTotal;
 
+  String _currentIdChildSelected;
+
   @override
   void initState() {
     super.initState();
     this._getMasters();
+    this._loadChildSelectedStorageFlow();
   }
 
   void _getMasters() {
@@ -49,10 +56,22 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     });
   }
 
+  void _loadChildSelectedStorageFlow() async {
+    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
+    this._currentIdChildSelected = idChildSelected;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: new AppDrawer(),
+      drawer: AppDrawer(
+        storage: widget.storage,
+        onChangeNewChildSelected: (HijoModel childSelected) {
+          this._currentIdChildSelected = childSelected.idAlumno;
+          setState(() {});
+        },
+      ),
       appBar: AppBar(
         title: Text('Estado cuenta'),
         centerTitle: true,
@@ -120,8 +139,7 @@ class FilterForm extends StatefulWidget {
 class _FilterFormState extends State<FilterForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final AnhosService _anhosService =
-      new AnhosService();
+  final AnhosService _anhosService = new AnhosService();
 
   final MisHijosService _misHijosService = new MisHijosService();
 

@@ -24,4 +24,18 @@ class HijoModel {
       numDoc: json['num_doc'] as String,
     );
   }
+
+  @override
+  String toString() {
+    return """
+    {
+      "id_alumno": "${this.idAlumno}", 
+      "nombre" : "${this.nombre}", 
+      "paterno" : "${this.paterno}", 
+      "materno" : "${this.materno}",
+      "num_doc" : "${this.numDoc}"
+    }
+    """;
+  }
+
 }

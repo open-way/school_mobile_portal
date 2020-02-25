@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/dashboard_model.dart';
+import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
-import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class DashboardPage extends StatefulWidget {
-  DashboardPage({Key key, this.authService, this.userId, this.logoutCallback})
-      : super(key: key);
+  DashboardPage({Key key, @required this.storage}) : super(key: key);
 
+  final FlutterSecureStorage storage;
   static const String routeName = '/dashboard';
-  final AuthService authService;
-  final VoidCallback logoutCallback;
-  final String userId;
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -23,9 +21,12 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardService dashboardService = new DashboardService();
 
+  String _currentIdChildSelected;
+
   @override
   void initState() {
     super.initState();
+    this._loadChildSelectedStorageFlow();
   }
 
   final ScrollController _controllerOne = ScrollController();
@@ -33,12 +34,23 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+          storage: widget.storage,
+          onChangeNewChildSelected: (HijoModel childSelected) {
+            this._currentIdChildSelected = childSelected.idAlumno;
+            setState(() {});
+          }),
       appBar: AppBar(
         title: Text('Dashboard'),
       ),
       body: scrollWidget(),
     );
+  }
+
+  void _loadChildSelectedStorageFlow() async {
+    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
+    this._currentIdChildSelected = idChildSelected;
+    setState(() {});
   }
 
   Widget scrollWidget() {
@@ -167,11 +179,17 @@ class _DashboardPageState extends State<DashboardPage> {
     hex = hex.length == 6 ? 'ff' + hex : hex;
     int val = int.parse(hex, radix: 16);
     return val;
+    await storage.read(key: 'token') ?? ''
   }*/
+
   Widget _cardEstadaCuenta() =>
       new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ListTile(
-            title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19))),
+          title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
+          // subtitle: Text('None'),
+          // subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
+          subtitle: Text(this._currentIdChildSelected ?? 'None'),
+        ),
         futureBuildEstadoCuenta(context)
       ]);
 

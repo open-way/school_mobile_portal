@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:school_mobile_portal/models/agenda_model.dart';
+import 'package:school_mobile_portal/models/hijo_model.dart';
+import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -9,6 +12,13 @@ import 'package:intl/intl.dart';
 
 class AgendaPage extends StatefulWidget {
   static const String routeName = '/agenda';
+
+  AgendaPage({
+    Key key,
+    @required this.storage,
+  }) : super(key: key);
+
+  final FlutterSecureStorage storage;
 
   @override
   _AgendaPageState createState() => _AgendaPageState();
@@ -20,6 +30,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
+  String _currentIdChildSelected;
 
   @override
   void initState() {
@@ -35,6 +46,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     );
 
     _animationController.forward();
+
+    this._loadChildSelectedStorageFlow();
   }
 
   @override
@@ -53,7 +66,13 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+        storage: widget.storage,
+        onChangeNewChildSelected: (HijoModel childSelected) {
+          this._currentIdChildSelected = childSelected.idAlumno;
+          setState(() {});
+        },
+      ),
       appBar: AppBar(
         title: Text('Agenda'),
       ),
@@ -65,6 +84,12 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  void _loadChildSelectedStorageFlow() async {
+    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
+    this._currentIdChildSelected = idChildSelected;
+    setState(() {});
   }
 
   final ScrollController _controllerOne = ScrollController();

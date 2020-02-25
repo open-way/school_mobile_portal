@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
@@ -17,6 +18,13 @@ import 'package:intl/intl.dart';
 
 class AsistenciaPage extends StatefulWidget {
   static const String routeName = '/asistencia';
+
+  AsistenciaPage({
+    Key key,
+    @required this.storage,
+  }) : super(key: key);
+
+  final FlutterSecureStorage storage;
 
   @override
   _AsistenciaPageState createState() => _AsistenciaPageState();
@@ -45,6 +53,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
+  
+  String _currentIdChildSelected;
 
   // List<DropdownMenuItem<String>> getDropDownMenuItems() {
   //   List<DropdownMenuItem<String>> items = new List();
@@ -68,6 +78,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+    this._loadChildSelectedStorageFlow();
   }
 
   void _getJustificacionMotivos() {
@@ -89,6 +100,12 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     }).catchError((err) {
       print(err);
     });
+  }
+
+  void _loadChildSelectedStorageFlow() async {
+    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
+    this._currentIdChildSelected = idChildSelected;
+    setState(() {});
   }
 
   void _getAsistencias(Map<String, String> result) {
@@ -208,7 +225,13 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+        storage: widget.storage,
+        onChangeNewChildSelected: (HijoModel childSelected) {
+          this._currentIdChildSelected = childSelected.idAlumno;
+          setState(() {});
+        },
+      ),
       appBar: AppBar(
         title: Text('Asistencia'),
         actions: <Widget>[
@@ -480,7 +503,7 @@ class _FilterFormState extends State<FilterForm> {
 
   // final PeriodosAcademicosService _periodosAcademicosService =
   //     new PeriodosAcademicosService();
-  final AnhosService _anhosService= new AnhosService();
+  final AnhosService _anhosService = new AnhosService();
 
   final MisHijosService _misHijosService = new MisHijosService();
 
