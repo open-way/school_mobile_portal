@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       theme: LambThemes.light,
       home: new RootPage(
         authService: AuthService(),
+        misHijosService: MisHijosService(),
         storage: storage,
       ),
       routes: {
