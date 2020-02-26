@@ -53,7 +53,7 @@ class _FilterFormState extends State<FilterForm> {
     var query = {
       'id_alumno': this.widget?.currentChildSelected?.idAlumno.toString() ?? '',
     };
-    _anhosService.getByQuery$(query).then((listSnap) {
+    this._anhosService.getByQuery$(query).then((listSnap) {
       // int currentYear = new DateTime(year);
       var now = new DateTime.now();
       // print(now.year);
