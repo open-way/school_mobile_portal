@@ -27,8 +27,6 @@ class PortalPadresService extends VitHttpService {
 
     final body = jsonDecode(res.body);
     print(res.body.toString());
-    print(queryParams.toString() +
-        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34333333333333333333333333333');
 
     if (res.statusCode == 200) {
       // String pres =

@@ -110,10 +110,12 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   void _loadChildSelectedStorageFlow(Map<String, String> result) async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    var idChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
     this._currentIdChildSelected = idChildSelected;
     if (result['id_alumno'] == null) {
-      result['id_alumno'] = _currentIdChildSelected;
+      result['id_alumno'] = idChildSelected;
     }
     if (result['id_anho'] == null) {
       result['id_anho'] = DateTime.now().year.toString();
@@ -139,14 +141,12 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   void changedDropDownItem(String selectedPeriodo) {
-    print('Selected city $selectedPeriodo, we are going to refresh the UI');
     setState(() {
       _currentJustificacion = selectedPeriodo;
     });
   }
 
   void _onDaySelected(DateTime day, List events) async {
-    print('CALLBACK: _onDaySelected');
     final f = new DateFormat('dd, MMMM yyyy');
 
     if (events.isNotEmpty) {
@@ -525,8 +525,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
                 ],
               )),
     );
-    print(localResult.toString() +
-        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!1');
     if (localResult != null) {
       result.addAll(localResult);
       this._loadChildSelectedStorageFlow(result);
@@ -670,8 +668,6 @@ class _FilterFormState extends State<FilterForm> {
                       params = {'id_anho': _idAnho};
                       //_AsistenciaPageState().reassemble();
                     }
-                    print(params.toString() +
-                        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!2');
                     Navigator.pop(context, params);
                   },
                 )),
