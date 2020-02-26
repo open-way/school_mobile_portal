@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
+// import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/enum.dart';
 import 'package:school_mobile_portal/services/anhos.service.dart';
-import 'package:school_mobile_portal/services/mis-hijos.service.dart';
+// import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
 class FilterForm extends StatefulWidget {
+  FilterForm({Key key, @required this.currentChildSelected}) : super(key: key);
+  final HijoModel currentChildSelected;
   @override
   _FilterFormState createState() => _FilterFormState();
 }
@@ -16,12 +19,13 @@ class _FilterFormState extends State<FilterForm> {
 
   final AnhosService _anhosService = new AnhosService();
 
-  final MisHijosService _misHijosService = new MisHijosService();
+  // final MisHijosService _misHijosService = new MisHijosService();
 
-  List<DropdownMenuItem<String>> _listaPeriodosContables;
-  List<DropdownMenuItem<String>> _misHijos;
+  List<DropdownMenuItem<String>> _listaAnhos;
+  // List<DropdownMenuItem<String>> _misHijos;
+  // HijoModel _currentChildSelected;
 
-  String _idAlumno;
+  // String _idAlumno;
   String _idAnho;
 
   @override
@@ -29,6 +33,7 @@ class _FilterFormState extends State<FilterForm> {
     //this._idAlumno = '203708';
     //this._idAnho = '1';
     super.initState();
+    print('Hola mundo');
     this._getMasters();
   }
 
@@ -40,13 +45,21 @@ class _FilterFormState extends State<FilterForm> {
   }
 
   void _getMasters() {
-    this._getPeriodos();
-    this._getMisHijos();
+    this._getAnhos();
+    // this._getMisHijos();
   }
 
-  void _getPeriodos() {
-    _anhosService.getAll$().then((listSnap) {
-      _listaPeriodosContables = listSnap.map((AnhoModel snap) {
+  void _getAnhos() {
+    var query = {
+      'id_alumno': this.widget?.currentChildSelected?.idAlumno.toString() ?? '',
+    };
+    _anhosService.getByQuery$(query).then((listSnap) {
+      // int currentYear = new DateTime(year);
+      var now = new DateTime.now();
+      // print(now.year);
+      this._idAnho = now.year.toString();
+
+      _listaAnhos = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,
           child: Text(snap.idAnho),
@@ -58,20 +71,20 @@ class _FilterFormState extends State<FilterForm> {
     });
   }
 
-  void _getMisHijos() {
-    _misHijosService.getAll$().then((listSnap) {
-      _misHijos = listSnap.map((HijoModel snap) {
-        return DropdownMenuItem(
-          value: snap.idAlumno,
-          child: Text(snap.nombre),
-        );
-      }).toList();
+  // void _getMisHijos() {
+  //   _misHijosService.getAll$().then((listSnap) {
+  //     _misHijos = listSnap.map((HijoModel snap) {
+  //       return DropdownMenuItem(
+  //         value: snap.idAlumno,
+  //         child: Text(snap.nombre),
+  //       );
+  //     }).toList();
 
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
-  }
+  //     setState(() {});
+  //   }).catchError((err) {
+  //     print(err);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -83,27 +96,26 @@ class _FilterFormState extends State<FilterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // new DropdownButton(
-            //   hint: new Text('Seleccione alumno'),
-            //   value: this._idAlumno,
-            //   isExpanded: true,
-            //   onChanged: (String newValue) {
-            //     setState(() {
-            //       _idAlumno = newValue;
-            //     });
-            //   },
-            //   items: _misHijos,
-            // ),
-            new DropdownButton(
-              hint: new Text('Seleccione un periodo'),
-              value: this._idAnho,
-              isExpanded: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  this._idAnho = newValue;
-                });
-              },
-              items: _listaPeriodosContables,
+            new Padding(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.date_range),
+                  labelText: 'Seleccione año',
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: this._idAnho,
+                    isDense: true,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this._idAnho = newValue;
+                      });
+                    },
+                    items: this._listaAnhos,
+                  ),
+                ),
+              ),
             ),
             new SizedBox(
                 width: double.infinity, // match_parent
@@ -111,12 +123,9 @@ class _FilterFormState extends State<FilterForm> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Filtrar'),
                   onPressed: () {
-                    if (this._idAlumno.isNotEmpty && this._idAnho.isNotEmpty) {
-                      // if (this._idAlumno.isEmpty && this._idAnho.isEmpty) {
+                    if (this._idAnho.isNotEmpty) {
                       Navigator.pop(context, DialogActions.SEARCH);
                     }
-                    // Navigator.pushReplacementNamed(context, Routes.estado_cuenta);
-                    // if (_formKey.currentState.validate()) {}
                   },
                 )),
           ],

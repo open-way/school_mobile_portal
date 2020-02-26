@@ -125,7 +125,9 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       child: new SimpleDialog(
         title: new Text('Filtrar'),
         children: <Widget>[
-          new FilterForm(),
+          new FilterForm(
+            currentChildSelected: this._currentChildSelected,
+          ),
         ],
       ),
     )) {
