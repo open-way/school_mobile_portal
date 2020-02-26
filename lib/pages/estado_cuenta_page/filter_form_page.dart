@@ -109,20 +109,6 @@ class _FilterFormState extends State<FilterForm> {
               },
             ),
           ),
-          new SizedBox(
-            width: double.infinity, // match_parent
-            child: RaisedButton(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text('Cancelar'),
-              onPressed: () {
-                if (this._idAnho.isNotEmpty) {
-                  var responseDialog = new ResponseDialogModel(
-                      action: DialogActions.CANCEL, data: this._idAnho);
-                  Navigator.pop(context, responseDialog);
-                }
-              },
-            ),
-          ),
         ],
       ),
     );

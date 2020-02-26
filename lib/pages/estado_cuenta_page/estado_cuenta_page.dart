@@ -154,8 +154,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       case DialogActions.SUBMIT:
         print(response.data);
         break;
-      case DialogActions.CANCEL:
-        break;
+      // case DialogActions.CANCEL:
+      //   break;
       default:
         print('default');
     }
