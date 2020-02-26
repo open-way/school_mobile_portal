@@ -4,14 +4,17 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
+import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/services/anhos.service.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
+import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:animated_dialog_box/animated_dialog_box.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -473,7 +476,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    Map<String, String> localResult = await showDialog(
+    /*Map<String, String> localResult = await showDialog(
         context: context,
         child: SimpleDialog(
           title: new Text('Filtrar'),
@@ -484,10 +487,33 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     if (localResult != null) {
       result.addAll(localResult);
       this._loadChildSelectedStorageFlow(result);
+    }*/
+    ResponseDialogModel response = await showDialog(
+      context: context,
+      child: new SimpleDialog(
+        title: new Text('Filtrar'),
+        children: <Widget>[
+          new FilterAnhoDialog(
+            idAlumno: this._currentIdChildSelected ?? '',
+          ),
+        ],
+      ),
+    );
+
+    switch (response?.action) {
+      case DialogActions.SUBMIT:
+        if (response.data != null) {
+          result.addAll({'id_anho': response.data});
+          this._loadChildSelectedStorageFlow(result);
+        }
+        break;
+      default:
+        print('default');
     }
   }
 }
 
+/*
 class FilterForm extends StatefulWidget {
   FilterForm({
     Key key,
@@ -590,3 +616,4 @@ class _FilterFormState extends State<FilterForm> {
     );
   }
 }
+*/
