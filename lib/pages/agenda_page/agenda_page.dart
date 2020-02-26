@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -30,7 +32,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
-  String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
@@ -47,7 +49,13 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
     _animationController.forward();
 
-    this._loadChildSelectedStorageFlow();
+    this._loadMaster();
+  }
+
+  Future _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
+
+    // Usar todos los metodos que quieran al hijo actual.
   }
 
   @override
@@ -69,7 +77,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
+          this._currentChildSelected = childSelected;
           setState(() {});
         },
       ),
@@ -86,9 +94,10 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     );
   }
 
-  void _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+  Future _loadChildSelectedStorageFlow() async {
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 

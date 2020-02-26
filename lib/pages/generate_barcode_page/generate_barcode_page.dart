@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -19,18 +21,25 @@ class GenerateBarcodePage extends StatefulWidget {
 }
 
 class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
-  String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
     super.initState();
-    this._loadChildSelectedStorageFlow();
-    print('ESTOY EN GenerateBarcode');
+    this._loadMaster();
   }
 
-  void _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+  Future _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
+
+    // Usar todos los metodos que quieran al hijo actual.
+  }
+
+  Future _loadChildSelectedStorageFlow() async {
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    print(childSelected);
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 
@@ -40,7 +49,7 @@ class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
+          this._currentChildSelected = childSelected;
           setState(() {});
         },
       ),
@@ -54,12 +63,13 @@ class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
             children: <Widget>[
               new ListTile(
                 // leading: Icon(Icons.album),
-                title: Text('80808080'),
-                subtitle: Text('Vitmar Jhonson Aliaga Cruz.'),
+                title: Text(_currentChildSelected?.numDoc ?? ''),
+                subtitle: Text(
+                    '${_currentChildSelected?.nombre ?? ''} ${_currentChildSelected?.paterno ?? ''} ${_currentChildSelected?.materno ?? ''}'),
               ),
               new BarCodeImage(
                 params: Code39BarCodeParams(
-                  '80808080',
+                  _currentChildSelected?.numDoc ?? '',
                   lineWidth:
                       2.0, // width for a single black/white bar (default: 2.0)
                   barHeight:

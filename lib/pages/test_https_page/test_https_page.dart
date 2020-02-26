@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
@@ -18,17 +20,24 @@ class TestHttpsPage extends StatefulWidget {
 }
 
 class _TestHttpsPageState extends State<TestHttpsPage> {
-  String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
     super.initState();
-    this._loadChildSelectedStorageFlow();
+    this._loadMaster();
   }
 
-  void _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+  Future _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
+
+    // Usar todos los metodos que quieran al hijo actual.
+  }
+  
+  Future _loadChildSelectedStorageFlow() async {
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 
@@ -38,7 +47,7 @@ class _TestHttpsPageState extends State<TestHttpsPage> {
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
+          this._currentChildSelected = childSelected;
           setState(() {});
         },
       ),

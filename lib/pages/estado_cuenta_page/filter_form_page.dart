@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/enum.dart';
-import 'package:school_mobile_portal/services/anhos.saervice.dart';
+import 'package:school_mobile_portal/services/anhos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
 class FilterForm extends StatefulWidget {
@@ -83,17 +83,17 @@ class _FilterFormState extends State<FilterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new DropdownButton(
-              hint: new Text('Seleccione alumno'),
-              value: this._idAlumno,
-              isExpanded: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  _idAlumno = newValue;
-                });
-              },
-              items: _misHijos,
-            ),
+            // new DropdownButton(
+            //   hint: new Text('Seleccione alumno'),
+            //   value: this._idAlumno,
+            //   isExpanded: true,
+            //   onChanged: (String newValue) {
+            //     setState(() {
+            //       _idAlumno = newValue;
+            //     });
+            //   },
+            //   items: _misHijos,
+            // ),
             new DropdownButton(
               hint: new Text('Seleccione un periodo'),
               value: this._idAnho,
