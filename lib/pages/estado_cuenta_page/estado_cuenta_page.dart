@@ -55,6 +55,12 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     this.portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
+
+      print('_operationsTotal');
+      print('_operationsTotal');
+      print('_operationsTotal');
+      print(_operationsTotal.total);
+
       setState(() {});
     }).catchError((err) {
       print(err);
@@ -114,27 +120,29 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   }
 
   Future _showDialog() async {
-    ResponseDialogModel response = await showDialog(
-      context: context,
-      child: new SimpleDialog(
-        title: new Text('Filtrar'),
-        children: <Widget>[
-          new FilterAnhoDialog(
-            idAlumno: this._currentChildSelected?.idAlumno ?? '',
-            idAnhoDefault: this.idAnho,
-          ),
-        ],
-      ),
-    );
+    if (this._currentChildSelected?.idAlumno != null) {
+      ResponseDialogModel response = await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text('Filtrar'),
+          children: <Widget>[
+            new FilterAnhoDialog(
+              idAlumno: this._currentChildSelected.idAlumno,
+              idAnhoDefault: this.idAnho,
+            ),
+          ],
+        ),
+      );
 
-    switch (response?.action) {
-      case DialogActions.SUBMIT:
-        print('SUBMIT');
-        this.idAnho = response.data;
-        this.getOperations();
-        break;
-      default:
-        print('default');
+      switch (response?.action) {
+        case DialogActions.SUBMIT:
+          print('SUBMIT');
+          this.idAnho = response.data;
+          this.getOperations();
+          break;
+        default:
+          print('default');
+      }
     }
   }
 }
