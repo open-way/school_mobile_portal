@@ -1,32 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/anho_model.dart';
-import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
-// import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/enum.dart';
 import 'package:school_mobile_portal/services/anhos.service.dart';
-// import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 
-class FilterForm extends StatefulWidget {
-  FilterForm({Key key, @required this.idAlumno}) : super(key: key);
+class FilterAnhoDialog extends StatefulWidget {
+  FilterAnhoDialog({Key key, @required this.idAlumno}) : super(key: key);
   final String idAlumno;
   @override
-  _FilterFormState createState() => _FilterFormState();
+  _FilterAnhoDialogState createState() => _FilterAnhoDialogState();
 }
 
-class _FilterFormState extends State<FilterForm> {
-  // final _formKey = GlobalKey<FormState>();
-
+class _FilterAnhoDialogState extends State<FilterAnhoDialog> {
   final AnhosService _anhosService = new AnhosService();
 
-  // final MisHijosService _misHijosService = new MisHijosService();
-
   List<DropdownMenuItem<String>> _listaAnhos;
-  // List<DropdownMenuItem<String>> _misHijos;
-  // HijoModel _currentChildSelected;
-
-  // String _idAlumno;
   String _idAnho;
 
   @override
@@ -37,8 +26,6 @@ class _FilterFormState extends State<FilterForm> {
 
   @override
   void dispose() {
-    // Limpia el controlador cuando el widget se elimine del árbol de widgets
-    // myController.dispose();
     super.dispose();
   }
 

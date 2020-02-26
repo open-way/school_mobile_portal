@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/enum.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/filter_form_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
+import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 
 class EstadoCuentaPage extends StatefulWidget {
   static const String routeName = '/estado_cuenta';
@@ -37,18 +37,17 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   Future _loadMaster() async {
     await this._loadChildSelectedStorageFlow();
-
     // Usar todos los metodos que quieran al hijo actual.
-    this._getOperations();
+    this.getOperations();
   }
 
-  _getOperations() {
+  getOperations() {
     _listaOperations = [];
     var queryParameters = {
       'id_anho': '2020',
       'id_alumno': this._currentChildSelected.idAlumno,
     };
-    portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
+    this.portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
       setState(() {});
@@ -65,7 +64,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   }
 
   Future<Null> _handleRefresh() async {
-    this._getOperations();
+    this.getOperations();
     return null;
   }
 
@@ -109,41 +108,13 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     );
   }
 
-  /*
-  Future _showDialog() async {
-    switch (await showDialog(
-      context: context,
-      // child: new Center(
-      //   child: new CircularProgressIndicator(),
-      // )
-      child: new SimpleDialog(
-        title: new Text('Filtrar'),
-        children: <Widget>[
-          new FilterForm(
-            idAlumno: this._currentChildSelected?.idAlumno ?? '',
-          ),
-        ],
-      ),
-    )) {
-      // case DialogActions.SEARCH:
-      //   this._getOperations();
-      //   break;
-      // case DialogActions.CANCEL:
-      //   break;
-      // case Answers.MAYBE:
-      //   _setValue('Maybe');
-      //   break;
-    }
-  }
-  */
-
   Future _showDialog() async {
     ResponseDialogModel response = await showDialog(
       context: context,
       child: new SimpleDialog(
         title: new Text('Filtrar'),
         children: <Widget>[
-          new FilterForm(
+          new FilterAnhoDialog(
             idAlumno: this._currentChildSelected?.idAlumno ?? '',
           ),
         ],
@@ -152,27 +123,12 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
     switch (response?.action) {
       case DialogActions.SUBMIT:
+        print('SUBMIT');
         print(response.data);
         break;
-      // case DialogActions.CANCEL:
-      //   break;
       default:
         print('default');
     }
-
-// switch (response)
-//       case DialogActions.SEARCH:
-//         this._getOperations();
-//         break;
-//       case DialogActions.CANCEL:
-//         break;
-//       case Answers.MAYBE:
-//         _setValue('Maybe');
-//         break;
-
-//     print('response');
-//     print('response');
-//     print(response);
   }
 }
 
