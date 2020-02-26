@@ -1,1 +1,1 @@
-enum DialogActions { SEARCH, CANCEL }
+enum DialogActions { SUBMIT, CANCEL }
