@@ -22,7 +22,7 @@ final ThemeData lightTheme = new ThemeData(
         //icon
         actionsIconTheme: IconThemeData(color: Colors.white)),
     //tabBarTheme: TabBarTheme(labelColor: Color(0xFF003366)),
-
+    //buttonTheme: ButtonThemeData(textTheme: TextTheme(subtitle: Colors.white)),
     primarySwatch: Colors.blue,
     brightness: Brightness.light,
     primaryColorBrightness: Brightness.dark,

@@ -10,8 +10,9 @@ import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
-import 'package:school_mobile_portal/services/mis-hijos.service.dart';
+//import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
+import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:animated_dialog_box/animated_dialog_box.dart';
@@ -39,7 +40,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final PortalPadresService portalPadresService = new PortalPadresService();
   final JustificacionMotivosService justificacionMotivosService =
       new JustificacionMotivosService();
-  List<AsistenciaModel> _listaAsistencias;
+  //List<AsistenciaModel> _listaAsistencias;
   GlobalKey<RefreshIndicatorState> refreshKey;
 
   final Map<DateTime, List> _asistenciaEventos = new Map();
@@ -57,6 +58,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
 
+  final Map<String, String> result = new Map();
   String _currentIdChildSelected;
 
   // List<DropdownMenuItem<String>> getDropDownMenuItems() {
@@ -82,7 +84,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
-    this._loadChildSelectedStorageFlow();
+    this._loadChildSelectedStorageFlow(result);
   }
 
   void _getJustificacionMotivos() {
@@ -106,13 +108,17 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     });
   }
 
-  void _loadChildSelectedStorageFlow() async {
+  void _loadChildSelectedStorageFlow(Map<String, String> result) async {
     var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+    //this._currentIdChildSelected = idChildSelected;
+    result['id_alumno'] = idChildSelected;
+    if (result['id_anho'] == null) {
+      result['id_anho'] = DateTime.now().year.toString();
+    }
     setState(() {});
   }
 
-  void _getAsistencias(Map<String, String> result) {
+  /*void _getAsistencias(Map<String, String> result) {
     _listaAsistencias = [];
     portalPadresService.getAsistencias(result).then((onValue) {
       _listaAsistencias = onValue;
@@ -120,7 +126,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     }).catchError((err) {
       print(err);
     });
-  }
+  }*/
 
   @override
   void dispose() {
@@ -233,8 +239,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
-          setState(() {});
+          //this._currentIdChildSelected = childSelected.idAlumno;
+          setState(() {
+            _loadChildSelectedStorageFlow(result);
+          });
         },
       ),
       appBar: AppBar(
@@ -270,7 +278,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       heightFactor: 1,
       widthFactor: 1,
       child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+        padding: EdgeInsets.fromLTRB(10, 25, 10, 0),
         controller: _controllerTwo,
         child: Column(
           children: <Widget>[
@@ -284,14 +292,15 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     );
   }
 
-  Future<Widget> refreshList() async {
+  Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
-    return _calendarBox();
+    Navigator.pushReplacementNamed(context, Routes.asistencia);
+    return null;
   }
 
   Widget futureBuild(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getAsistencias({}),
+        future: portalPadresService.getAsistencias(result),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -497,7 +506,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    final result = await Navigator.push(
+    result.addAll(await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => SimpleDialog(
@@ -506,10 +515,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
                   new FilterForm(),
                 ],
               )),
-    );
+    ));
     print(result.toString() +
         'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!1');
-    this._getAsistencias(result);
+    this._loadChildSelectedStorageFlow(result);
     /*switch (await showDialog(
       context: context,
       child: new SimpleDialog(
@@ -540,12 +549,12 @@ class _FilterFormState extends State<FilterForm> {
   //     new PeriodosAcademicosService();
   final AnhosService _anhosService = new AnhosService();
 
-  final MisHijosService _misHijosService = new MisHijosService();
+  //final MisHijosService _misHijosService = new MisHijosService();
 
   List<DropdownMenuItem<String>> _listaAnhos;
-  List<DropdownMenuItem<String>> _misHijos;
+  //List<DropdownMenuItem<String>> _misHijos;
 
-  String _idAlumno;
+  //String _idAlumno;
   String _idAnho;
 
   @override
@@ -565,11 +574,11 @@ class _FilterFormState extends State<FilterForm> {
 
   void _getMasters() {
     this._getMyAnhos();
-    this._getMisHijos();
+    //this._getMisHijos();
   }
 
   void _getMyAnhos() {
-    _anhosService.getAllLocal().then((listSnap) {
+    _anhosService.getAll$().then((listSnap) {
       _listaAnhos = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,
@@ -582,8 +591,8 @@ class _FilterFormState extends State<FilterForm> {
     });
   }
 
-  void _getMisHijos() {
-    _misHijosService.getAllLocal().then((listSnap) {
+  /*void _getMisHijos() {
+    _misHijosService.getAll$().then((listSnap) {
       _misHijos = listSnap.map((HijoModel snap) {
         return DropdownMenuItem(
           value: snap.idAlumno,
@@ -595,7 +604,7 @@ class _FilterFormState extends State<FilterForm> {
     }).catchError((err) {
       print(err);
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -606,7 +615,7 @@ class _FilterFormState extends State<FilterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            DropdownButton(
+            /*DropdownButton(
               hint: new Text('Seleccione alumno'),
               value: this._idAlumno,
               isExpanded: true,
@@ -616,7 +625,7 @@ class _FilterFormState extends State<FilterForm> {
                 });
               },
               items: _misHijos,
-            ),
+            ),*/
             DropdownButton(
               hint: new Text('Seleccione un periodo'),
               value: this._idAnho,
@@ -631,19 +640,19 @@ class _FilterFormState extends State<FilterForm> {
             new SizedBox(
                 width: double.infinity, // match_parent
                 child: RaisedButton(
+                  textTheme: LambThemes.light.buttonTheme.textTheme,
+                  color: LambThemes.light.accentColor,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Filtrar'),
                   onPressed: () {
-                    if (this._idAlumno.isNotEmpty && this._idAnho.isNotEmpty) {
-                      Map<String, String> params = {
-                        'id_alumno': _idAlumno,
-                        'id_anho': _idAnho
-                      };
-                      print(params.toString() +
-                          'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!2');
-                      Navigator.pop(context, params);
+                    Map<String, String> params;
+                    if (this._idAnho.isNotEmpty) {
+                      params = {'id_anho': _idAnho};
                       //_AsistenciaPageState().reassemble();
                     }
+                    print(params.toString() +
+                        'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!2');
+                    Navigator.pop(context, params);
                   },
                 )),
           ],
