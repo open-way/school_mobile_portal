@@ -5,12 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/enums/enum.dart';
-import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
-import 'package:school_mobile_portal/services/anhos.service.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -52,6 +50,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   final Map<String, String> result = new Map();
   String _currentIdChildSelected;
+  String idAnho;
 
   @override
   void initState() {
@@ -88,16 +87,18 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   void _loadChildSelectedStorageFlow(Map<String, String> result) async {
+    var now = new DateTime.now();
+    this.idAnho = this.idAnho ?? now.year.toString();
     var childSelected = await widget.storage.read(key: 'child_selected');
     var idChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
     this._currentIdChildSelected = idChildSelected;
     if (result['id_alumno'] == null) {
-      result['id_alumno'] = idChildSelected;
+      result['id_alumno'] = _currentIdChildSelected;
     }
-    if (result['id_anho'] == null) {
-      result['id_anho'] = DateTime.now().year.toString();
-    }
+    //if (result['id_anho'] == null) {
+    result['id_anho'] = this.idAnho;
+    //}
     setState(() {});
   }
 
@@ -476,144 +477,30 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    /*Map<String, String> localResult = await showDialog(
+    if (this._currentIdChildSelected != null) {
+      ResponseDialogModel response = await showDialog(
         context: context,
-        child: SimpleDialog(
+        child: new SimpleDialog(
           title: new Text('Filtrar'),
           children: <Widget>[
-            new FilterForm(currentIdChildSelected: _currentIdChildSelected),
+            new FilterAnhoDialog(
+              idAlumno: this._currentIdChildSelected,
+              idAnhoDefault: this.idAnho,
+            ),
           ],
-        ));
-    if (localResult != null) {
-      result.addAll(localResult);
-      this._loadChildSelectedStorageFlow(result);
-    }*/
-    ResponseDialogModel response = await showDialog(
-      context: context,
-      child: new SimpleDialog(
-        title: new Text('Filtrar'),
-        children: <Widget>[
-          new FilterAnhoDialog(
-            idAlumno: this._currentIdChildSelected ?? '',
-          ),
-        ],
-      ),
-    );
+        ),
+      );
 
-    switch (response?.action) {
-      case DialogActions.SUBMIT:
-        if (response.data != null) {
-          result.addAll({'id_anho': response.data});
-          this._loadChildSelectedStorageFlow(result);
-        }
-        break;
-      default:
-        print('default');
+      switch (response?.action) {
+        case DialogActions.SUBMIT:
+          if (response.data != null) {
+            this.idAnho = response.data;
+            result.addAll({'id_anho': response.data});
+            this._loadChildSelectedStorageFlow(result);
+          }
+          break;
+        default:
+      }
     }
   }
 }
-
-/*
-class FilterForm extends StatefulWidget {
-  FilterForm({
-    Key key,
-    @required this.currentIdChildSelected,
-  }) : super(key: key);
-
-  final String currentIdChildSelected;
-
-  @override
-  _FilterFormState createState() => _FilterFormState();
-}
-
-class _FilterFormState extends State<FilterForm> {
-  final _formKey = GlobalKey<FormState>();
-
-  final AnhosService _anhosService = new AnhosService();
-
-  List<DropdownMenuItem<String>> _listaAnhos;
-
-  String _idAnho;
-
-  @override
-  void initState() {
-    super.initState();
-    this._getMasters();
-  }
-
-  @override
-  void dispose() {
-    // Limpia el controlador cuando el widget se elimine del árbol de widgets
-    // myController.dispose();
-    super.dispose();
-  }
-
-  void _getMasters() {
-    this._getMyAnhos();
-  }
-
-  void _getMyAnhos() {
-    _anhosService
-        .getAll$({'id_alumno': widget.currentIdChildSelected}).then((listSnap) {
-      _listaAnhos = listSnap.map((AnhoModel snap) {
-        return DropdownMenuItem(
-          value: snap.idAnho,
-          child: Text(snap.idAnho),
-        );
-      }).toList();
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: new EdgeInsets.all(15),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  icon: Icon(Icons.date_range),
-                  labelText: 'Seleccione año',
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: this._idAnho,
-                    isDense: true,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        this._idAnho = newValue;
-                      });
-                    },
-                    items: this._listaAnhos,
-                  ),
-                ),
-              ),
-            ),
-            new SizedBox(
-                width: double.infinity, // match_parent
-                child: RaisedButton(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Filtrar'),
-                  onPressed: () {
-                    Map<String, String> params;
-                    if (this._idAnho.isNotEmpty) {
-                      params = {'id_anho': _idAnho};
-                    }
-                    Navigator.pop(context, params);
-                  },
-                )),
-          ],
-        ),
-      ),
-    );
-  }
-}
-*/
