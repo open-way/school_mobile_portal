@@ -94,11 +94,9 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
     this._currentIdChildSelected = idChildSelected;
     if (result['id_alumno'] == null) {
-      result['id_alumno'] = _currentIdChildSelected;
+      result['id_alumno'] = this._currentIdChildSelected;
     }
-    //if (result['id_anho'] == null) {
     result['id_anho'] = this.idAnho;
-    //}
     setState(() {});
   }
 
@@ -265,6 +263,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
+    //Navigator.pushReplacementNamed(context, Routes.asistencia);
     _loadChildSelectedStorageFlow(result);
     return null;
   }
