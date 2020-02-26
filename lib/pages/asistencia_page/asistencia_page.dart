@@ -9,10 +9,7 @@ import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/services/anhos.service.dart';
-//import 'package:school_mobile_portal/routes/routes.dart';
-// import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
-//import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -34,14 +31,11 @@ class AsistenciaPage extends StatefulWidget {
   _AsistenciaPageState createState() => _AsistenciaPageState();
 }
 
-//enum DialogActions { SEARCH, CANCEL }
-
 class _AsistenciaPageState extends State<AsistenciaPage>
     with TickerProviderStateMixin {
   final PortalPadresService portalPadresService = new PortalPadresService();
   final JustificacionMotivosService justificacionMotivosService =
       new JustificacionMotivosService();
-  //List<AsistenciaModel> _listaAsistencias;
   GlobalKey<RefreshIndicatorState> refreshKey;
 
   final Map<DateTime, List> _asistenciaEventos = new Map();
@@ -49,12 +43,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   CalendarController _calendarController;
 
   List<JustificacionMotivoModel> _justificacionMotivos;
-  // List _justificaciones = [
-  //   'Elegir Motivo',
-  //   'Tengo trabajo',
-  //   'No le gusta llegar puntual',
-  //   'Se quemó la casa'
-  // ];
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
@@ -62,23 +50,11 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final Map<String, String> result = new Map();
   String _currentIdChildSelected;
 
-  // List<DropdownMenuItem<String>> getDropDownMenuItems() {
-  //   List<DropdownMenuItem<String>> items = new List();
-  //   for (JustificacionMotivoModel justificacion in _justificacionMotivos) {
-  //     items.add(new DropdownMenuItem(
-  //         value: justificacion.idJmotivo,
-  //         child: new Text(justificacion.nombre)));
-  //   }
-  //   return items;
-  // }
-
   @override
   void initState() {
     super.initState();
     refreshKey = GlobalKey<RefreshIndicatorState>();
     this._getJustificacionMotivos();
-    // _dropDownMenuItems = getDropDownMenuItems();
-    // _currentJustificacion = _dropDownMenuItems ?? _dropDownMenuItems[0].value;
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
@@ -92,7 +68,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     _justificacionMotivos = [];
     justificacionMotivosService.getAll$().then((onValue) {
       _justificacionMotivos = onValue;
-      // _dropDownMenuItems
       _dropDownMenuItems = [];
       for (JustificacionMotivoModel justificacion in _justificacionMotivos) {
         _dropDownMenuItems.add(new DropdownMenuItem(
@@ -123,27 +98,11 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     setState(() {});
   }
 
-  /*void _getAsistencias(Map<String, String> result) {
-    _listaAsistencias = [];
-    portalPadresService.getAsistencias(result).then((onValue) {
-      _listaAsistencias = onValue;
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
-  }*/
-
   @override
   void dispose() {
     _animationController.dispose();
     _calendarController.dispose();
     super.dispose();
-  }
-
-  void changedDropDownItem(String selectedPeriodo) {
-    setState(() {
-      _currentJustificacion = selectedPeriodo;
-    });
   }
 
   void _onDaySelected(DateTime day, List events) async {
@@ -197,11 +156,23 @@ class _AsistenciaPageState extends State<AsistenciaPage>
               style: TextStyle(fontSize: 15, color: Colors.black45)));
       txtButton = 'OK';
     } else {
-      selecjusti = DropdownButton(
-        value: _currentJustificacion,
-        items: _dropDownMenuItems,
-        onChanged: changedDropDownItem,
-      );
+      selecjusti = InputDecorator(
+          decoration: InputDecoration(
+            icon: Icon(Icons.date_range),
+            labelText: 'Seleccione motivo',
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton(
+              value: _currentJustificacion,
+              items: _dropDownMenuItems,
+              onChanged: (String newValue) {
+                setState(() {
+                  this._currentJustificacion = newValue;
+                });
+              },
+            ),
+          ));
+
       descripcion = TextField(
           obscureText: false,
           decoration: InputDecoration(
@@ -253,21 +224,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentIdChildSelected = childSelected.idAlumno;
           result['id_alumno'] = _currentIdChildSelected;
-          //setState(() {
           _loadChildSelectedStorageFlow(result);
-          //});
         },
       ),
       appBar: appBar,
-      // body: SingleChildScrollView(
-      //   padding: EdgeInsets.all(7),
-      //   scrollDirection: Axis.vertical,
-      //   child: Column(
-      //     mainAxisSize: MainAxisSize.max,
-      //     children: <Widget>[
-      //       futureBuild(context),
-      //     ],
-      //   ),
       body: RefreshIndicator(
         displacement: 2,
         key: refreshKey,
@@ -302,7 +262,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
     _loadChildSelectedStorageFlow(result);
-    //Navigator.pushReplacementNamed(context, Routes.asistencia);
     return null;
   }
 
@@ -514,36 +473,18 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    Map<String, String> localResult = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => SimpleDialog(
-                title: new Text('Filtrar'),
-                children: <Widget>[
-                  new FilterForm(
-                      currentIdChildSelected: _currentIdChildSelected),
-                ],
-              )),
-    );
+    Map<String, String> localResult = await showDialog(
+        context: context,
+        child: SimpleDialog(
+          title: new Text('Filtrar'),
+          children: <Widget>[
+            new FilterForm(currentIdChildSelected: _currentIdChildSelected),
+          ],
+        ));
     if (localResult != null) {
       result.addAll(localResult);
       this._loadChildSelectedStorageFlow(result);
     }
-    /*switch (await showDialog(
-      context: context,
-      child: new SimpleDialog(
-        title: new Text('Filtrar'),
-        children: <Widget>[
-          new FilterForm(),
-        ],
-      ),
-    )) {
-      case DialogActions.SEARCH:
-        this._getAsistencias({});
-        break;
-      case DialogActions.CANCEL:
-        break;
-    }*/
   }
 }
 
@@ -562,22 +503,14 @@ class FilterForm extends StatefulWidget {
 class _FilterFormState extends State<FilterForm> {
   final _formKey = GlobalKey<FormState>();
 
-  // final PeriodosAcademicosService _periodosAcademicosService =
-  //     new PeriodosAcademicosService();
   final AnhosService _anhosService = new AnhosService();
 
-  //final MisHijosService _misHijosService = new MisHijosService();
-
   List<DropdownMenuItem<String>> _listaAnhos;
-  //List<DropdownMenuItem<String>> _misHijos;
 
-  //String _idAlumno;
   String _idAnho;
 
   @override
   void initState() {
-    //this._idAlumno = '1';
-    //this._idAnho = '1';
     super.initState();
     this._getMasters();
   }
@@ -591,7 +524,6 @@ class _FilterFormState extends State<FilterForm> {
 
   void _getMasters() {
     this._getMyAnhos();
-    //this._getMisHijos();
   }
 
   void _getMyAnhos() {
@@ -609,21 +541,6 @@ class _FilterFormState extends State<FilterForm> {
     });
   }
 
-  /*void _getMisHijos() {
-    _misHijosService.getAll$().then((listSnap) {
-      _misHijos = listSnap.map((HijoModel snap) {
-        return DropdownMenuItem(
-          value: snap.idAlumno,
-          child: Text(snap.nombre),
-        );
-      }).toList();
-
-      setState(() {});
-    }).catchError((err) {
-      print(err);
-    });
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -633,40 +550,36 @@ class _FilterFormState extends State<FilterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            /*DropdownButton(
-              hint: new Text('Seleccione alumno'),
-              value: this._idAlumno,
-              isExpanded: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  _idAlumno = newValue;
-                });
-              },
-              items: _misHijos,
-            ),*/
-            DropdownButton(
-              hint: new Text('Seleccione un periodo'),
-              value: this._idAnho,
-              isExpanded: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  this._idAnho = newValue;
-                });
-              },
-              items: _listaAnhos,
+            new Padding(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.date_range),
+                  labelText: 'Seleccione año',
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: this._idAnho,
+                    isDense: true,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this._idAnho = newValue;
+                      });
+                    },
+                    items: this._listaAnhos,
+                  ),
+                ),
+              ),
             ),
             new SizedBox(
                 width: double.infinity, // match_parent
                 child: RaisedButton(
-                  //textTheme: LambThemes.light.buttonTheme.textTheme,
-                  //color: LambThemes.light.accentColor,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Filtrar'),
                   onPressed: () {
                     Map<String, String> params;
                     if (this._idAnho.isNotEmpty) {
                       params = {'id_anho': _idAnho};
-                      //_AsistenciaPageState().reassemble();
                     }
                     Navigator.pop(context, params);
                   },
