@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:school_mobile_portal/models/operation_model.dart';
 
 class OperationDetail extends StatelessWidget {
-  final OperationModel operation;
+  final dynamic operation;
 
   OperationDetail({@required this.operation});
 

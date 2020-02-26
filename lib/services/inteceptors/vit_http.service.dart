@@ -17,7 +17,7 @@ class VitHttpService {
 
   Future<dynamic> httpGetAll(String otherUrl) {
     // log
-      debugPrint('httpGetAll: $intermediateUrl$otherUrl');
+    debugPrint('httpGetAll: $intermediateUrl$otherUrl');
     var uri = new Uri.http(baseUrl, '$intermediateUrl$otherUrl');
     return lambHttp.get(uri);
   }
@@ -26,14 +26,12 @@ class VitHttpService {
       String otherUrl, Map<String, String> queryParams) {
     debugPrint(
         'httpGetByQuery: $intermediateUrl$otherUrl; queryParams: ${queryParams.toString()}');
-    print('$intermediateUrl$otherUrl');
     var uri = new Uri.http(baseUrl, '$intermediateUrl$otherUrl', queryParams);
     return lambHttp.get(uri);
   }
 
   Future<dynamic> httpGetById(
       String otherUrl, String id, Map<String, String> queryParams) {
-    print('$intermediateUrl$otherUrl');
     debugPrint(
         'httpGetById: $intermediateUrl$otherUrl/$id; queryParams: ${queryParams.toString()}');
     var uri =
