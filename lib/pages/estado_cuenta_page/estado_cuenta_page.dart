@@ -29,6 +29,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   HijoModel _currentChildSelected;
 
+  String idAnho;
+
   @override
   void initState() {
     super.initState();
@@ -42,9 +44,12 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   }
 
   getOperations() {
-    _listaOperations = [];
+    var now = new DateTime.now();
+    this.idAnho = this.idAnho ?? now.year.toString();
+
+    this._listaOperations = [];
     var queryParameters = {
-      'id_anho': '2020',
+      'id_anho': this.idAnho,
       'id_alumno': this._currentChildSelected.idAlumno,
     };
     this.portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
@@ -116,6 +121,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         children: <Widget>[
           new FilterAnhoDialog(
             idAlumno: this._currentChildSelected?.idAlumno ?? '',
+            idAnhoDefault: this.idAnho,
           ),
         ],
       ),
@@ -124,7 +130,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     switch (response?.action) {
       case DialogActions.SUBMIT:
         print('SUBMIT');
-        print(response.data);
+        this.idAnho = response.data;
+        this.getOperations();
         break;
       default:
         print('default');

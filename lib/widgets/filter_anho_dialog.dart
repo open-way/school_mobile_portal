@@ -6,8 +6,11 @@ import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/services/anhos.service.dart';
 
 class FilterAnhoDialog extends StatefulWidget {
-  FilterAnhoDialog({Key key, @required this.idAlumno}) : super(key: key);
+  FilterAnhoDialog(
+      {Key key, @required this.idAlumno, @required this.idAnhoDefault})
+      : super(key: key);
   final String idAlumno;
+  final String idAnhoDefault;
   @override
   _FilterAnhoDialogState createState() => _FilterAnhoDialogState();
 }
@@ -31,6 +34,7 @@ class _FilterAnhoDialogState extends State<FilterAnhoDialog> {
 
   void getMasters() {
     this.getAnhos();
+    this._idAnho = widget.idAnhoDefault;
   }
 
   void getAnhos() {
@@ -39,8 +43,6 @@ class _FilterAnhoDialogState extends State<FilterAnhoDialog> {
         'id_alumno': this.widget?.idAlumno,
       };
       this._anhosService.getByQuery$(query).then((listSnap) {
-        var now = new DateTime.now();
-        this._idAnho = now.year.toString();
         this._listaAnhos = listSnap.map((AnhoModel snap) {
           return DropdownMenuItem(
             value: snap.idAnho,
