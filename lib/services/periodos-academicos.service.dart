@@ -6,7 +6,7 @@ import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart'
 
 class PeriodosAcademicosService extends VitHttpService {
   Future<List<PeriodoAcademicoModel>> getAll$() async {
-    http.Response res = await httpGetAll('/setup/periodos-contables');
+    http.Response res = await httpGetAll('/setup/periodos-acedemicos');
 
     print(res.body.toString());
     if (res.statusCode == 200) {

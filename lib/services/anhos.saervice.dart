@@ -5,8 +5,9 @@ import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
 class AnhosService extends VitHttpService {
-  Future<List<AnhoModel>> getAll$() async {
-    http.Response res = await httpGetAll('/setup/anhos');
+  Future<List<AnhoModel>> getAll$(
+      Map<String, String> queryParams) async {
+    http.Response res = await httpGetByQuery('/setup/anhos', queryParams);
 
     print(res.body.toString());
     if (res.statusCode == 200) {

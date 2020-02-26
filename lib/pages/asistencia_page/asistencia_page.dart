@@ -7,12 +7,11 @@ import 'package:school_mobile_portal/models/anho_model.dart';
 import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
-import 'package:school_mobile_portal/routes/routes.dart';
+//import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/anhos.saervice.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 //import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
-import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:animated_dialog_box/animated_dialog_box.dart';
@@ -33,7 +32,7 @@ class AsistenciaPage extends StatefulWidget {
   _AsistenciaPageState createState() => _AsistenciaPageState();
 }
 
-enum DialogActions { SEARCH, CANCEL }
+//enum DialogActions { SEARCH, CANCEL }
 
 class _AsistenciaPageState extends State<AsistenciaPage>
     with TickerProviderStateMixin {
@@ -110,8 +109,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   void _loadChildSelectedStorageFlow(Map<String, String> result) async {
     var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    //this._currentIdChildSelected = idChildSelected;
-    result['id_alumno'] = idChildSelected;
+    this._currentIdChildSelected = idChildSelected;
+    if (result['id_alumno'] == null) {
+      result['id_alumno'] = _currentIdChildSelected;
+    }
     if (result['id_anho'] == null) {
       result['id_anho'] = DateTime.now().year.toString();
     }
@@ -235,25 +236,27 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final ScrollController _controllerTwo = ScrollController();
   @override
   Widget build(BuildContext context) {
+    AppBar appBar = AppBar(
+      title: Text('Asistencia'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          onPressed: _showDialog,
+        ),
+      ],
+    );
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          //this._currentIdChildSelected = childSelected.idAlumno;
-          setState(() {
-            _loadChildSelectedStorageFlow(result);
-          });
+          this._currentIdChildSelected = childSelected.idAlumno;
+          result['id_alumno'] = _currentIdChildSelected;
+          //setState(() {
+          _loadChildSelectedStorageFlow(result);
+          //});
         },
       ),
-      appBar: AppBar(
-        title: Text('Asistencia'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: _showDialog,
-          ),
-        ],
-      ),
+      appBar: appBar,
       // body: SingleChildScrollView(
       //   padding: EdgeInsets.all(7),
       //   scrollDirection: Axis.vertical,
@@ -264,27 +267,29 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       //     ],
       //   ),
       body: RefreshIndicator(
+        displacement: 2,
         key: refreshKey,
         onRefresh: () async {
           await refreshList();
         },
-        child: _calendarBox(),
+        child: _calendarBox(appBar.preferredSize.height),
       ),
     );
   }
 
-  Widget _calendarBox() {
+  Widget _calendarBox(double appBarHeight) {
     return FractionallySizedBox(
       heightFactor: 1,
       widthFactor: 1,
       child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(10, 25, 10, 0),
+        padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
         controller: _controllerTwo,
         child: Column(
           children: <Widget>[
             Container(
                 width: MediaQuery.of(context).size.height,
-                height: MediaQuery.of(context).size.height,
+                height:
+                    MediaQuery.of(context).size.height - appBarHeight * 1.99,
                 child: futureBuild(context)),
           ],
         ),
@@ -294,7 +299,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
-    Navigator.pushReplacementNamed(context, Routes.asistencia);
+    _loadChildSelectedStorageFlow(result);
+    //Navigator.pushReplacementNamed(context, Routes.asistencia);
     return null;
   }
 
@@ -506,19 +512,23 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    result.addAll(await Navigator.push(
+    Map<String, String> localResult = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => SimpleDialog(
                 title: new Text('Filtrar'),
                 children: <Widget>[
-                  new FilterForm(),
+                  new FilterForm(
+                      currentIdChildSelected: _currentIdChildSelected),
                 ],
               )),
-    ));
-    print(result.toString() +
+    );
+    print(localResult.toString() +
         'q34tvqc413XRXc#XE3rc3qxrwC4a%YV34WTrc4CT#CR34!!!!!!!!!!!!!!!!!!!1');
-    this._loadChildSelectedStorageFlow(result);
+    if (localResult != null) {
+      result.addAll(localResult);
+      this._loadChildSelectedStorageFlow(result);
+    }
     /*switch (await showDialog(
       context: context,
       child: new SimpleDialog(
@@ -538,6 +548,13 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 }
 
 class FilterForm extends StatefulWidget {
+  FilterForm({
+    Key key,
+    @required this.currentIdChildSelected,
+  }) : super(key: key);
+
+  final String currentIdChildSelected;
+
   @override
   _FilterFormState createState() => _FilterFormState();
 }
@@ -578,7 +595,8 @@ class _FilterFormState extends State<FilterForm> {
   }
 
   void _getMyAnhos() {
-    _anhosService.getAll$().then((listSnap) {
+    _anhosService
+        .getAll$({'id_alumno': widget.currentIdChildSelected}).then((listSnap) {
       _listaAnhos = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,
@@ -640,8 +658,8 @@ class _FilterFormState extends State<FilterForm> {
             new SizedBox(
                 width: double.infinity, // match_parent
                 child: RaisedButton(
-                  textTheme: LambThemes.light.buttonTheme.textTheme,
-                  color: LambThemes.light.accentColor,
+                  //textTheme: LambThemes.light.buttonTheme.textTheme,
+                  //color: LambThemes.light.accentColor,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Filtrar'),
                   onPressed: () {

@@ -45,7 +45,7 @@ class _FilterFormState extends State<FilterForm> {
   }
 
   void _getPeriodos() {
-    _anhosService.getAll$().then((listSnap) {
+    _anhosService.getAll$({}).then((listSnap) {
       _listaPeriodosContables = listSnap.map((AnhoModel snap) {
         return DropdownMenuItem(
           value: snap.idAnho,

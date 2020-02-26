@@ -17,12 +17,17 @@ final ThemeData lightTheme = new ThemeData(
       // bodyText2: TextStyle(color: Colors.black54),
     ),
     appBarTheme: AppBarTheme(
-        //AppBar
-        color: Color(0xFF1973FF),
-        //icon
-        actionsIconTheme: IconThemeData(color: Colors.white)),
+      //AppBar
+      color: Color(0xFF1973FF),
+      //icon
+      actionsIconTheme: IconThemeData(color: Colors.white),
+      //textTheme: TextTheme(title: TextStyle(color: Colors.white,))
+      //iconTheme: IconThemeData(color: Colors.white),
+      elevation: 0,
+    ),
     //tabBarTheme: TabBarTheme(labelColor: Color(0xFF003366)),
-    //buttonTheme: ButtonThemeData(textTheme: TextTheme(subtitle: Colors.white)),
+    buttonTheme: ButtonThemeData(
+        textTheme: ButtonTextTheme.primary, buttonColor: Color(0xFF003366)),
     primarySwatch: Colors.blue,
     brightness: Brightness.light,
     primaryColorBrightness: Brightness.dark,
