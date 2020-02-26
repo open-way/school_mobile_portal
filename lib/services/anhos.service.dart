@@ -6,7 +6,7 @@ import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart'
 
 class AnhosService extends VitHttpService {
   Future<List<AnhoModel>> getAll$() async {
-    http.Response res = await httpGetAll('/setup/anhos-contables');
+    http.Response res = await httpGetAll('/setup/anhos');
 
     print(res.body.toString());
     if (res.statusCode == 200) {

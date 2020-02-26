@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
@@ -24,7 +26,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   List<dynamic> _listaOperations;
   OperationTotalModel _operationsTotal;
 
-  String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
@@ -34,6 +36,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   Future _loadMaster() async {
     await this._loadChildSelectedStorageFlow();
+
+    // Usar todos los metodos que quieran al hijo actual.
     this._getOperations();
   }
 
@@ -42,7 +46,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     var queryParameters = {
       // 'estado': 'S',
       'id_anho': '2020',
-      'id_cliente': this._currentIdChildSelected,
+      'id_cliente': this._currentChildSelected.idAlumno,
     };
     print(queryParameters.toString());
     portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
@@ -55,8 +59,9 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   }
 
   Future _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 
@@ -71,7 +76,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
+          this._currentChildSelected = childSelected;
           setState(() {});
         },
       ),

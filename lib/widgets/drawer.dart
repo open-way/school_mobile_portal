@@ -165,9 +165,11 @@ class _AppDrawerState extends State<AppDrawer> {
     // Enviar al los hijos el hijo seleccionado y guardar en el storage.
     this._chilSelected = newSelected;
     widget.onChangeNewChildSelected(newSelected);
-    await widget.storage.delete(key: 'id_child_selected');
+    // await widget.storage.delete(key: 'id_child_selected');
+    await widget.storage.delete(key: 'child_selected');
     await widget.storage
-        .write(key: 'id_child_selected', value: newSelected.idAlumno);
+        // .write(key: 'id_child_selected', value: newSelected.idAlumno);
+        .write(key: 'child_selected', value: newSelected.toString());
   }
 
   void changeMenu() {

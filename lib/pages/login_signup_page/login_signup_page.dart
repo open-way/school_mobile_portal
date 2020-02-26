@@ -87,7 +87,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       // this._chilSelected = newSelected;
       // widget.onChangeNewChildSelected(this._chilSelected);
       await widget.storage
-          .write(key: 'id_child_selected', value: hijos[0].idAlumno);
+          // .write(key: 'id_child_selected', value: hijos[0].idAlumno);
+          .write(key: 'child_selected', value: hijos[0].toString());
       // }
     }
 

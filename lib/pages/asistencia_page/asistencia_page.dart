@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:school_mobile_portal/models/asistencia_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
-import 'package:school_mobile_portal/services/anhos.saervice.dart';
+import 'package:school_mobile_portal/services/anhos.service.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
@@ -57,7 +58,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentJustificacion;
 
-  String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   // List<DropdownMenuItem<String>> getDropDownMenuItems() {
   //   List<DropdownMenuItem<String>> items = new List();
@@ -82,7 +83,13 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
-    this._loadChildSelectedStorageFlow();
+    this._loadMaster();
+  }
+
+  Future _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
+
+    // Usar todos los metodos que quieran al hijo actual.
   }
 
   void _getJustificacionMotivos() {
@@ -106,9 +113,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     });
   }
 
-  void _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+  Future _loadChildSelectedStorageFlow() async {
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 
@@ -233,7 +241,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
+          this._currentChildSelected = childSelected;
           setState(() {});
         },
       ),

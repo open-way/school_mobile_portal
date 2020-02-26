@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,12 +23,19 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardService dashboardService = new DashboardService();
 
-  String _currentIdChildSelected;
+  // String _currentIdChildSelected;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
     super.initState();
-    this._loadChildSelectedStorageFlow();
+    this._loadMaster();
+  }
+
+  Future _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
+    
+    // Usar todos los metodos que quieran al hijo actual.
   }
 
   final ScrollController _controllerOne = ScrollController();
@@ -37,7 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
       drawer: AppDrawer(
           storage: widget.storage,
           onChangeNewChildSelected: (HijoModel childSelected) {
-            this._currentIdChildSelected = childSelected.idAlumno;
+            // this._currentIdChildSelected = childSelected.idAlumno;
+            this._currentChildSelected = childSelected;
             setState(() {});
           }),
       appBar: AppBar(
@@ -47,9 +57,10 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  void _loadChildSelectedStorageFlow() async {
-    var idChildSelected = await widget.storage.read(key: 'id_child_selected');
-    this._currentIdChildSelected = idChildSelected;
+  Future _loadChildSelectedStorageFlow() async {
+    var childSelected = await widget.storage.read(key: 'child_selected');
+    this._currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
     setState(() {});
   }
 
@@ -188,7 +199,7 @@ class _DashboardPageState extends State<DashboardPage> {
           title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
           // subtitle: Text('None'),
           // subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
-          subtitle: Text(this._currentIdChildSelected ?? 'None'),
+          subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
         ),
         futureBuildEstadoCuenta(context)
       ]);
