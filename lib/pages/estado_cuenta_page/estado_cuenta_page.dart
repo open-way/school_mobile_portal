@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
+import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/enum.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/filter_form_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
@@ -44,11 +45,9 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   _getOperations() {
     _listaOperations = [];
     var queryParameters = {
-      // 'estado': 'S',
       'id_anho': '2020',
-      'id_cliente': this._currentChildSelected.idAlumno,
+      'id_alumno': this._currentChildSelected.idAlumno,
     };
-    print(queryParameters.toString());
     portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
@@ -83,12 +82,6 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       appBar: AppBar(
         title: Text('Estado cuenta'),
         centerTitle: true,
-        // leading: IconButton(
-        //   icon: Icon(Icons.menu),
-        //   onPressed: () {
-        //     _scaffoldKey.currentState.openDrawer();
-        //   },
-        // ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -116,6 +109,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     );
   }
 
+  /*
   Future _showDialog() async {
     switch (await showDialog(
       context: context,
@@ -126,26 +120,63 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         title: new Text('Filtrar'),
         children: <Widget>[
           new FilterForm(
-            currentChildSelected: this._currentChildSelected,
+            idAlumno: this._currentChildSelected?.idAlumno ?? '',
           ),
         ],
       ),
     )) {
-      case DialogActions.SEARCH:
-        // this.estado =
-        this._getOperations();
-        break;
-      case DialogActions.CANCEL:
-        break;
+      // case DialogActions.SEARCH:
+      //   this._getOperations();
+      //   break;
+      // case DialogActions.CANCEL:
+      //   break;
       // case Answers.MAYBE:
       //   _setValue('Maybe');
       //   break;
     }
   }
+  */
+
+  Future _showDialog() async {
+    ResponseDialogModel response = await showDialog(
+      context: context,
+      child: new SimpleDialog(
+        title: new Text('Filtrar'),
+        children: <Widget>[
+          new FilterForm(
+            idAlumno: this._currentChildSelected?.idAlumno ?? '',
+          ),
+        ],
+      ),
+    );
+
+    switch (response?.action) {
+      case DialogActions.SUBMIT:
+        print(response.data);
+        break;
+      case DialogActions.CANCEL:
+        break;
+      default:
+        print('default');
+    }
+
+// switch (response)
+//       case DialogActions.SEARCH:
+//         this._getOperations();
+//         break;
+//       case DialogActions.CANCEL:
+//         break;
+//       case Answers.MAYBE:
+//         _setValue('Maybe');
+//         break;
+
+//     print('response');
+//     print('response');
+//     print(response);
+  }
 }
 
 class OperationsList extends StatefulWidget {
-  // final List<OperationModel> listaOperations;
   final List<dynamic> listaOperations;
 
   OperationsList({Key key, @required this.listaOperations}) : super(key: key);
@@ -154,12 +185,9 @@ class OperationsList extends StatefulWidget {
 }
 
 class _OperationsListState extends State<OperationsList> {
-  // bool _isSearching;
-
   @override
   void initState() {
     super.initState();
-    // _isSearching = true;
   }
 
   @override
@@ -186,8 +214,4 @@ class _OperationsListState extends State<OperationsList> {
       ),
     );
   }
-
-  // void _handleRefresh() {
-  //   this._
-  // }
 }
