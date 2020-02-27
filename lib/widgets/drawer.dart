@@ -215,13 +215,13 @@ class _AppDrawerState extends State<AppDrawer> {
             Navigator.pushReplacementNamed(context, Routes.generate_barcode),
       ),
       Divider(),
-      createDrawerItem(
-          icon: Icons.note,
-          text: 'Test https',
-          onTap: () =>
-              Navigator.pushReplacementNamed(context, Routes.test_https)),
-      createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
-      createDrawerItem(icon: Icons.info, text: 'Acerca'),
+      // createDrawerItem(
+      //     icon: Icons.note,
+      //     text: 'Test https',
+      //     onTap: () =>
+      //         Navigator.pushReplacementNamed(context, Routes.test_https)),
+      // createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
+      // createDrawerItem(icon: Icons.info, text: 'Acerca'),
       createDrawerItem(
         icon: Icons.power_settings_new,
         text: 'Cerrar sesión',

@@ -10,7 +10,7 @@ class OperationDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(operation.glosa),
+          title: Text(operation['glosa']),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -23,7 +23,7 @@ class OperationDetail extends StatelessWidget {
                     children: <Widget>[
                       ListTile(
                         title: Text("Glosa"),
-                        subtitle: Text(operation.glosa),
+                        subtitle: Text(operation['glosa']),
                       ),
                       // ListTile(
                       //   title: Text("ID"),
@@ -31,11 +31,11 @@ class OperationDetail extends StatelessWidget {
                       // ),
                       ListTile(
                         title: Text("Fecha"),
-                        subtitle: Text(operation.fecha),
+                        subtitle: Text(operation['fecha']),
                       ),
                       ListTile(
                         title: Text("Importe"),
-                        subtitle: Text("${operation.total}"),
+                        subtitle: Text("${operation['total']}"),
                       ),
                     ],
                   ),
