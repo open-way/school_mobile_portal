@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class AsistenciaModel {
+  final String idAsistencia;
   final String periodoNombre;
   final String fechaRegistro;
   final String estadoNombre;
@@ -12,6 +13,7 @@ class AsistenciaModel {
   final String jutificacionDescripcion;
 
   AsistenciaModel({
+    @required this.idAsistencia,
     @required this.periodoNombre,
     @required this.fechaRegistro,
     @required this.estadoNombre,
@@ -25,6 +27,7 @@ class AsistenciaModel {
 
   factory AsistenciaModel.fromJson(Map<String, dynamic> json) {
     return AsistenciaModel(
+      idAsistencia: json['id_asistencia'] as String,
       periodoNombre: json['periodo_nombre'] as String,
       fechaRegistro: json['fecha_registro'] as String,
       estadoNombre: json['estado_nombre'] as String,

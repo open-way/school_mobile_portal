@@ -5,12 +5,15 @@ import 'package:school_mobile_portal/models/periodo_academico_model.dart';
 import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
 class PeriodosAcademicosService extends VitHttpService {
-  Future<List<PeriodoAcademicoModel>> getAll$() async {
-    http.Response res = await httpGetAll('/setup/periodos-academicos');
+  Future<List<PeriodoAcademicoModel>> getAll$(
+      Map<String, String> queryParams) async {
+    http.Response res =
+        await httpGetByQuery('/setup/periodos-academicos', queryParams);
 
     print(res.body.toString());
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
+      print(body.toString() + '=====================');
       final data = body['data'].cast<Map<String, dynamic>>();
       return data
           .map<PeriodoAcademicoModel>(

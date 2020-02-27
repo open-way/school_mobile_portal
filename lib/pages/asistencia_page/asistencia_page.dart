@@ -10,6 +10,7 @@ import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/justificacion_motivo_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/services/justificacion-motivos.service.dart';
+import 'package:school_mobile_portal/services/justificaciones.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
@@ -37,18 +38,20 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final PortalPadresService portalPadresService = new PortalPadresService();
   final JustificacionMotivosService justificacionMotivosService =
       new JustificacionMotivosService();
+  final JustificacionesService justificacionesService =
+      new JustificacionesService();
   GlobalKey<RefreshIndicatorState> refreshKey;
 
-  final Map<DateTime, List> _asistenciaEventos = new Map();
   AnimationController _animationController;
   CalendarController _calendarController;
 
   List<JustificacionMotivoModel> _justificacionMotivos;
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
+  String currentDescripcionJusti;
   String _currentJustificacion;
 
-  final Map<String, String> result = new Map();
+  final Map<String, String> queryParams = new Map();
   String _currentIdChildSelected;
   String idAnho;
 
@@ -63,7 +66,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
-    this._loadChildSelectedStorageFlow(result);
+    this._loadChildSelectedStorageFlow();
   }
 
   void _getJustificacionMotivos() {
@@ -80,23 +83,23 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           ? _justificacionMotivos[0].idJmotivo
           : null;
 
-      setState(() {});
+      //setState(() {});
     }).catchError((err) {
       print(err);
     });
   }
 
-  void _loadChildSelectedStorageFlow(Map<String, String> result) async {
+  void _loadChildSelectedStorageFlow() async {
     var now = new DateTime.now();
     this.idAnho = this.idAnho ?? now.year.toString();
     var childSelected = await widget.storage.read(key: 'child_selected');
     var idChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
     this._currentIdChildSelected = idChildSelected;
-    if (result['id_alumno'] == null) {
-      result['id_alumno'] = this._currentIdChildSelected;
+    if (this.queryParams['id_alumno'] == null) {
+      this.queryParams['id_alumno'] = this._currentIdChildSelected;
     }
-    result['id_anho'] = this.idAnho;
+    this.queryParams['id_anho'] = this.idAnho;
     setState(() {});
   }
 
@@ -129,7 +132,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
             ),
             icon: Icon(null),
             yourWidget: Container(
-              height: 260,
+              height: MediaQuery.of(context).size.height / 3,
               width: 300,
               child: CupertinoScrollbar(
                   controller: _controllerOne,
@@ -144,9 +147,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   showAlertJustificar(AsistenciaModel listaAsistencia) {
-    var selecjusti;
-    var descripcion;
-    var txtButton;
+    Widget selecjusti;
+    Widget descripcion;
+    //String txtButton;
+    DialogButton botonConfirmar;
 
     if (listaAsistencia.jutificacionEstado == '0' ||
         listaAsistencia.jutificacionEstado == '1') {
@@ -156,7 +160,16 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       descripcion = Center(
           child: Text(listaAsistencia.jutificacionDescripcion,
               style: TextStyle(fontSize: 15, color: Colors.black45)));
-      txtButton = 'OK';
+      botonConfirmar = DialogButton(
+        onPressed: () => Future.delayed(Duration.zero, () {
+          Navigator.of(context).pop();
+        }),
+        child: Text(
+          'OK',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      );
+      //txtButton = 'OK';
     } else {
       selecjusti = InputDecorator(
           decoration: InputDecoration(
@@ -176,14 +189,40 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           ));
 
       descripcion = TextField(
-          obscureText: false,
-          decoration: InputDecoration(
-            labelText: 'Descripción',
-          ));
-      txtButton = 'ENVIAR';
+        obscureText: false,
+        decoration: InputDecoration(
+          labelText: 'Descripción',
+        ),
+        onChanged: (String newValue) =>
+            {this.currentDescripcionJusti = newValue},
+      );
+      botonConfirmar = DialogButton(
+        onPressed: () => Future.delayed(Duration.zero, () {
+          if (this.currentDescripcionJusti != null) {
+            Map<String, String> postParams = {
+              'id_jmotivo': this._currentJustificacion,
+              'id_asistencia': listaAsistencia.idAsistencia,
+              'descripcion': this.currentDescripcionJusti,
+              'archivo': ''
+            };
+            justificacionesService.postAll$(postParams);
+          }
+          Navigator.of(context).pop();
+        }),
+        child: Text(
+          'ENVIAR',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      );
+      //txtButton = 'ENVIAR';
     }
+    Navigator.of(context).pop();
+    newJustificacion(selecjusti, descripcion, botonConfirmar);
+  }
 
-    var newJustificacion = new Alert(
+  Future newJustificacion(Widget selecjusti, Widget descripcion,
+      DialogButton botonConfirmar) async {
+    await new Alert(
         context: context,
         style: AlertStyle(isCloseButton: false),
         title: 'Justificación',
@@ -194,17 +233,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           ],
         ),
         buttons: [
-          DialogButton(
-            onPressed: () => Future.delayed(Duration.zero, () {
-              Navigator.of(context).pop();
-            }),
-            child: Text(
-              txtButton,
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
+          botonConfirmar,
         ]).show();
-    return newJustificacion;
   }
 
   final ScrollController _controllerOne = ScrollController();
@@ -225,8 +255,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentIdChildSelected = childSelected.idAlumno;
-          result['id_alumno'] = _currentIdChildSelected;
-          _loadChildSelectedStorageFlow(result);
+          this.queryParams['id_alumno'] = this._currentIdChildSelected;
+          _loadChildSelectedStorageFlow();
         },
       ),
       appBar: appBar,
@@ -236,12 +266,12 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         onRefresh: () async {
           await refreshList();
         },
-        child: _calendarBox(appBar.preferredSize.height),
+        child: _calendarBox(),
       ),
     );
   }
 
-  Widget _calendarBox(double appBarHeight) {
+  Widget _calendarBox() {
     return FractionallySizedBox(
       heightFactor: 1,
       widthFactor: 1,
@@ -252,8 +282,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           children: <Widget>[
             Container(
                 width: MediaQuery.of(context).size.height,
-                height:
-                    MediaQuery.of(context).size.height - appBarHeight * 1.99,
+                height: MediaQuery.of(context).size.height,
                 child: futureBuild(context)),
           ],
         ),
@@ -263,23 +292,24 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
-    //Navigator.pushReplacementNamed(context, Routes.asistencia);
-    _loadChildSelectedStorageFlow(result);
+    _loadChildSelectedStorageFlow();
     return null;
   }
 
   Widget futureBuild(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getAsistencias(result),
+        future: portalPadresService.getAsistencias(this.queryParams),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
             List<AsistenciaModel> asistencias = snapshot.data;
+            Map<DateTime, List> _asistenciaEventos = new Map();
             for (var i = 0; i < asistencias.length; i++) {
               DateTime newDateTimeObj =
                   DateTime.parse(asistencias[i].fechaRegistro);
               _asistenciaEventos[newDateTimeObj] = [
                 asistencias[i].estadoNombre,
+                asistencias[i].idAsistencia,
                 asistencias[i].estadoColor,
                 asistencias[i].periodoNombre,
                 asistencias[i].responsable,
@@ -325,7 +355,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget detalleAsistenciasDia(DateTime day) {
     return new FutureBuilder(
-        future: portalPadresService.getAsistencias({}),
+        future: portalPadresService.getAsistencias(this.queryParams),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -494,8 +524,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         case DialogActions.SUBMIT:
           if (response.data != null) {
             this.idAnho = response.data;
-            result.addAll({'id_anho': response.data});
-            this._loadChildSelectedStorageFlow(result);
+            this.queryParams['id_anho'] = response.data;
+            this._loadChildSelectedStorageFlow();
           }
           break;
         default:

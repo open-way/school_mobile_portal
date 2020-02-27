@@ -4,9 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/agenda_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/services/auth.service.dart';
+import 'package:school_mobile_portal/models/response_dialog_model.dart';
+import 'package:school_mobile_portal/pages/agenda_page/filter_periodo_aca_dialog.dart';
+import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -28,15 +31,21 @@ class AgendaPage extends StatefulWidget {
 
 class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   final PortalPadresService portalPadresService = new PortalPadresService();
+  final PeriodosAcademicosService _periodoAcaService =
+      new PeriodosAcademicosService();
+  GlobalKey<RefreshIndicatorState> refreshKey;
   final Map<DateTime, List> _agendaEventos = new Map();
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
-  HijoModel _currentChildSelected;
+  final Map<String, String> queryParams = new Map();
+  String _currentIdChildSelected;
+  String _idPeriodoAcademico;
 
   @override
   void initState() {
     super.initState();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
     final _selectedDay = DateTime.now();
 
     _selectedEvents = _agendaEventos[_selectedDay] ?? [];
@@ -52,8 +61,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     this._loadMaster();
   }
 
-  Future _loadMaster() async {
-    await this._loadChildSelectedStorageFlow();
+  void _loadMaster() {
+    this._loadChildSelectedStorageFlow();
 
     // Usar todos los metodos que quieran al hijo actual.
   }
@@ -73,35 +82,91 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    AppBar appBar = AppBar(
+      title: Text('Agenda'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          onPressed: _showDialog,
+        ),
+      ],
+    );
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentChildSelected = childSelected;
-          setState(() {});
+          this._currentIdChildSelected = childSelected.idAlumno;
+          this.queryParams['id_alumno'] = this._currentIdChildSelected;
+          _loadChildSelectedStorageFlow();
         },
       ),
-      appBar: AppBar(
-        title: Text('Agenda'),
-      ),
-      body: Column(
-        children: <Widget>[
-          scrollWidget(),
-          const SizedBox(height: 8.0),
-          Expanded(child: _buildEventList()),
-        ],
+      appBar: appBar,
+      body: RefreshIndicator(
+        displacement: 2,
+        key: refreshKey,
+        onRefresh: () async {
+          await refreshList();
+        },
+        child: _calendarBox(appBar.preferredSize.height),
       ),
     );
   }
 
-  Future _loadChildSelectedStorageFlow() async {
+  Widget _calendarBox(double appBarHeight) {
+    return new FractionallySizedBox(
+      heightFactor: 1,
+      widthFactor: 1,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
+        controller: _controllerTwo,
+        child: Column(
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height - appBarHeight * 1.99,
+              child: Column(
+                children: <Widget>[
+                  scrollWidget(),
+                  const SizedBox(height: 8.0),
+                  Expanded(child: _buildEventList()),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<Null> refreshList() async {
+    await Future.delayed(Duration(seconds: 0));
+    _loadChildSelectedStorageFlow();
+    return null;
+  }
+
+  void _loadChildSelectedStorageFlow() async {
+    //var now = new DateTime.now();
     var childSelected = await widget.storage.read(key: 'child_selected');
-    this._currentChildSelected =
-        new HijoModel.fromJson(jsonDecode(childSelected));
+    var idChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
+    this._currentIdChildSelected = idChildSelected;
+    if (this.queryParams['id_alumno'] == null) {
+      this.queryParams['id_alumno'] = this._currentIdChildSelected;
+    }
+    if (this.queryParams['id_periodo'] == null) {
+      this
+          ._periodoAcaService
+          .getAll$({'id_alumno': _currentIdChildSelected}).then((listSnap) {
+        this.queryParams['id_periodo'] = listSnap[0].idPeriodo;
+      });
+    }
+    this._idPeriodoAcademico =
+        this._idPeriodoAcademico ?? this.queryParams['id_periodo'];
     setState(() {});
   }
 
   final ScrollController _controllerOne = ScrollController();
+  final ScrollController _controllerTwo = ScrollController();
 
   Widget scrollWidget() {
     return new Container(
@@ -147,7 +212,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget futureBuildCalendar(BuildContext context) {
     return new FutureBuilder(
-        future: portalPadresService.getAgenda({}),
+        future: portalPadresService.getAgendaLocal(this.queryParams),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -352,7 +417,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget _buildEventList() {
     return new FutureBuilder(
-        future: portalPadresService.getAgenda({}),
+        future: portalPadresService.getAgendaLocal(this.queryParams),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -378,5 +443,33 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
             return Center(child: CircularProgressIndicator());
           }
         });
+  }
+
+  Future _showDialog() async {
+    if (this._currentIdChildSelected != null) {
+      ResponseDialogModel response = await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text('Filtrar'),
+          children: <Widget>[
+            new FilterPeriodoAcaDialog(
+              idAlumno: this._currentIdChildSelected,
+              idPeriodoDefault: this._idPeriodoAcademico,
+            ),
+          ],
+        ),
+      );
+
+      switch (response?.action) {
+        case DialogActions.SUBMIT:
+          if (response.data != null) {
+            this._idPeriodoAcademico = response.data;
+            this.queryParams['id_periodo'] = _idPeriodoAcademico;
+            this._loadChildSelectedStorageFlow();
+          }
+          break;
+        default:
+      }
+    }
   }
 }
