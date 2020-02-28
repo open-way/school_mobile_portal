@@ -242,7 +242,13 @@ class _AsistenciaPageState extends State<AsistenciaPage>
                             'descripcion': this.currentDescripcionJusti,
                             'archivo': ''
                           };
-                          justificacionesService.postAll$(postParams);
+                          justificacionesService
+                              .postAll$(postParams)
+                              .then((onValue) {
+                            print(onValue);
+                          }).catchError((onError) {
+                            print(onError);
+                          });
                           Navigator.pop(context);
                         },
                         child: const Text('Sí!'),

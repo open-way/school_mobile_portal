@@ -7,10 +7,8 @@ class TokenInterceptor implements InterceptorContract {
     try {
       final storage = new FlutterSecureStorage();
       final token = await storage.read(key: 'token') ?? '';
-      // data.params['appid'] = OPEN_WEATHER_API_KEy;
-      // data.params['units'] = 'metric';
       data.headers['Authorization'] = token;
-      data.headers['Content-Type'] = 'application/json';
+      // data.headers['Content-Type'] = 'application/json';
     } catch (e) {
       print(e);
     }

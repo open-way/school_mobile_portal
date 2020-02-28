@@ -8,14 +8,11 @@ class JustificacionesService extends VitHttpService {
     http.Response res =
         await httpPost('/portal-padre/justificaciones', postParams);
     final body = jsonDecode(res.body);
-    print(postParams.toString() +
-        'JustificacionesService postParams !!!!!!!!!!!');
-    print(body.toString() + 'JustificacionesService body !!!!!!!!!!!');
     if (res.statusCode == 200) {
       final data = body['data'];
       return data;
     } else {
-      print("Can't save justificaciones.");
+      throw "Can't save justificaciones.";
     }
   }
 }
