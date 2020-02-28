@@ -20,7 +20,7 @@ class PeriodosAcademicosService extends VitHttpService {
               (json) => PeriodoAcademicoModel.fromJson(json))
           .toList();
     } else {
-      throw "Can't get periodos contables.";
+      throw "Can't get periodos academicos.";
     }
   }
 

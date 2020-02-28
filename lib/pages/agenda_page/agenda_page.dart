@@ -40,6 +40,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   CalendarController _calendarController;
   final Map<String, String> queryParams = new Map();
   String _currentIdChildSelected;
+  String _currentNameChildSelected;
   String _idPeriodoAcademico;
 
   @override
@@ -61,8 +62,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     this._loadMaster();
   }
 
-  void _loadMaster() {
-    this._loadChildSelectedStorageFlow();
+  void _loadMaster() async {
+    await this._loadChildSelectedStorageFlow();
 
     // Usar todos los metodos que quieran al hijo actual.
   }
@@ -84,8 +85,19 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
       title: Text('Agenda'),
+      centerTitle: true,
+      bottom: PreferredSize(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            child: Text(
+              this._currentNameChildSelected ?? '',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
       actions: <Widget>[
         IconButton(
+          //alignment: CrossAxisAlignment.center,
           icon: Icon(Icons.filter_list),
           onPressed: _showDialog,
         ),
@@ -94,10 +106,11 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
-        onChangeNewChildSelected: (HijoModel childSelected) {
+        onChangeNewChildSelected: (HijoModel childSelected) async {
           this._currentIdChildSelected = childSelected.idAlumno;
           this.queryParams['id_alumno'] = this._currentIdChildSelected;
-          _loadChildSelectedStorageFlow();
+          this._currentNameChildSelected = childSelected.nombre;
+          await _loadChildSelectedStorageFlow();
         },
       ),
       appBar: appBar,
@@ -123,7 +136,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.height,
-              height: MediaQuery.of(context).size.height - appBarHeight * 1.99,
+              height: MediaQuery.of(context).size.height - appBarHeight,
               child: Column(
                 children: <Widget>[
                   scrollWidget(),
@@ -140,25 +153,26 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 0));
-    _loadChildSelectedStorageFlow();
+    await _loadChildSelectedStorageFlow();
     return null;
   }
 
-  void _loadChildSelectedStorageFlow() async {
+  Future _loadChildSelectedStorageFlow() async {
     //var now = new DateTime.now();
     var childSelected = await widget.storage.read(key: 'child_selected');
-    var idChildSelected =
-        new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
-    this._currentIdChildSelected = idChildSelected;
+    var currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
+    this._currentIdChildSelected = currentChildSelected.idAlumno;
+    this._currentNameChildSelected =
+        this._currentNameChildSelected ?? currentChildSelected.nombre;
     if (this.queryParams['id_alumno'] == null) {
       this.queryParams['id_alumno'] = this._currentIdChildSelected;
     }
     if (this.queryParams['id_periodo'] == null) {
-      this
+      var listaPeriodos = await this
           ._periodoAcaService
-          .getAll$({'id_alumno': _currentIdChildSelected}).then((listSnap) {
-        this.queryParams['id_periodo'] = listSnap[0].idPeriodo;
-      });
+          .getAll$({'id_alumno': _currentIdChildSelected});
+      this.queryParams['id_periodo'] = listaPeriodos[0].idPeriodo;
     }
     this._idPeriodoAcademico =
         this._idPeriodoAcademico ?? this.queryParams['id_periodo'];
@@ -212,7 +226,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget futureBuildCalendar(BuildContext context) {
     return new FutureBuilder(
-        future: portalPadresService.getAgendaLocal(this.queryParams),
+        future: portalPadresService.getAgenda(this.queryParams),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -417,7 +431,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget _buildEventList() {
     return new FutureBuilder(
-        future: portalPadresService.getAgendaLocal(this.queryParams),
+        future: portalPadresService.getAgenda(this.queryParams),
         builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -465,7 +479,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
           if (response.data != null) {
             this._idPeriodoAcademico = response.data;
             this.queryParams['id_periodo'] = _idPeriodoAcademico;
-            this._loadChildSelectedStorageFlow();
+            await this._loadChildSelectedStorageFlow();
           }
           break;
         default:

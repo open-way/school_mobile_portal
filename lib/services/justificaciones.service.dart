@@ -15,7 +15,7 @@ class JustificacionesService extends VitHttpService {
       final data = body['data'];
       return data;
     } else {
-      throw "Can't save justificaciones.";
+      print("Can't save justificaciones.");
     }
   }
 }

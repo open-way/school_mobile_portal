@@ -7,6 +7,7 @@ import 'package:school_mobile_portal/models/dashboard_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
+import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:pie_chart/pie_chart.dart';
 
@@ -22,6 +23,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardService dashboardService = new DashboardService();
+  final MisHijosService misHijosService = new MisHijosService();
 
   // String _currentIdChildSelected;
   HijoModel _currentChildSelected;
@@ -34,7 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future _loadMaster() async {
     await this._loadChildSelectedStorageFlow();
-    
+
     // Usar todos los metodos que quieran al hijo actual.
   }
 
@@ -134,12 +136,22 @@ class _DashboardPageState extends State<DashboardPage> {
           if (snapshot.hasData) {
             DashboardModel dashboard = snapshot.data;
             var listaAsistencia = dashboard.asistencias;
+            var childrenCard = <Widget>[];
             var children = <Widget>[];
 
             Map<String, dynamic> colores = listaAsistencia['colores'];
             List<dynamic> alumnos = listaAsistencia['alumnos'];
+            //children.add(Row(children: <Widget>[Text('Puntual: '), ],));
+            children.add(SizedBox(
+                //width: 200.0,
+                //height: 300.0,
+                child: Container(
+                    color: Color(int.parse(colores['puntual_color'])),
+                    //padding: EdgeInsets.all(2),
+                    //decoration: BoxDecoration(borderRadius: BorderRadius.circular(1)),
+                    child: Text('Puntual'))));
             for (var i = 0; i < alumnos.length; i++) {
-              children.add(LayoutBuilder(
+              childrenCard.add(LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                 var localWidth;
                 if (alumnos.length > 1) {
@@ -153,9 +165,20 @@ class _DashboardPageState extends State<DashboardPage> {
                         elevation: 0,
                         child: InkWell(
                             splashColor: Colors.blue.withAlpha(30),
-                            onTap: () {
-                              Navigator.pushReplacementNamed(
-                                  context, Routes.asistencia);
+                            onTap: () async {
+                              try {
+                                HijoModel hijoModel = await misHijosService
+                                    .getHijoById(alumnos[i]['id_alumno']);
+                                await widget.storage
+                                    .delete(key: 'child_selected');
+                                await widget.storage.write(
+                                    key: 'child_selected',
+                                    value: hijoModel.toString());
+                                Navigator.pushReplacementNamed(
+                                    context, Routes.asistencia);
+                              } catch (e) {
+                                print('Error: $e');
+                              }
                             },
                             child: PieChartAsistencia(
                                 colorList: [
@@ -172,13 +195,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                   'J': double.parse(
                                       alumnos[i]['justificada_valor'])
                                 },
-                                fontSize: 14,
+                                fontSize: 0,
                                 size: 180,
                                 text: Text(alumnos[i]['nombre'],
                                     style: TextStyle(fontSize: 14))))));
               }));
             }
-            return Row(children: children);
+            children.add(Row(children: childrenCard));
+            return Column(children: children);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -328,21 +352,21 @@ class PieChartAsistencia extends StatelessWidget {
               animationDuration: Duration(milliseconds: 800),
               chartLegendSpacing: 0,
               chartRadius: constraints.maxHeight / 1.8,
-              showChartValuesInPercentage: false,
-              showChartValues: true,
-              showChartValuesOutside: true,
+              showChartValuesInPercentage: true,
+              showChartValues: false,
+              showChartValuesOutside: false,
               chartValueBackgroundColor: Colors.grey[900],
               colorList: colorList,
               showLegends: false,
               legendPosition: LegendPosition.left,
-              decimalPlaces: 1,
+              decimalPlaces: 0,
               showChartValueLabel: false,
               initialAngle: 0,
               chartValueStyle: defaultChartValueStyle.copyWith(
                 color: Colors.blueGrey[900].withOpacity(0.9),
                 fontSize: fontSize,
               ),
-              chartType: ChartType.ring,
+              chartType: ChartType.disc,
             )
           ]));
         }));

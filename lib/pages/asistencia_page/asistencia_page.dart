@@ -42,14 +42,16 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       new JustificacionesService();
   GlobalKey<RefreshIndicatorState> refreshKey;
 
+  TextEditingController _controller;
   AnimationController _animationController;
   CalendarController _calendarController;
 
-  List<JustificacionMotivoModel> _justificacionMotivos;
+  String _idMotivo;
+  String _nombreMotivo;
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String currentDescripcionJusti;
-  String _currentJustificacion;
+  String _currentNameChildSelected;
 
   final Map<String, String> queryParams = new Map();
   String _currentIdChildSelected;
@@ -58,6 +60,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController();
     refreshKey = GlobalKey<RefreshIndicatorState>();
     this._getJustificacionMotivos();
     _calendarController = CalendarController();
@@ -70,20 +73,15 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   void _getJustificacionMotivos() {
-    _justificacionMotivos = [];
     justificacionMotivosService.getAll$().then((onValue) {
-      _justificacionMotivos = onValue;
-      _dropDownMenuItems = [];
-      for (JustificacionMotivoModel justificacion in _justificacionMotivos) {
-        _dropDownMenuItems.add(new DropdownMenuItem(
-            value: justificacion.idJmotivo,
-            child: new Text(justificacion.nombre)));
-      }
-      _currentJustificacion = (_dropDownMenuItems.length > 0)
-          ? _justificacionMotivos[0].idJmotivo
-          : null;
-
-      //setState(() {});
+      this._dropDownMenuItems = onValue.map((JustificacionMotivoModel snap) {
+        this._idMotivo = this._idMotivo ?? snap.idJmotivo;
+        this._nombreMotivo = this._nombreMotivo ?? snap.nombre;
+        return DropdownMenuItem(
+          value: snap.idJmotivo,
+          child: Text(snap.nombre),
+        );
+      }).toList();
     }).catchError((err) {
       print(err);
     });
@@ -93,9 +91,11 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     var now = new DateTime.now();
     this.idAnho = this.idAnho ?? now.year.toString();
     var childSelected = await widget.storage.read(key: 'child_selected');
-    var idChildSelected =
-        new HijoModel.fromJson(jsonDecode(childSelected)).idAlumno;
-    this._currentIdChildSelected = idChildSelected;
+    var currentChildSelected =
+        new HijoModel.fromJson(jsonDecode(childSelected));
+    this._currentIdChildSelected = currentChildSelected.idAlumno;
+    this._currentNameChildSelected =
+        this._currentNameChildSelected ?? currentChildSelected.nombre;
     if (this.queryParams['id_alumno'] == null) {
       this.queryParams['id_alumno'] = this._currentIdChildSelected;
     }
@@ -105,6 +105,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   @override
   void dispose() {
+    _controller.dispose();
     _animationController.dispose();
     _calendarController.dispose();
     super.dispose();
@@ -147,107 +148,145 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   showAlertJustificar(AsistenciaModel listaAsistencia) {
-    Widget selecjusti;
-    Widget descripcion;
-    //String txtButton;
-    DialogButton botonConfirmar;
-
+    Navigator.of(context).pop();
     if (listaAsistencia.jutificacionEstado == '0' ||
         listaAsistencia.jutificacionEstado == '1') {
-      selecjusti = Center(
-          child: Text(listaAsistencia.jutificacionMotivo,
-              style: TextStyle(fontSize: 17, color: Color(0x99000000))));
-      descripcion = Center(
-          child: Text(listaAsistencia.jutificacionDescripcion,
-              style: TextStyle(fontSize: 15, color: Colors.black45)));
-      botonConfirmar = DialogButton(
-        onPressed: () => Future.delayed(Duration.zero, () {
-          Navigator.of(context).pop();
-        }),
-        child: Text(
-          'OK',
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-      );
-      //txtButton = 'OK';
+      showJustificacion(listaAsistencia);
     } else {
-      selecjusti = InputDecorator(
-        decoration: InputDecoration(
-          icon: Icon(Icons.date_range),
-          labelText: 'Seleccione motivo',
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton(
-            value: _currentJustificacion,
-            items: _dropDownMenuItems,
-            onChanged: (String newValue) {
-              setState(() {
-                this._currentJustificacion = newValue;
-              });
-            },
-          ),
-        ),
-      );
-      descripcion = TextField(
-        obscureText: false,
-        decoration: InputDecoration(
-          labelText: 'Descripción',
-        ),
-        onChanged: (String newValue) {
-          setState(() {
-            this.currentDescripcionJusti = newValue;
-          });
-        },
-      );
-      botonConfirmar = DialogButton(
-        onPressed: () => Future.delayed(Duration.zero, () {
-          if (this.currentDescripcionJusti != null) {
-            Map<String, String> postParams = {
-              'id_jmotivo': this._currentJustificacion,
-              'id_asistencia': listaAsistencia.idAsistencia,
-              'descripcion': this.currentDescripcionJusti,
-              'archivo': ''
-            };
-            justificacionesService.postAll$(postParams);
-          }
-          Navigator.of(context).pop();
-        }),
-        child: Text(
-          'ENVIAR',
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-      );
-      //txtButton = 'ENVIAR';
+      newJustificacion(listaAsistencia);
     }
-    // Navigator.of(context).pop();
-    newJustificacion(selecjusti, descripcion, botonConfirmar);
   }
 
-  Future newJustificacion(Widget selecjusti, Widget descripcion,
-      DialogButton botonConfirmar) async {
-    await new Alert(
+  showJustificacion(AsistenciaModel listaAsistencia) {
+    animated_dialog_box.showScaleAlertBox(
         context: context,
-        style: AlertStyle(isCloseButton: false),
+        title: Text('Justificación'),
+        yourWidget: Column(
+          children: <Widget>[
+            Center(
+                child: Text(listaAsistencia.jutificacionMotivo,
+                    style: TextStyle(fontSize: 17, color: Color(0x99000000)))),
+            Center(
+                child: Text(listaAsistencia.jutificacionDescripcion,
+                    style: TextStyle(fontSize: 15, color: Colors.black45))),
+          ],
+        ),
+        firstButton: DialogButton(
+          onPressed: () => Future.delayed(Duration.zero, () {
+            Navigator.of(context).pop();
+          }),
+          child: Text(
+            'OK',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ));
+  }
+
+  newJustificacion(AsistenciaModel listaAsistencia) {
+    new Alert(
+        context: context,
         title: 'Justificación',
         content: Column(
           children: <Widget>[
-            selecjusti,
-            // descripcion,
+            InputDecorator(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.date_range),
+                  labelText: 'Seleccione motivo',
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: this._idMotivo,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this._idMotivo = newValue;
+                      });
+                    },
+                    items: this._dropDownMenuItems,
+                  ),
+                )),
+            TextField(
+              controller: _controller,
+              obscureText: false,
+              scrollController: _controllerThree,
+              maxLength: 100,
+              onSubmitted: (String newValue) =>
+                  {this.currentDescripcionJusti = newValue},
+              decoration: InputDecoration(
+                labelText: 'Descripción',
+              ),
+              onChanged: (String newValue) =>
+                  {this.currentDescripcionJusti = newValue},
+            ),
           ],
         ),
         buttons: [
-          botonConfirmar,
+          DialogButton(
+            onPressed: () => Future.delayed(Duration.zero, () async {
+              await showDialog<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: const Text('Seguro que desea enviar:'),
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Text('Motivo: ${this._nombreMotivo}.'),
+                          Text('Descripcion: ${this.currentDescripcionJusti}.')
+                        ],
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Map<String, String> postParams = {
+                            'id_jmotivo': this._idMotivo,
+                            'id_asistencia': listaAsistencia.idAsistencia,
+                            'descripcion': this.currentDescripcionJusti,
+                            'archivo': ''
+                          };
+                          justificacionesService.postAll$(postParams);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Sí!'),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancelar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              Navigator.of(context).pop();
+            }),
+            child: Text(
+              'ENVIAR',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
         ]).show();
   }
 
   final ScrollController _controllerOne = ScrollController();
   final ScrollController _controllerTwo = ScrollController();
+  final ScrollController _controllerThree = ScrollController();
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
       title: Text('Asistencia'),
+      centerTitle: true,
+      bottom: PreferredSize(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            child: Text(
+              this._currentNameChildSelected ?? '',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
       actions: <Widget>[
         IconButton(
+          //alignment: CrossAxisAlignment.center,
           icon: Icon(Icons.filter_list),
           onPressed: _showDialog,
         ),
@@ -259,6 +298,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentIdChildSelected = childSelected.idAlumno;
           this.queryParams['id_alumno'] = this._currentIdChildSelected;
+          this._currentNameChildSelected = childSelected.nombre;
           _loadChildSelectedStorageFlow();
         },
       ),
