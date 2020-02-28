@@ -172,29 +172,32 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       //txtButton = 'OK';
     } else {
       selecjusti = InputDecorator(
-          decoration: InputDecoration(
-            icon: Icon(Icons.date_range),
-            labelText: 'Seleccione motivo',
+        decoration: InputDecoration(
+          icon: Icon(Icons.date_range),
+          labelText: 'Seleccione motivo',
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            value: _currentJustificacion,
+            items: _dropDownMenuItems,
+            onChanged: (String newValue) {
+              setState(() {
+                this._currentJustificacion = newValue;
+              });
+            },
           ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton(
-              value: _currentJustificacion,
-              items: _dropDownMenuItems,
-              onChanged: (String newValue) {
-                setState(() {
-                  this._currentJustificacion = newValue;
-                });
-              },
-            ),
-          ));
-
+        ),
+      );
       descripcion = TextField(
         obscureText: false,
         decoration: InputDecoration(
           labelText: 'Descripción',
         ),
-        onChanged: (String newValue) =>
-            {this.currentDescripcionJusti = newValue},
+        onChanged: (String newValue) {
+          setState(() {
+            this.currentDescripcionJusti = newValue;
+          });
+        },
       );
       botonConfirmar = DialogButton(
         onPressed: () => Future.delayed(Duration.zero, () {
@@ -216,7 +219,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       );
       //txtButton = 'ENVIAR';
     }
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
     newJustificacion(selecjusti, descripcion, botonConfirmar);
   }
 
@@ -229,7 +232,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         content: Column(
           children: <Widget>[
             selecjusti,
-            descripcion,
+            // descripcion,
           ],
         ),
         buttons: [
