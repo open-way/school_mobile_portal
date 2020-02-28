@@ -91,13 +91,13 @@ class _FilterPeriodoAcaDialogState extends State<FilterPeriodoAcaDialog> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text('Filtrar'),
               onPressed: () {
-                if (this.idPeriodoAcademico ?? null != null) {
+                if (this.idPeriodoAcademico != null) {
                   var responseDialog = new ResponseDialogModel(
                       action: DialogActions.SUBMIT,
                       data: this.idPeriodoAcademico);
                   Navigator.pop(context, responseDialog);
                 }
-                if (this.idPeriodoAcademico ?? null == null) {
+                if (this.idPeriodoAcademico == null) {
                   var responseDialog = new ResponseDialogModel(
                       action: DialogActions.CANCEL,
                       data: this.idPeriodoAcademico);

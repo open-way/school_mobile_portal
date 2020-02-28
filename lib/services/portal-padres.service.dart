@@ -44,7 +44,8 @@ class PortalPadresService extends VitHttpService {
   }
 
   Future<List<AgendaModel>> getAgenda(Map<String, String> queryParams) async {
-    http.Response res = await httpGetByQuery('/portal-padre/agendas', {});
+    http.Response res =
+        await httpGetByQuery('/portal-padre/agendas', queryParams);
     final body = jsonDecode(res.body);
     print(body.toString() + '!!!!!!!!!!!');
     print(queryParams.toString() + '!!!!!!!!!!!');
@@ -54,11 +55,12 @@ class PortalPadresService extends VitHttpService {
           .map<AgendaModel>((json) => AgendaModel.fromJson(json))
           .toList();
     } else {
-      throw "Can't get agenda.";
+      print("Can't get agenda.");
     }
   }
 
-  Future<List<AgendaModel>> getAgendaLocal(Map<String, String> queryParams) async {
+  Future<List<AgendaModel>> getAgendaLocal(
+      Map<String, String> queryParams) async {
     String pres =
         '{"data":[{"id_actividad":"1","fecha_inicio":"2020-02-09 13:02:00","fecha_final":"2020-02-10 14:03:00","nombre":"Exa Comu","descripcion":"examen de gramática","nivel":"Primaria","grado":"1ro","seccion":"Daniel","curso":"Comunicación","categoria_nombre":"Examen","categoria_color":"#eb4034"},{"id_actividad":"2","fecha_inicio":"2020-02-08 15:15:00","fecha_final":"2020-02-09 17:45:00","nombre":"Exa Mate","descripcion":"examen de integrales","nivel":"Secundaria","grado":"2do","seccion":"José","curso":"Matemáticas","categoria_nombre":"Parcial","categoria_color":"#41e06c"},{"id_actividad":"3","fecha_inicio":"2020-02-07 09:16:00","fecha_final":"2020-02-07 10:47:00","nombre":"Deporte","descripcion":"Mini olimpiadas","nivel":"Inicial","grado":"4 años","seccion":"A","curso":"Educacación física","categoria_nombre":"Juegos","categoria_color":"#d041e0"}]}';
     Map<String, dynamic> res = await jsonDecode(pres);

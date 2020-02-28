@@ -26,6 +26,19 @@ class MisHijosService extends VitHttpService {
     }
   }
 
+  Future<HijoModel> getHijoById(String id) async {
+    http.Response res = await httpGetById('/setup/mis-hijos', id, {});
+    final body = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      //final data = body['data'];
+      //return data.map<HijoModel>((json) => HijoModel.fromJson(json)).toList();
+      final data = new HijoModel.fromJson(body['data']);
+      return data;
+    } else {
+      throw new ResponseModel.fromJson(body['error']);
+    }
+  }
+
   Future<List<HijoModel>> getAllLocal() async {
     String pres =
         '{"data":[{"id_alumno":"1","nombre":"Ana","paterno":"Mesa","materno":"Vaca","num_doc":"72506111"},{"id_alumno":"2","nombre":"Cristina","paterno":"Caso","materno":"Chávez","num_doc":"72506112"},{"id_alumno":"3","nombre":"Carol","paterno":"Puma","materno":"Venegas","num_doc":"72506113"}]}';
