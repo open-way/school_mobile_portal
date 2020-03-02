@@ -50,9 +50,8 @@ class DashboardService extends VitHttpService {
   //   }
   // }
 
-  Future<DashboardModel> getDashboard$(Map<String, String> queryParams) async {
-    http.Response res =
-        await httpGetByQuery('/portal-padre/my-dashboard', queryParams);
+  Future<DashboardModel> getDashboard$() async {
+    http.Response res = await httpGetAll('/portal-padre/my-dashboard');
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = new DashboardModel.fromJson(body['data']);

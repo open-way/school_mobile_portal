@@ -671,7 +671,8 @@ class _FormJustificacionState extends State<FormJustificacion> {
   void getMotivos() {
     this.justificacionMotivosService.getAll$().then((onValue) {
       this._listaMotivos = onValue.map((JustificacionMotivoModel snap) {
-        //this._nombreMotivo[snap.idJmotivo] = snap.nombre;
+        this._idMotivo = snap.idJmotivo;
+        this._nombreMotivo[snap.idJmotivo] = snap.nombre;
         return DropdownMenuItem(
           value: snap.idJmotivo,
           child: Text(snap.nombre),

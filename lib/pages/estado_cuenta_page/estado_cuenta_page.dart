@@ -86,12 +86,22 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentChildSelected = childSelected;
+          this.getOperations();
           setState(() {});
         },
       ),
       appBar: AppBar(
         title: Text('Estado cuenta'),
         centerTitle: true,
+        bottom: PreferredSize(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              child: Text(
+                this._currentChildSelected.nombre ?? '',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
