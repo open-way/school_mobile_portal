@@ -55,6 +55,8 @@ class AuthService implements BaseAuth {
     print('-------');
     print('-------');
     print('-------');
+    print(res.toString());
+    print(res.body.toString());
 
     final body = jsonDecode(res.body);
     print('-------');

@@ -236,6 +236,8 @@ class _DashboardPageState extends State<DashboardPage> {
       new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ListTile(
           title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
+          // subtitle: Text('None'),
+          // subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
         ),
         futureBuildEstadoCuenta(context)
       ]);

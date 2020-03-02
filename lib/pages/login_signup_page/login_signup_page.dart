@@ -157,12 +157,24 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   body: Container(
+    //     decoration: BoxDecoration(
+    //       image: DecorationImage(
+    //         image: AssetImage('assets/images/background.png'),
+    //         fit: BoxFit.cover,
+    //       ),
+    //     ),
+    //     child: Stack(
+    //       children: <Widget>[
+    //         this._showForm(),
+    //         this._showCircularProgress(),
+    //       ],
+    //     )
+    //   ),
+    // );
+
     return Scaffold(
-      // drawer: AppDrawer(),
-      // appBar: AppBar(
-      //   title: Text('Autenticación'),
-      // ),
-      // body: ContactList());
       body: Stack(
         children: <Widget>[
           this._showForm(),
@@ -317,7 +329,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         // keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            // hintText: 'DNI',
             labelText: 'Usuario(DNI)',
             icon: new Icon(
               Icons.perm_identity,
