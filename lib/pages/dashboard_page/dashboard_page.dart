@@ -223,7 +223,6 @@ class _DashboardPageState extends State<DashboardPage> {
           title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
           // subtitle: Text('None'),
           // subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
-          subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
         ),
         futureBuildEstadoCuenta(context)
       ]);
