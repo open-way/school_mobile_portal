@@ -35,34 +35,25 @@ class AsistenciaPage extends StatefulWidget {
 
 class _AsistenciaPageState extends State<AsistenciaPage>
     with TickerProviderStateMixin {
-  final PortalPadresService portalPadresService = new PortalPadresService();
-  final JustificacionMotivosService justificacionMotivosService =
-      new JustificacionMotivosService();
-  final JustificacionesService justificacionesService =
-      new JustificacionesService();
-  GlobalKey<RefreshIndicatorState> refreshKey;
+  final PortalPadresService _portalPadresService = new PortalPadresService();
 
-  TextEditingController _textController;
+  final JustificacionesService _justificacionesService =
+      new JustificacionesService();
+  GlobalKey<RefreshIndicatorState> _refreshKey;
+
   AnimationController _animationController;
   CalendarController _calendarController;
 
-  String _idMotivo;
-  String _nombreMotivo;
-
-  List<DropdownMenuItem<String>> _dropDownMenuItems;
-  String currentDescripcionJusti;
   String _currentNameChildSelected;
 
-  final Map<String, String> queryParams = new Map();
+  final Map<String, String> _queryParams = new Map();
   String _currentIdChildSelected;
-  String idAnho;
+  String _idAnho;
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
-    refreshKey = GlobalKey<RefreshIndicatorState>();
-    //this._getJustificacionMotivos();
+    this._refreshKey = GlobalKey<RefreshIndicatorState>();
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
@@ -72,56 +63,24 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     this._loadChildSelectedStorageFlow();
   }
 
-  /*void _getJustificacionMotivos() {
-    justificacionMotivosService.getAll$().then((onValue) {
-      this._dropDownMenuItems = onValue.map((JustificacionMotivoModel snap) {
-        this._idMotivo = this._idMotivo ?? snap.idJmotivo;
-        this._nombreMotivo = this._nombreMotivo ?? snap.nombre;
-        return DropdownMenuItem(
-          value: snap.idJmotivo,
-          child: Text(snap.nombre),
-        );
-      }).toList();
-    }).catchError((err) {
-      print(err);
-    });
-  }*/
-
-  /*void _getReOrderJustificacionMotivos() {
-    justificacionMotivosService.getAll$().then((onValue) {
-      this._dropDownMenuItems = onValue.map((JustificacionMotivoModel snap) {
-        if (this._idMotivo == snap.idJmotivo) {
-          this._nombreMotivo = this._nombreMotivo ?? snap.nombre;
-        }
-        this._idMotivo = this._idMotivo ?? snap.idJmotivo;
-        return DropdownMenuItem(
-          value: snap.idJmotivo,
-          child: Text(snap.nombre),
-        );
-      }).toList();
-    }).catchError((err) {
-      print(err);
-    });
-  }*/
-
   void _loadChildSelectedStorageFlow() async {
     var now = new DateTime.now();
     DateTime selectedDay = now;
-    this.idAnho = this.idAnho ?? now.year.toString();
+    this._idAnho = this._idAnho ?? now.year.toString();
     var childSelected = await widget.storage.read(key: 'child_selected');
     var currentChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected));
     this._currentIdChildSelected = currentChildSelected.idAlumno;
     this._currentNameChildSelected =
         this._currentNameChildSelected ?? currentChildSelected.nombre;
-    if (this.queryParams['id_alumno'] == null) {
-      this.queryParams['id_alumno'] = this._currentIdChildSelected;
+    if (this._queryParams['id_alumno'] == null) {
+      this._queryParams['id_alumno'] = this._currentIdChildSelected;
     }
-    this.queryParams['id_anho'] = this.idAnho;
-    if (int.parse(this.idAnho) == now.year) {
+    this._queryParams['id_anho'] = this._idAnho;
+    if (int.parse(this._idAnho) == now.year) {
       selectedDay = now;
     } else {
-      selectedDay = DateTime(int.parse(this.idAnho), 1, 1, 0, 0);
+      selectedDay = DateTime(int.parse(this._idAnho), 1, 1, 0, 0);
     }
     try {
       _calendarController.setSelectedDay(selectedDay);
@@ -133,7 +92,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   @override
   void dispose() {
-    _textController.dispose();
     _animationController.dispose();
     _calendarController.dispose();
     super.dispose();
@@ -175,16 +133,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     }
   }
 
-  /*showAlertJustificar(AsistenciaModel listaAsistencia) {
-    Navigator.of(context).pop();
-    if (listaAsistencia.jutificacionEstado == '0' ||
-        listaAsistencia.jutificacionEstado == '1') {
-      showJustificacion(listaAsistencia);
-    } else {
-      newJustificacion(listaAsistencia);
-    }
-  }*/
-
   void showJustificacion(AsistenciaModel listaAsistencia) async {
     await animated_dialog_box.showScaleAlertBox(
         context: context,
@@ -211,14 +159,17 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future newJustificacion(AsistenciaModel listaAsistencia) async {
-    ResponseDialogModel response = await showDialog(
-        context: context,
-        child: new SimpleDialog(
-          title: new Text('Justificación'),
-          children: <Widget>[
-            new FormJustificacion(),
-          ],
-        ));
+    ResponseDialogModel response = await animated_dialog_box.showScaleAlertBox(
+      context: context,
+      icon: Icon(null),
+      title: Text('Justificación'),
+      yourWidget: new CupertinoScrollbar(
+          controller: _controllerThree,
+          child: Container(
+            child: new FormJustificacion(),
+          )),
+      firstButton: FlatButton(onPressed: null, child: null),
+    );
 
     switch (response?.action) {
       case DialogActions.SUBMIT:
@@ -227,7 +178,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           postParams.addAll(response.data);
           postParams['id_asistencia'] = listaAsistencia.idAsistencia;
           postParams['archivo'] = '';
-          justificacionesService.postAll$(postParams).then((onValue) {
+          this._justificacionesService.postAll$(postParams).then((onValue) {
             print(onValue);
           }).catchError((onError) {
             print(onError);
@@ -238,100 +189,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         break;
       default:
     }
-    /*await animated_dialog_box.showScaleAlertBox(
-        context: context,
-        icon: Icon(null),
-        title: Text('Justificación'),
-        yourWidget: Column(
-          children: <Widget>[
-            InputDecorator(
-                decoration: InputDecoration(
-                  labelText: 'Seleccione motivo',
-                ),
-                child: DropdownButtonHideUnderline(
-                  key: Key('selec_motivo'),
-                  child: DropdownButton<String>(
-                    value: this._idMotivo,
-                    onChanged: (String newValue) {
-                      this._idMotivo = newValue;
-                      setState(() {});
-                    },
-                    items: this._dropDownMenuItems,
-                  ),
-                )),
-            TextField(
-              controller: _textController,
-              obscureText: false,
-              scrollController: _controllerThree,
-              maxLength: 100,
-              onSubmitted: (String newValue) =>
-                  {this.currentDescripcionJusti = newValue},
-              decoration: InputDecoration(
-                  labelText: 'Descripción',
-                  counterStyle:
-                      TextStyle(color: LambThemes.light.primaryColor)),
-              onChanged: (String newValue) =>
-                  {this.currentDescripcionJusti = newValue},
-            ),
-          ],
-        ),
-        firstButton: RaisedButton(
-          onPressed: () => Future.delayed(Duration.zero, () async {
-            await showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return SimpleDialog(
-                  title: const Text('Desea enviar justificación?'),
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Text('Motivo: ${this._nombreMotivo}.'),
-                        Text('Descripcion: ${this.currentDescripcionJusti}.')
-                      ],
-                    ),
-                    ButtonBar(
-                      children: <Widget>[
-                        FlatButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('CANCELAR',
-                              style: TextStyle(
-                                color: LambThemes.light.primaryColor,
-                              )),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            Map<String, String> postParams = {
-                              'id_jmotivo': this._idMotivo,
-                              'id_asistencia': listaAsistencia.idAsistencia,
-                              'descripcion': this.currentDescripcionJusti,
-                              'archivo': ''
-                            };
-                            justificacionesService
-                                .postAll$(postParams)
-                                .then((onValue) {
-                              print(onValue);
-                            }).catchError((onError) {
-                              print(onError);
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: const Text('  SÍ  '),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            );
-            Navigator.of(context).pop();
-          }),
-          child: Text(
-            '  ENVIAR  ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ));*/
   }
 
   final ScrollController _controllerOne = ScrollController();
@@ -353,7 +210,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
       actions: <Widget>[
         IconButton(
-          //alignment: CrossAxisAlignment.center,
           icon: Icon(Icons.filter_list),
           onPressed: _showDialog,
         ),
@@ -364,7 +220,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentIdChildSelected = childSelected.idAlumno;
-          this.queryParams['id_alumno'] = this._currentIdChildSelected;
+          this._queryParams['id_alumno'] = this._currentIdChildSelected;
           this._currentNameChildSelected = childSelected.nombre;
           _loadChildSelectedStorageFlow();
         },
@@ -372,7 +228,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       appBar: appBar,
       body: RefreshIndicator(
         displacement: 2,
-        key: refreshKey,
+        key: this._refreshKey,
         onRefresh: () async {
           await refreshList();
         },
@@ -408,7 +264,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget futureBuild(BuildContext context) {
     return FutureBuilder(
-        future: portalPadresService.getAsistencias(this.queryParams),
+        future: this._portalPadresService.getAsistencias(this._queryParams),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -438,8 +294,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     _calendarFormat[CalendarFormat.month] = 'only month';
     return TableCalendar(
       calendarController: _calendarController,
-      startDay: DateTime(int.parse(this.idAnho), 1, 1, 0, 0),
-      endDay: DateTime(int.parse(this.idAnho), 12, 31, 0, 0),
+      startDay: DateTime(int.parse(this._idAnho), 1, 1, 0, 0),
+      endDay: DateTime(int.parse(this._idAnho), 12, 31, 0, 0),
       events: asistenciaEventos,
       availableCalendarFormats: _calendarFormat,
       calendarStyle: CalendarStyle(
@@ -466,7 +322,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   Widget detalleAsistenciasDia(DateTime day) {
     return new FutureBuilder(
-        future: portalPadresService.getAsistencias(this.queryParams),
+        future: this._portalPadresService.getAsistencias(this._queryParams),
         builder: (context, AsyncSnapshot<List<AsistenciaModel>> snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
@@ -582,19 +438,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     if (events != null) {
       asisColor = Color(int.parse(events[2]));
     }
-    /*var getEventEstado = events.toString().substring(1, 2);
-    if (getEventEstado == 'T') {
-      asisColor = Color(int.parse(events[2]));
-    }
-    if (getEventEstado == 'F') {
-      asisColor = Colors.red[300];
-    }
-    if (getEventEstado == 'J') {
-      asisColor = Colors.lightBlue;
-    }
-    if (getEventEstado == 'P') {
-      asisColor = Colors.green[600];
-    }*/
     return Container(
         decoration: BoxDecoration(color: asisColor, shape: BoxShape.circle),
         margin: const EdgeInsets.all(4.0),
@@ -615,7 +458,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           children: <Widget>[
             new FilterAnhoDialog(
               idAlumno: this._currentIdChildSelected,
-              idAnhoDefault: this.idAnho,
+              idAnhoDefault: this._idAnho,
             ),
           ],
         ),
@@ -624,8 +467,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       switch (response?.action) {
         case DialogActions.SUBMIT:
           if (response.data != null) {
-            this.idAnho = response.data;
-            this.queryParams['id_anho'] = response.data;
+            this._idAnho = response.data;
+            this._queryParams['id_anho'] = response.data;
             this._loadChildSelectedStorageFlow();
           }
           break;
@@ -642,14 +485,16 @@ class FormJustificacion extends StatefulWidget {
 }
 
 class _FormJustificacionState extends State<FormJustificacion> {
-  final JustificacionMotivosService justificacionMotivosService =
+  final JustificacionMotivosService _justificacionMotivosService =
       new JustificacionMotivosService();
-  TextEditingController _textController;
 
   List<DropdownMenuItem<String>> _listaMotivos;
   String _idMotivo;
+
   final Map<String, String> _nombreMotivo = new Map();
-  String currentDescripcionJusti;
+  String _currentDescripcionJusti;
+  TextEditingController _textController;
+  ResponseDialogModel _responseDialog;
 
   @override
   void initState() {
@@ -669,21 +514,22 @@ class _FormJustificacionState extends State<FormJustificacion> {
   }
 
   void getMotivos() {
-    this.justificacionMotivosService.getAll$().then((onValue) {
+    this._justificacionMotivosService.getAll$().then((onValue) {
+      this._idMotivo = onValue[0].idJmotivo;
       this._listaMotivos = onValue.map((JustificacionMotivoModel snap) {
-        this._idMotivo = snap.idJmotivo;
         this._nombreMotivo[snap.idJmotivo] = snap.nombre;
         return DropdownMenuItem(
           value: snap.idJmotivo,
           child: Text(snap.nombre),
         );
       }).toList();
+      setState(() {});
     }).catchError((err) {
       print(err);
     });
   }
 
-  final ScrollController _controllerThree = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -715,15 +561,15 @@ class _FormJustificacionState extends State<FormJustificacion> {
           new TextField(
             controller: _textController,
             obscureText: false,
-            scrollController: _controllerThree,
+            scrollController: _scrollController,
             maxLength: 100,
             onSubmitted: (String newValue) =>
-                {this.currentDescripcionJusti = newValue},
+                {this._currentDescripcionJusti = newValue},
             decoration: InputDecoration(
                 labelText: 'Descripción',
                 counterStyle: TextStyle(color: LambThemes.light.primaryColor)),
             onChanged: (String newValue) =>
-                {this.currentDescripcionJusti = newValue},
+                {this._currentDescripcionJusti = newValue},
           ),
           new RaisedButton(
             onPressed: () => Future.delayed(Duration.zero, () async {
@@ -737,7 +583,7 @@ class _FormJustificacionState extends State<FormJustificacion> {
                         children: <Widget>[
                           Text(
                               'Motivo: ${this._nombreMotivo[this._idMotivo]}.'),
-                          Text('Descripcion: ${this.currentDescripcionJusti}.')
+                          Text('Descripcion: ${this._currentDescripcionJusti}.')
                         ],
                       ),
                       ButtonBar(
@@ -753,13 +599,13 @@ class _FormJustificacionState extends State<FormJustificacion> {
                           ),
                           RaisedButton(
                             onPressed: () {
-                              var responseDialog = new ResponseDialogModel(
+                              this._responseDialog = new ResponseDialogModel(
                                   action: DialogActions.SUBMIT,
                                   data: {
                                     'id_jmotivo': this._idMotivo,
-                                    'descripcion': this.currentDescripcionJusti
+                                    'descripcion': this._currentDescripcionJusti
                                   });
-                              Navigator.pop(context, responseDialog);
+                              Navigator.pop(context);
                             },
                             child: Text('  SÍ  '),
                           ),
@@ -769,7 +615,7 @@ class _FormJustificacionState extends State<FormJustificacion> {
                   );
                 },
               );
-              Navigator.of(context).pop();
+              Navigator.pop(context, _responseDialog);
             }),
             child: Text(
               '  ENVIAR  ',

@@ -97,7 +97,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
               child: Text(
-                this._currentChildSelected.nombre ?? '',
+                this._currentChildSelected?.nombre ?? '',
                 style: TextStyle(color: Colors.white),
               ),
             ),

@@ -42,6 +42,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   String _currentIdChildSelected;
   String _currentNameChildSelected;
   String _idPeriodoAcademico;
+  String _idAnho;
 
   @override
   void initState() {
@@ -158,24 +159,41 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Future _loadChildSelectedStorageFlow() async {
-    //var now = new DateTime.now();
+    var now = new DateTime.now();
+    DateTime selectedDay = now;
     var childSelected = await widget.storage.read(key: 'child_selected');
     var currentChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected));
     this._currentIdChildSelected = currentChildSelected.idAlumno;
     this._currentNameChildSelected =
         this._currentNameChildSelected ?? currentChildSelected.nombre;
+    var listaPeriodos = await this
+        ._periodoAcaService
+        .getAll$({'id_alumno': _currentIdChildSelected});
     if (this.queryParams['id_alumno'] == null) {
       this.queryParams['id_alumno'] = this._currentIdChildSelected;
     }
     if (this.queryParams['id_periodo'] == null) {
-      var listaPeriodos = await this
-          ._periodoAcaService
-          .getAll$({'id_alumno': _currentIdChildSelected});
       this.queryParams['id_periodo'] = listaPeriodos[0].idPeriodo;
     }
     this._idPeriodoAcademico =
         this._idPeriodoAcademico ?? this.queryParams['id_periodo'];
+    try {
+      this._idAnho =
+          listaPeriodos[int.parse(this._idPeriodoAcademico)].anhoPeriodo;
+    } catch (e) {
+      print('Error: $e');
+    }
+    if (int.parse(this._idAnho ?? '${now.year}') == now.year) {
+      selectedDay = now;
+    } else {
+      selectedDay = DateTime(int.parse(this._idAnho), 1, 1, 0, 0);
+    }
+    try {
+      _calendarController.setSelectedDay(selectedDay);
+    } catch (e) {
+      print('Error calendar controller: $e');
+    }
     setState(() {});
   }
 
@@ -243,7 +261,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     return TableCalendar(
       calendarController: _calendarController,
       events: _getEventosDays(agenda),
-      initialSelectedDay: DateTime.now(),
       calendarStyle: CalendarStyle(
         outsideDaysVisible: false,
       ),
