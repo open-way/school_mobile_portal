@@ -25,20 +25,15 @@ class _DashboardPageState extends State<DashboardPage> {
   final DashboardService dashboardService = new DashboardService();
   final MisHijosService misHijosService = new MisHijosService();
 
-  // String _currentIdChildSelected;
-  HijoModel _currentChildSelected;
-
   @override
   void initState() {
     super.initState();
-    this._loadMaster();
+    //this._loadMaster();
   }
 
-  Future _loadMaster() async {
-    await this._loadChildSelectedStorageFlow();
-
-    // Usar todos los metodos que quieran al hijo actual.
-  }
+  //Future _loadMaster() async {
+  // Usar todos los metodos que quieran al hijo actual.
+  //}
 
   final ScrollController _controllerOne = ScrollController();
 
@@ -49,7 +44,6 @@ class _DashboardPageState extends State<DashboardPage> {
           storage: widget.storage,
           onChangeNewChildSelected: (HijoModel childSelected) {
             // this._currentIdChildSelected = childSelected.idAlumno;
-            this._currentChildSelected = childSelected;
             setState(() {});
           }),
       appBar: AppBar(
@@ -57,13 +51,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       body: scrollWidget(),
     );
-  }
-
-  Future _loadChildSelectedStorageFlow() async {
-    var childSelected = await widget.storage.read(key: 'child_selected');
-    this._currentChildSelected =
-        new HijoModel.fromJson(jsonDecode(childSelected));
-    setState(() {});
   }
 
   Widget scrollWidget() {
@@ -142,14 +129,38 @@ class _DashboardPageState extends State<DashboardPage> {
             Map<String, dynamic> colores = listaAsistencia['colores'];
             List<dynamic> alumnos = listaAsistencia['alumnos'];
             //children.add(Row(children: <Widget>[Text('Puntual: '), ],));
-            children.add(SizedBox(
-                //width: 200.0,
-                //height: 300.0,
-                child: Container(
-                    color: Color(int.parse(colores['puntual_color'])),
-                    //padding: EdgeInsets.all(2),
-                    //decoration: BoxDecoration(borderRadius: BorderRadius.circular(1)),
-                    child: Text('Puntual'))));
+            children.add(Padding(
+                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
+                child: SizedBox(
+                    child: Container(
+                        color: Color(int.parse(colores['puntual_color'])),
+                        padding: EdgeInsets.all(5),
+                        child: Text('Puntual',
+                            style: TextStyle(color: Colors.white))))));
+            children.add(Padding(
+                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
+                child: SizedBox(
+                    child: Container(
+                        color: Color(int.parse(colores['tarde_color'])),
+                        padding: EdgeInsets.all(5),
+                        child: Text('Tarde',
+                            style: TextStyle(color: Colors.white))))));
+            children.add(Padding(
+                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
+                child: SizedBox(
+                    child: Container(
+                        color: Color(int.parse(colores['falta_color'])),
+                        padding: EdgeInsets.all(5),
+                        child: Text('Falta',
+                            style: TextStyle(color: Colors.white))))));
+            children.add(Padding(
+                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
+                child: SizedBox(
+                    child: Container(
+                        color: Color(int.parse(colores['justificado_color'])),
+                        padding: EdgeInsets.all(5),
+                        child: Text('Justificado',
+                            style: TextStyle(color: Colors.white))))));
             for (var i = 0; i < alumnos.length; i++) {
               childrenCard.add(LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
@@ -201,8 +212,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: TextStyle(fontSize: 14))))));
               }));
             }
-            children.add(Row(children: childrenCard));
-            return Column(children: children);
+            return Column(
+              children: <Widget>[
+                Row(children: children),
+                Row(children: childrenCard)
+              ],
+            );
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -221,9 +236,6 @@ class _DashboardPageState extends State<DashboardPage> {
       new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ListTile(
           title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
-          // subtitle: Text('None'),
-          // subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
-          subtitle: Text(this._currentChildSelected?.idAlumno ?? 'None'),
         ),
         futureBuildEstadoCuenta(context)
       ]);

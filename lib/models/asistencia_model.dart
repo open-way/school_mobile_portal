@@ -8,9 +8,10 @@ class AsistenciaModel {
   final String estadoColor;
   final String responsable;
   final String puerta;
-  final String jutificacionEstado;
-  final String jutificacionMotivo;
-  final String jutificacionDescripcion;
+  final String idJustificacion;
+  final String justificacionEstado;
+  final String justificacionMotivo;
+  final String justificacionDescripcion;
 
   AsistenciaModel({
     @required this.idAsistencia,
@@ -20,9 +21,10 @@ class AsistenciaModel {
     @required this.estadoColor,
     @required this.responsable,
     @required this.puerta,
-    @required this.jutificacionEstado,
-    @required this.jutificacionMotivo,
-    @required this.jutificacionDescripcion,
+    @required this.idJustificacion,
+    @required this.justificacionEstado,
+    @required this.justificacionMotivo,
+    @required this.justificacionDescripcion,
   });
 
   factory AsistenciaModel.fromJson(Map<String, dynamic> json) {
@@ -34,9 +36,10 @@ class AsistenciaModel {
       estadoColor: json['estado_color'] as String,
       responsable: json['responsable'] as String,
       puerta: json['puerta'] as String,
-      jutificacionEstado: json['jutificacion_estado'] as String,
-      jutificacionMotivo: json['jutificacion_motivo'] as String,
-      jutificacionDescripcion: json['jutificacion_descripcion'] as String,
+      idJustificacion: json['id_justificacion'] as String,
+      justificacionEstado: json['justificacion_estado'] as String,
+      justificacionMotivo: json['justificacion_motivo'] as String,
+      justificacionDescripcion: json['justificacion_descripcion'] as String,
     );
   }
 }

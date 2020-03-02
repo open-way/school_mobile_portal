@@ -25,6 +25,7 @@ final ThemeData lightTheme = new ThemeData(
       //iconTheme: IconThemeData(color: Colors.white),
       elevation: 0,
     ),
+    dividerTheme: DividerThemeData(color: Color(0xFF1973FF), thickness: 2),
     //tabBarTheme: TabBarTheme(labelColor: Color(0xFF003366)),
     buttonTheme: ButtonThemeData(
         textTheme: ButtonTextTheme.primary, buttonColor: Color(0xFF003366)),
