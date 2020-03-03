@@ -46,7 +46,7 @@ flutter_icons:
   # adaptive_icon_foreground: "assets/icon/background.png"
 
 flutter_native_splash:
-  image: assets/images/background.png
+  image: assets/icon/a-283x283-white-ios.png
   color: "081322"
   fill: true
 # For information on the generic Dart part of this file, see the
