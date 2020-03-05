@@ -45,7 +45,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         // applicationId "openway.com.school_mobile_portal"
-        applicationId "pe.adventistas.lambschool"
+        applicationId "pe.adventistas.lamb_school"
         minSdkVersion 18
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
