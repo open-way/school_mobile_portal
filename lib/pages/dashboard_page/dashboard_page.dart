@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,7 +7,8 @@ import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
-import 'package:pie_chart/pie_chart.dart';
+import 'package:school_mobile_portal/pages/dashboard_page/circle_button.dart';
+import 'package:school_mobile_portal/pages/dashboard_page/pie_chart_asis.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage({Key key, @required this.storage}) : super(key: key);
@@ -47,7 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
             setState(() {});
           }),
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Text('DASHBOARD'),
+        centerTitle: true,
       ),
       body: scrollWidget(),
     );
@@ -107,7 +107,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     },
                     child: Container(
                         child: ListTile(
-                            title: Text('Hoy hay $cantEventos evento(s)',
+                            title: Text(
+                                'Tienes $cantEventos evento(s) los siguientes 7 días',
                                 style: TextStyle(fontSize: 17))))));
           } else {
             return Center(child: CircularProgressIndicator());
@@ -136,7 +137,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         color: Color(int.parse(colores['puntual_color'])),
                         padding: EdgeInsets.all(5),
                         child: Text('Puntual',
-                            style: TextStyle(color: Colors.white))))));
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800))))));
             children.add(Padding(
                 padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
                 child: SizedBox(
@@ -144,7 +148,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         color: Color(int.parse(colores['tarde_color'])),
                         padding: EdgeInsets.all(5),
                         child: Text('Tarde',
-                            style: TextStyle(color: Colors.white))))));
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800))))));
             children.add(Padding(
                 padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
                 child: SizedBox(
@@ -152,7 +159,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         color: Color(int.parse(colores['falta_color'])),
                         padding: EdgeInsets.all(5),
                         child: Text('Falta',
-                            style: TextStyle(color: Colors.white))))));
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800))))));
             children.add(Padding(
                 padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
                 child: SizedBox(
@@ -160,7 +170,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         color: Color(int.parse(colores['justificado_color'])),
                         padding: EdgeInsets.all(5),
                         child: Text('Justificado',
-                            style: TextStyle(color: Colors.white))))));
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800))))));
             for (var i = 0; i < alumnos.length; i++) {
               childrenCard.add(LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
@@ -295,94 +308,5 @@ class _DashboardPageState extends State<DashboardPage> {
       futureBuildAsistencias(context)
     ]);
     return card;
-  }
-}
-
-class CircleButton extends StatelessWidget {
-  final Color color;
-  final double size;
-  final double circleWidth;
-  final Text txt;
-
-  const CircleButton(
-      {Key key, this.color, this.size, this.circleWidth, this.txt})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return new InkResponse(
-      child: new Container(
-        width: size,
-        height: size,
-        decoration: new BoxDecoration(
-          border: Border(
-            top: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            left: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            right: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            bottom: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-          ),
-          color: Colors.white,
-          shape: BoxShape.circle,
-        ),
-        child: new Center(child: txt),
-      ),
-    );
-  }
-}
-
-class PieChartAsistencia extends StatelessWidget {
-  final Text text;
-  final Map<String, double> dataMap;
-  final List<Color> colorList;
-  final double size;
-  final double fontSize;
-  const PieChartAsistencia(
-      {Key key,
-      this.text,
-      this.dataMap,
-      this.colorList,
-      this.size,
-      this.fontSize})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: size,
-        width: size,
-        constraints: BoxConstraints(
-            maxHeight: size, minHeight: size, maxWidth: size, minWidth: size),
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return Center(
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            text,
-            PieChart(
-              dataMap: dataMap,
-              animationDuration: Duration(milliseconds: 800),
-              chartLegendSpacing: 0,
-              chartRadius: constraints.maxHeight / 1.8,
-              showChartValuesInPercentage: true,
-              showChartValues: false,
-              showChartValuesOutside: false,
-              chartValueBackgroundColor: Colors.grey[900],
-              colorList: colorList,
-              showLegends: false,
-              legendPosition: LegendPosition.left,
-              decimalPlaces: 0,
-              showChartValueLabel: false,
-              initialAngle: 0,
-              chartValueStyle: defaultChartValueStyle.copyWith(
-                color: Colors.blueGrey[900].withOpacity(0.9),
-                fontSize: fontSize,
-              ),
-              chartType: ChartType.disc,
-            )
-          ]));
-        }));
   }
 }

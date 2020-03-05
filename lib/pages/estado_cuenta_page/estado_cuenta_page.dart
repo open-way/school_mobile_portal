@@ -91,17 +91,19 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         },
       ),
       appBar: AppBar(
-        title: Text('Estado cuenta'),
+        title: Padding(
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+            child: Text('ESTADO DE CUENTA')),
         centerTitle: true,
         bottom: PreferredSize(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
               child: Text(
                 this._currentChildSelected?.nombre ?? '',
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
+            preferredSize: Size(MediaQuery.of(context).size.width - 2, 45)),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),

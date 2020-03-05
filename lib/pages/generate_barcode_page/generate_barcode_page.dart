@@ -54,7 +54,7 @@ class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
         },
       ),
       appBar: AppBar(
-        title: Text('Código de barras'),
+        title: Text('CÓDIGO DE BARRAS'),
       ),
       body: Center(
         child: Card(

@@ -85,7 +85,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
-      title: Text('Agenda'),
+      title: Text('AGENDA'),
       centerTitle: true,
       bottom: PreferredSize(
           child: Padding(

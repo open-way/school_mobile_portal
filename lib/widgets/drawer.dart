@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/theme/lamb_themes.dart';
 
 enum MENUS { MENU_PRINCIPAL, MENU_SECUNDARIO }
 
@@ -59,11 +60,12 @@ class _DrawerHeaderState extends State<DrawerHeader> {
           widget.onChangeMenu();
         },
         decoration: new BoxDecoration(
-          image: new DecorationImage(
-            image:
-                new ExactAssetImage('assets/images/oauth-school.jpg', scale: 1),
-            fit: BoxFit.cover,
-          ),
+          color: LambThemes.light.primaryColor,
+          /*image: new DecorationImage(
+              image:
+                  new ExactAssetImage('assets/images/oauth-school.jpg', scale: 1),
+              fit: BoxFit.cover,
+            ),*/
         ),
         currentAccountPicture: CircleAvatar(
           child: InkWell(
@@ -127,20 +129,26 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-                new DrawerHeader(
-                  onChangeMenu: () {
-                    this.changeMenu();
-                  },
-                  chilSelected: this._chilSelected,
-                  storage: widget.storage,
-                ),
-              ] +
-              this.configMenu(context)),
-    );
+    return Theme(
+        data: Theme.of(context).copyWith(
+            canvasColor: LambThemes.light.accentColor,
+            dividerTheme: DividerThemeData(
+                color: LambThemes.light.dividerColor,
+                thickness: LambThemes.light.dividerTheme.thickness)),
+        child: Drawer(
+          child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                    new DrawerHeader(
+                      onChangeMenu: () {
+                        this.changeMenu();
+                      },
+                      chilSelected: this._chilSelected,
+                      storage: widget.storage,
+                    ),
+                  ] +
+                  this.configMenu(context)),
+        ));
   }
 
   @override
@@ -192,22 +200,26 @@ class _AppDrawerState extends State<AppDrawer> {
         text: 'Dashboard',
         onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
       ),
+      Divider(),
       createDrawerItem(
         icon: Icons.view_agenda,
         text: 'Estado de cuenta',
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.estado_cuenta),
       ),
+      Divider(),
       createDrawerItem(
         icon: Icons.view_agenda,
         text: 'Asistencia',
         onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
       ),
+      Divider(),
       createDrawerItem(
         icon: Icons.note,
         text: 'Agenda',
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
       ),
+      Divider(),
       createDrawerItem(
         icon: Icons.note,
         text: 'Generar barcode',
@@ -248,7 +260,10 @@ class _AppDrawerState extends State<AppDrawer> {
       {IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Text(text),
-      leading: Icon(icon),
+      leading: Icon(
+        icon,
+        color: LambThemes.light.textTheme.body2.color,
+      ),
       // title: Row(
       //   children: <Widget>[
       //     Icon(icon),
