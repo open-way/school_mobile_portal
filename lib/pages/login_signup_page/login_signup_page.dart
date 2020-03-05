@@ -151,10 +151,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   Widget _showForm() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: _isLoginForm
-            ? LambThemes.dark.appBarTheme.color
-            : LambThemes.light.accentColor));
     List<Widget> widgetsSignIn = [
       Theme(
           data: LambThemes.dark.copyWith(),
@@ -273,6 +269,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     ];
     List<Widget> widgets = _isLoginForm ? widgetsSignIn : widgetsSignUp;
 
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: _isLoginForm
+            ? LambThemes.dark.appBarTheme.color
+            : LambThemes.light.accentColor));
     return new Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new Form(
