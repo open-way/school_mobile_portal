@@ -12,6 +12,7 @@ import 'package:school_mobile_portal/pages/asistencia_page/form_justificacion.da
 import 'package:school_mobile_portal/services/justificaciones.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
+import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -43,11 +44,9 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   AnimationController _animationController;
   CalendarController _calendarController;
 
-  String _currentNameChildSelected;
-
   final Map<String, String> _queryParams = new Map();
-  String _currentIdChildSelected;
   String _idAnho;
+  HijoModel _currentChildSelected;
 
   @override
   void initState() {
@@ -69,11 +68,10 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     var childSelected = await widget.storage.read(key: 'child_selected');
     var currentChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected));
-    this._currentIdChildSelected = currentChildSelected.idAlumno;
-    this._currentNameChildSelected =
-        this._currentNameChildSelected ?? currentChildSelected.nombre;
+    this._currentChildSelected =
+        this._currentChildSelected ?? currentChildSelected;
     if (this._queryParams['id_alumno'] == null) {
-      this._queryParams['id_alumno'] = this._currentIdChildSelected;
+      this._queryParams['id_alumno'] = this._currentChildSelected.idAlumno;
     }
     this._queryParams['id_anho'] = this._idAnho;
     if (int.parse(this._idAnho) == now.year) {
@@ -213,36 +211,25 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   final ScrollController _controllerThree = ScrollController();
   @override
   Widget build(BuildContext context) {
-    AppBar appBar = AppBar(
-      title: Text('ASISTENCIA'),
-      centerTitle: true,
-      bottom: PreferredSize(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Text(
-              this._currentNameChildSelected ?? '',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.filter_list),
-          onPressed: _showDialog,
-        ),
-      ],
-    );
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentIdChildSelected = childSelected.idAlumno;
-          this._queryParams['id_alumno'] = this._currentIdChildSelected;
-          this._currentNameChildSelected = childSelected.nombre;
+          this._currentChildSelected = childSelected;
+          this._queryParams['id_alumno'] = this._currentChildSelected.idAlumno;
           _loadChildSelectedStorageFlow();
         },
       ),
-      appBar: appBar,
+      appBar: AppBarLamb(
+        title: Text('ASISTENCIA'),
+        alumno: this._currentChildSelected,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: _showDialog,
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         displacement: 2,
         key: this._refreshKey,
@@ -470,14 +457,14 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future _showDialog() async {
-    if (this._currentIdChildSelected != null) {
+    if (this._currentChildSelected != null) {
       ResponseDialogModel response = await showDialog(
         context: context,
         child: new SimpleDialog(
           title: new Text('Filtrar'),
           children: <Widget>[
             new FilterAnhoDialog(
-              idAlumno: this._currentIdChildSelected,
+              idAlumno: this._currentChildSelected.idAlumno,
               idAnhoDefault: this._idAnho,
             ),
           ],

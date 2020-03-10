@@ -50,19 +50,7 @@ class AuthService implements BaseAuth {
     };
     print(data.toString());
     http.Response res = await http.post('$theUrl/sign-up', body: data);
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
-    print(res.toString());
-    print(res.body.toString());
-
     final body = jsonDecode(res.body);
-    print('-------');
-    print('-------');
-    print('-------');
-    print('-------');
 
     if (res.statusCode == 200) {
       final data = new UserSignUpModel.fromJson(body['data']);

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/dashboard_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
+import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
+import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -103,7 +105,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: InkWell(
                     splashColor: Colors.blue.withAlpha(30),
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, Routes.agenda);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AgendaPage(storage: widget.storage)));
                     },
                     child: Container(
                         child: ListTile(
@@ -198,8 +204,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                 await widget.storage.write(
                                     key: 'child_selected',
                                     value: hijoModel.toString());
-                                Navigator.pushReplacementNamed(
-                                    context, Routes.asistencia);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AsistenciaPage(
+                                              storage: widget.storage,
+                                            )));
                               } catch (e) {
                                 print('Error: $e');
                               }
@@ -260,7 +270,11 @@ class _DashboardPageState extends State<DashboardPage> {
       child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
-            Navigator.pushReplacementNamed(context, Routes.estado_cuenta);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        EstadoCuentaPage(storage: widget.storage)));
           },
           child: Column(
             children: <Widget>[

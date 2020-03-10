@@ -8,6 +8,8 @@ import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
+import 'package:school_mobile_portal/theme/lamb_themes.dart';
+import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 
@@ -55,12 +57,6 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     this.portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
-
-      print('_operationsTotal');
-      print('_operationsTotal');
-      print('_operationsTotal');
-      print(_operationsTotal.total);
-
       setState(() {});
     }).catchError((err) {
       print(err);
@@ -90,20 +86,9 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
           setState(() {});
         },
       ),
-      appBar: AppBar(
-        title: Padding(
-            padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-            child: Text('ESTADO DE CUENTA')),
-        centerTitle: true,
-        bottom: PreferredSize(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-              child: Text(
-                this._currentChildSelected?.nombre ?? '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            preferredSize: Size(MediaQuery.of(context).size.width - 2, 45)),
+      appBar: AppBarLamb(
+        title: Text('ESTADO DE CUENTA'),
+        alumno: this._currentChildSelected,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -111,22 +96,62 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: new Card(
-              child: new Container(
-                padding: new EdgeInsets.all(15),
-                child: new RefreshIndicator(
-                  child: new OperationsList(
-                    listaOperations: this._listaOperations ?? [],
-                  ),
-                  onRefresh: _handleRefresh,
+      body: new RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: Container(
+          padding: new EdgeInsets.all(15),
+          child: Column(
+            children: <Widget>[
+              new Card(
+                child: Container(
+                  padding: new EdgeInsets.all(15),
+                  alignment: Alignment.center,
+                  child: new RichText(
+                      text: new TextSpan(
+                    // Note: Styles for TextSpans must be explicitly defined.
+                    // Child text spans will inherit styles from parent
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),
+                    children: <TextSpan>[
+                      new TextSpan(
+                        text: 'SU SALDO ES: ',
+                        style: new TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w300,
+                            letterSpacing: 3),
+                      ),
+                      new TextSpan(
+                          text: '${_operationsTotal?.total ?? ''}',
+                          style: new TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          )),
+                    ],
+                  )),
                 ),
               ),
-            ),
+              Expanded(
+                child: new Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: new Container(
+                    padding: new EdgeInsets.all(5),
+                    //child: new RefreshIndicator(
+                    child: new OperationsList(
+                      listaOperations: this._listaOperations ?? [],
+                    ),
+                    //onRefresh: _handleRefresh,
+                    //),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -173,27 +198,41 @@ class _OperationsListState extends State<OperationsList> {
     super.initState();
   }
 
+  Color zero = LambThemes.light.primaryColorLight;
+
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+      ),
       child: new ListView(
         children: widget.listaOperations
-            .map(
-              (dynamic operacion) => ListTile(
-                title: Text(operacion['glosa']),
-                subtitle: Text("${operacion['fecha']}"),
-                trailing: Text('S/. ${operacion['total'].toString()}'),
-                leading: CircleAvatar(child: Icon(Icons.check_box)),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => OperationDetail(
-                      operation: operacion,
-                    ),
-                  ),
-                ),
-              ),
-            )
+            .map((dynamic operacion) => getOperation(operacion))
             .toList(),
+      ),
+    );
+  }
+
+  Widget getOperation(operacion) {
+    return Container(
+      color: operacion['fila_color'] == '0' ? zero : null,
+      child: ListTile(
+        title: Text(operacion['glosa']),
+        subtitle: Text("${operacion['fecha']}"),
+        trailing: Text(
+          'S/. ${operacion['total'].toString()}',
+          style: TextStyle(color: Color(int.parse(operacion['total_color']))),
+        ),
+        leading:
+            CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OperationDetail(
+              operation: operacion,
+            ),
+          ),
+        ),
       ),
     );
   }

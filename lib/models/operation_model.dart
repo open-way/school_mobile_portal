@@ -20,6 +20,7 @@ class OperationModel {
   final String numero;
   final String glosa;
   final String total;
+  final String totalColor;
 
   OperationModel({
     @required this.fecha,
@@ -27,6 +28,7 @@ class OperationModel {
     @required this.numero,
     @required this.glosa,
     @required this.total,
+    @required this.totalColor,
   });
 
   factory OperationModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class OperationModel {
       numero: json['numero'] as String,
       glosa: json['glosa'] as String,
       total: json['total'] as String,
+      totalColor: json['total_color'] as String,
     );
   }
 }

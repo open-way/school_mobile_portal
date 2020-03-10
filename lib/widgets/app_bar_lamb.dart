@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 
-class AppBarLamb extends StatefulWidget implements PreferredSizeWidget {
+class AppBarLamb extends StatelessWidget implements PreferredSizeWidget {
   AppBarLamb({Key key, @required this.title, this.alumno, this.actions})
       : preferredSize = Size.fromHeight(100),
         super(key: key);
@@ -14,14 +14,24 @@ class AppBarLamb extends StatefulWidget implements PreferredSizeWidget {
   final Size preferredSize; // default is 56.0
 
   @override
+  Widget build(BuildContext context) {
+    return BarLamb(title: title, alumno: alumno, actions: actions);
+  }
+}
+
+class BarLamb extends StatefulWidget {
+  BarLamb({Key key, @required this.title, this.alumno, this.actions})
+      : super(key: key);
+  final Widget title;
+  final HijoModel alumno;
+  final List<Widget> actions;
+  @override
   _AppBarLambState createState() => _AppBarLambState();
 }
 
-class _AppBarLambState extends State<AppBarLamb> {
-  Widget title;
-  HijoModel alumno;
+class _AppBarLambState extends State<BarLamb> {
   String nombreDoc;
-  List<Widget> actions;
+  String institucion;
 
   @override
   void initState() {
@@ -35,32 +45,33 @@ class _AppBarLambState extends State<AppBarLamb> {
   }
 
   void getMasters() {
-    this.title = widget.title;
-    this.alumno = widget.alumno;
-    this.actions = widget.actions;
     this.getNomDoc();
+    this.getInstitucion();
     setState(() {});
   }
 
   String getNomDoc() {
-    String nombre = this.alumno?.nombre ?? '';
+    String nombre = widget.alumno?.nombre ?? '';
     String doc;
-    if (this.alumno?.numDoc == null) {
+    if (widget.alumno?.numDoc == null) {
       doc = '';
     } else {
-      doc = '(${this.alumno?.numDoc})';
+      doc = '(${widget.alumno?.numDoc})';
     }
     this.nombreDoc = '$nombre $doc';
-    print(nombreDoc + '????????????????');
-    setState(() {});
     return this.nombreDoc;
+  }
+
+  String getInstitucion() {
+    this.institucion = widget.alumno?.institucionNombre ?? '';
+    return this.institucion;
   }
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Padding(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 10), child: this.title),
+          padding: EdgeInsets.fromLTRB(0, 16, 0, 10), child: widget.title),
       centerTitle: true,
       bottom: PreferredSize(
           child: Padding(
@@ -68,21 +79,21 @@ class _AppBarLambState extends State<AppBarLamb> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    //this.getNomDoc(),
-                    this.alumno?.nombre ?? '',
+                    this.getNomDoc(),
                     style: TextStyle(color: Colors.white),
                   ),
                   Text(
-                    'El Buen Pastor',
+                    widget.alumno?.institucionNombre ?? '',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               )),
           preferredSize: Size(MediaQuery.of(context).size.width - 2, 45)),
-      actions: this.actions,
+      actions: widget.actions,
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+double get opacity40 => 0.4 / 0xFF0063C6;
+
 final ThemeData walterTheme = new ThemeData(
     primaryColor: Color(0xFF0063C6),
-    primaryColorLight: Color(0xFF81AFFF),
+    primaryColorLight: Color(0xFF0063C6).withOpacity(0.1),
     //dialog button
     accentColor: Color(0xFF003473),
     //all background color
@@ -41,7 +43,7 @@ final ThemeData walterTheme = new ThemeData(
       elevation: 0,
     ),
     dividerTheme: DividerThemeData(color: Color(0xFF0063C6), thickness: 2),
-    dividerColor: Color(0xFF81AFFF),
+    dividerColor: Color(0xFF0063C6).withOpacity(0.4),
     //tabBarTheme: TabBarTheme(labelColor: Color(0xFF003473)),
     buttonTheme: ButtonThemeData(
         textTheme: ButtonTextTheme.primary, buttonColor: Color(0xFF003473)),
@@ -50,4 +52,8 @@ final ThemeData walterTheme = new ThemeData(
     primaryColorBrightness: Brightness.dark,
     accentColorBrightness: Brightness.dark,
     backgroundColor: Color(0xFFF1F2F2),
-    inputDecorationTheme: InputDecorationTheme(fillColor: Color(0xFFB9BABA)));
+    inputDecorationTheme: InputDecorationTheme(
+      fillColor: Colors.transparent,
+      filled: true,
+      contentPadding: EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+    ));

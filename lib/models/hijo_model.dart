@@ -6,6 +6,7 @@ class HijoModel {
   final String paterno;
   final String materno;
   final String numDoc;
+  final String institucionNombre;
 
   HijoModel({
     @required this.idAlumno,
@@ -13,6 +14,7 @@ class HijoModel {
     @required this.paterno,
     @required this.materno,
     @required this.numDoc,
+    @required this.institucionNombre,
   });
 
   factory HijoModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class HijoModel {
       paterno: json['paterno'] as String,
       materno: json['materno'] as String,
       numDoc: json['num_doc'] as String,
+      institucionNombre: json['institucion_nombre'] as String,
     );
   }
 
@@ -33,9 +36,9 @@ class HijoModel {
       "nombre" : "${this.nombre}", 
       "paterno" : "${this.paterno}", 
       "materno" : "${this.materno}",
-      "num_doc" : "${this.numDoc}"
+      "num_doc" : "${this.numDoc}",
+      "institucion_nombre" : "${this.institucionNombre}"
     }
     """;
   }
-
 }

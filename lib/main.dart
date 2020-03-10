@@ -25,8 +25,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: LambThemes.light.appBarTheme.color));
+    //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: LambThemes.light.appBarTheme.color));
     return new MaterialApp(
       title: 'Lamb School',
       debugShowCheckedModeBanner: false,
