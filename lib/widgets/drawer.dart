@@ -89,14 +89,14 @@ class _DrawerHeaderState extends State<DrawerHeader> {
         ),
         otherAccountsPictures: <Widget>[
           // widget?.chilSelected ??
-          new CircleAvatar(
+          /*new CircleAvatar(
             child: InkWell(
               onTap: () {
                 print(widget?.chilSelected?.nombre);
               },
             ),
             backgroundImage: new ExactAssetImage('assets/images/girl.png'),
-          ),
+          ),*/
         ],
       ),
     );
@@ -197,36 +197,31 @@ class _AppDrawerState extends State<AppDrawer> {
     return [
       createDrawerItem(
         icon: Icons.dashboard,
-        text: 'Dashboard',
+        text: Text('Dashboard'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
       ),
-      Divider(),
       createDrawerItem(
         icon: Icons.view_agenda,
-        text: 'Estado de cuenta',
+        text: Text('Estado de cuenta'),
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.estado_cuenta),
       ),
-      Divider(),
       createDrawerItem(
-        icon: Icons.view_agenda,
-        text: 'Asistencia',
+        icon: Icons.calendar_today,
+        text: Text('Asistencia'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
       ),
-      Divider(),
       createDrawerItem(
         icon: Icons.note,
-        text: 'Agenda',
+        text: Text('Agenda'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
       ),
-      Divider(),
       createDrawerItem(
-        icon: Icons.note,
-        text: 'Generar barcode',
+        icon: Icons.call_to_action,
+        text: Text('Generar barcode'),
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.generate_barcode),
       ),
-      Divider(),
       // createDrawerItem(
       //     icon: Icons.note,
       //     text: 'Test https',
@@ -236,7 +231,7 @@ class _AppDrawerState extends State<AppDrawer> {
       // createDrawerItem(icon: Icons.info, text: 'Acerca'),
       createDrawerItem(
         icon: Icons.power_settings_new,
-        text: 'Cerrar sesión',
+        text: Text('Cerrar sesión'),
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.login_signup),
       ),
@@ -247,7 +242,22 @@ class _AppDrawerState extends State<AppDrawer> {
     return this._misHijos.map((HijoModel res) {
       return createDrawerItem(
         icon: Icons.person,
-        text: '${res.nombre} ${res.paterno} ${res.materno}',
+        text: RichText(
+            text: new TextSpan(
+          // Note: Styles for TextSpans must be explicitly defined.
+          // Child text spans will inherit styles from parent
+          style: new TextStyle(),
+          children: <TextSpan>[
+            new TextSpan(
+              text: '${res.nombre} ${res.paterno} ${res.materno}',
+              style: new TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            new TextSpan(
+                text: '\n${res.institucionNombre ?? ''}',
+                style:
+                    new TextStyle(fontSize: 12, fontWeight: FontWeight.w300)),
+          ],
+        )),
         onTap: () {
           this.onChangeSeleted(res);
           this.changeMenu();
@@ -257,23 +267,19 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Widget createDrawerItem(
-      {IconData icon, String text, GestureTapCallback onTap}) {
-    return ListTile(
-      title: Text(text),
-      leading: Icon(
-        icon,
-        color: LambThemes.light.textTheme.body2.color,
-      ),
-      // title: Row(
-      //   children: <Widget>[
-      //     Icon(icon),
-      //     Padding(
-      //       padding: EdgeInsets.only(left: 8.0),
-      //       child: Text(text),
-      //     )
-      //   ],
-      // ),
-      onTap: onTap,
+      {IconData icon, Widget text, GestureTapCallback onTap}) {
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: text,
+          leading: Icon(
+            icon,
+            color: LambThemes.light.textTheme.body2.color,
+          ),
+          onTap: onTap,
+        ),
+        Divider(),
+      ],
     );
   }
 }

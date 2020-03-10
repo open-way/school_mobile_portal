@@ -11,8 +11,11 @@ import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/pages/agenda_page/filter_periodo_aca_dialog.dart';
 import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
+import 'package:school_mobile_portal/theme/lamb_themes.dart';
+import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class AgendaPage extends StatefulWidget {
@@ -39,8 +42,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
   final Map<String, String> queryParams = new Map();
-  String _currentIdChildSelected;
-  String _currentNameChildSelected;
+  //String _currentIdChildSelected;
+  //String _currentNameChildSelected;
+  HijoModel _currentChildSelected;
   String _idPeriodoAcademico;
   String _idAnho;
 
@@ -48,9 +52,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     refreshKey = GlobalKey<RefreshIndicatorState>();
-    final _selectedDay = DateTime.now();
 
-    _selectedEvents = _agendaEventos[_selectedDay] ?? [];
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -59,7 +61,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     );
 
     _animationController.forward();
-
+    initializeDateFormatting();
+    Intl.defaultLocale = 'es_PE';
     this._loadMaster();
   }
 
@@ -79,12 +82,13 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   void _onDaySelected(DateTime day, List events) {
     setState(() {
       _selectedEvents = events;
+      _calendarController.setSelectedDay(day);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    AppBar appBar = AppBar(
+    /*AppBar(
       title: Text('AGENDA'),
       centerTitle: true,
       bottom: PreferredSize(
@@ -103,52 +107,68 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
           onPressed: _showDialog,
         ),
       ],
-    );
+    );*/
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) async {
-          this._currentIdChildSelected = childSelected.idAlumno;
-          this.queryParams['id_alumno'] = this._currentIdChildSelected;
-          this._currentNameChildSelected = childSelected.nombre;
+          this._currentChildSelected = childSelected;
+          this.queryParams['id_alumno'] = this._currentChildSelected.idAlumno;
           await _loadChildSelectedStorageFlow();
         },
       ),
-      appBar: appBar,
+      appBar: AppBarLamb(
+        title: Text('AGENDA'),
+        alumno: this._currentChildSelected,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: _showDialog,
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         displacement: 2,
         key: refreshKey,
         onRefresh: () async {
           await refreshList();
         },
-        child: _calendarBox(appBar.preferredSize.height),
+        child: _calendarBox(),
       ),
     );
   }
 
-  Widget _calendarBox(double appBarHeight) {
-    return new FractionallySizedBox(
-      heightFactor: 1,
-      widthFactor: 1,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
-        controller: _controllerTwo,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.height,
-              height: MediaQuery.of(context).size.height - appBarHeight,
-              child: Column(
-                children: <Widget>[
-                  scrollWidget(),
-                  const SizedBox(height: 8.0),
-                  Expanded(child: _buildEventList()),
-                ],
-              ),
+  Widget _calendarBox() {
+    return //new FractionallySizedBox(
+        //heightFactor: 1,
+        //widthFactor: 1,
+        /*child:*/ ListView(
+      //shrinkWrap: true,
+      padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
+      controller: _controllerTwo,
+      //child: Column(
+      children: <Widget>[
+        Column(children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.height,
+            height: (MediaQuery.of(context).size.height),
+            child: Column(
+              children: <Widget>[
+                scrollWidget(),
+                const SizedBox(height: 8.0),
+                Expanded(child: _buildEventList()),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        ])
+        /*Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 2,
+              child: Expanded(child: _buildEventList()),
+            ),*/
+      ],
+      //),
+      //),
     );
   }
 
@@ -164,14 +184,13 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     var childSelected = await widget.storage.read(key: 'child_selected');
     var currentChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected));
-    this._currentIdChildSelected = currentChildSelected.idAlumno;
-    this._currentNameChildSelected =
-        this._currentNameChildSelected ?? currentChildSelected.nombre;
+    this._currentChildSelected =
+        this._currentChildSelected ?? currentChildSelected;
     var listaPeriodos = await this
         ._periodoAcaService
-        .getAll$({'id_alumno': _currentIdChildSelected});
+        .getAll$({'id_alumno': this._currentChildSelected.idAlumno});
     if (this.queryParams['id_alumno'] == null) {
-      this.queryParams['id_alumno'] = this._currentIdChildSelected;
+      this.queryParams['id_alumno'] = this._currentChildSelected.idAlumno;
     }
     if (this.queryParams['id_periodo'] == null) {
       this.queryParams['id_periodo'] = listaPeriodos[0].idPeriodo;
@@ -194,6 +213,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     } catch (e) {
       print('Error calendar controller: $e');
     }
+    _selectedEvents = _agendaEventos[DateTime.parse(
+            DateFormat('yyyy-MM-dd 00:00:00.000').format(selectedDay))] ??
+        [];
     setState(() {});
   }
 
@@ -202,18 +224,20 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget scrollWidget() {
     return new Container(
-      height: MediaQuery.of(context).size.height / 2,
-      width: MediaQuery.of(context).size.width,
-      child: CupertinoScrollbar(
+        //height: (MediaQuery.of(context).size.height - 100) / 2,
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+        //child: CupertinoScrollbar(
+        //  controller: _controllerOne,
+        child: ListView(
+          shrinkWrap: true,
           controller: _controllerOne,
-          child: ListView.builder(
-            controller: _controllerOne,
-            itemCount: 1,
-            itemBuilder: (BuildContext context, int index) => Column(
-              children: <Widget>[futureBuildCalendar(context)],
-            ),
-          )),
-    );
+          children: <Widget>[futureBuildCalendar(context)],
+          //itemCount: 1,
+          //itemBuilder: (BuildContext context, int index) => Column(children: <Widget>[futureBuildCalendar(context)],),
+        )
+        //),
+        );
   }
 
   List<DateTime> calculateDaysInterval(DateTime startDate, DateTime endDate) {
@@ -258,7 +282,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar(List<AgendaModel> agenda) {
+    final formatoFecha = new DateFormat('yyyy-MM-dd 00:00:00.000');
     return TableCalendar(
+      locale: 'es_PE',
       calendarController: _calendarController,
       events: _getEventosDays(agenda),
       calendarStyle: CalendarStyle(
@@ -307,8 +333,16 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   Widget _dayBuilder(DateTime date, List events, Color txtColor) {
     var asisColor;
+    final f = new DateFormat('yyyy.MM.dd');
+    DateTime selectedDay = _calendarController.selectedDay;
     if (events != null) {
       asisColor = Colors.black12;
+    }
+    if (f.format(date) == f.format(DateTime.now())) {
+      asisColor = LambThemes.light.primaryColor.withOpacity(0.5);
+    }
+    if (date == selectedDay) {
+      asisColor = LambThemes.light.primaryColor.withOpacity(0.8);
     }
     return Container(
       decoration: BoxDecoration(
@@ -322,7 +356,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
       child: Center(
         child: Text(
           '${date.day}',
-          style: TextStyle().copyWith(fontSize: 16.0, color: txtColor),
+          style: TextStyle(fontSize: 16.0, color: txtColor),
         ),
       ),
     );
@@ -350,12 +384,34 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   _getDetalleActividad(String idActividad, List<AgendaModel> listaActividades) {
+    var categoriaNombre;
+    var nombre;
+
     for (var i = 0; i < listaActividades.length; i++) {
+      categoriaNombre = listaActividades[i].categoriaNombre; //.substring(0, 6);
+      nombre = listaActividades[i].nombre; //.substring(0, 5);
       if (idActividad == listaActividades[i].idActividad) {
-        return '"' +
-            listaActividades[i].categoriaNombre +
-            '": ' +
-            listaActividades[i].nombre;
+        return [
+          RichText(
+              text: new TextSpan(
+            // Note: Styles for TextSpans must be explicitly defined.
+            // Child text spans will inherit styles from parent
+            style: new TextStyle(
+              fontSize: 18.0,
+              color: Colors.black,
+            ),
+            children: <TextSpan>[
+              new TextSpan(
+                  text: '$categoriaNombre. ',
+                  style: new TextStyle(fontWeight: FontWeight.bold)),
+              new TextSpan(text: '$nombre'),
+            ],
+          )),
+          Text(
+            '${DateFormat('HH:mm').format(DateTime.parse(listaActividades[i].fechaInicio))}',
+            style: TextStyle(fontWeight: FontWeight.w200, fontSize: 18),
+          )
+        ];
       }
     }
   }
@@ -427,12 +483,13 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         title: listaActividades[getId].categoriaNombre,
         content: Column(
           children: <Widget>[
-            Text(rangoFechas),
-            Text(rangoHoras),
-            Text(listaActividades[getId].nombre),
-            Text(listaActividades[getId].descripcion),
-            Text(nivelGrado + ' ' + seccion),
-            Text(curso),
+            Text(rangoFechas, textAlign: TextAlign.center),
+            Text(rangoHoras, textAlign: TextAlign.center),
+            Text(listaActividades[getId].nombre, textAlign: TextAlign.center),
+            Text(listaActividades[getId].descripcion,
+                textAlign: TextAlign.center),
+            Text(nivelGrado + ' ' + seccion, textAlign: TextAlign.center),
+            Text(curso, textAlign: TextAlign.center),
           ],
         ),
         buttons: [
@@ -453,23 +510,61 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
           if (snapshot.hasError) print(snapshot.error);
           if (snapshot.hasData) {
             List<AgendaModel> agenda = snapshot.data;
-            return ListView(
-              children: _selectedEvents
-                  .map((event) => Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 0.8),
-                          borderRadius: BorderRadius.circular(12.0),
+            print(_selectedEvents.toString() + '121231212312312');
+            List<Widget> eventList = [];
+            var evenText;
+            for (var i = 0; i < _selectedEvents.length; i++) {
+              evenText = _getDetalleActividad(_selectedEvents[i], agenda);
+
+              eventList.add(Container(
+                padding: EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  gradient: LinearGradient(
+                    colors: [LambThemes.light.primaryColor, Colors.white],
+                    begin: Alignment(1000, 0),
+                    end: Alignment(-1, 0),
+                    tileMode: TileMode.repeated,
+                  ),
+                ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: ListTile(
+                  title: Container(
+                    //constraints: BoxConstraints(minHeight: 50),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                          alignment: Alignment.center,
+                          width: 30,
+                          child: Text(
+                            '${i + 1}.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                         ),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 4.0),
-                        child: ListTile(
-                          title: Text(_getDetalleActividad(event, agenda)),
-                          onTap: () =>
-                              {_showDetalleActividadAlert(event, agenda)},
+                        //Agregar LayoutBuilder
+                        Container(
+                          width: 210,
+                          child: evenText[0],
                         ),
-                      ))
-                  .toList(),
-            );
+
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: evenText[1],
+                        )
+                      ],
+                    ),
+                  ),
+                  onTap: () =>
+                      _showDetalleActividadAlert(_selectedEvents[i], agenda),
+                ),
+              ));
+            }
+            return ListView(children: eventList);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -477,14 +572,14 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Future _showDialog() async {
-    if (this._currentIdChildSelected != null) {
+    if (this._currentChildSelected != null) {
       ResponseDialogModel response = await showDialog(
         context: context,
         child: new SimpleDialog(
           title: new Text('Filtrar'),
           children: <Widget>[
             new FilterPeriodoAcaDialog(
-              idAlumno: this._currentIdChildSelected,
+              idAlumno: this._currentChildSelected.idAlumno,
               idPeriodoDefault: this._idPeriodoAcademico,
             ),
           ],

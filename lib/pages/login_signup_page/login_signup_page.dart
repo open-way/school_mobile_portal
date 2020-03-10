@@ -131,6 +131,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(0),
+          child: AppBar(
+              // Here we create one to set status bar color
+              backgroundColor: _isLoginForm
+                  ? LambThemes.dark.appBarTheme.color
+                  : LambThemes.light.accentColor)),
       body: Stack(
         children: <Widget>[
           this._showForm(),
@@ -182,97 +189,80 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ))
     ];
     List<Widget> widgetsSignUp = [
-      Theme(
-          data: LambThemes.light.copyWith(
-            iconTheme: IconThemeData(
-              color: LambThemes.light.primaryColor,
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              fillColor: Colors.transparent,
-              filled: true,
-              contentPadding:
-                  EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-            ),
+      Container(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top,
           ),
-          child: Container(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top,
-              ),
-              child: Column(
-                children: <Widget>[
-                  new Container(
-                    height: 235,
-                    decoration: BoxDecoration(
+          child: Column(
+            children: <Widget>[
+              new Container(
+                height: 235,
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: LambThemes.light.accentColor,
+                  gradient: new LinearGradient(
+                      colors: [
+                        LambThemes.light.accentColor,
+                        LambThemes.light.scaffoldBackgroundColor
+                      ],
+                      begin: Alignment(0, 2100),
+                      end: Alignment(0, 0),
+                      tileMode: TileMode.repeated),
+                ),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    width: MediaQuery.of(context).size.width / 1.25,
+                    height: 100,
+                    decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(
+                          style: BorderStyle.solid,
+                          color: LambThemes.light.primaryColor,
+                          width: 6),
+                      color: LambThemes.light.scaffoldBackgroundColor,
                       shape: BoxShape.rectangle,
-                      color: LambThemes.light.accentColor,
-                      gradient: new LinearGradient(
-                          colors: [
-                            LambThemes.light.accentColor,
-                            LambThemes.light.scaffoldBackgroundColor
-                          ],
-                          begin: Alignment(0, 2100),
-                          end: Alignment(0, 0),
-                          tileMode: TileMode.repeated),
                     ),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
+                    child: new Center(
                       child: Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                        width: MediaQuery.of(context).size.width / 1.25,
-                        height: 100,
-                        decoration: new BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(
-                              style: BorderStyle.solid,
-                              color: LambThemes.light.primaryColor,
-                              width: 6),
-                          color: LambThemes.light.scaffoldBackgroundColor,
+                        width: MediaQuery.of(context).size.width / 1.925,
+                        height: 36,
+                        decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
+                          color: LambThemes.light.scaffoldBackgroundColor,
                         ),
-                        child: new Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width / 1.925,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color: LambThemes.light.scaffoldBackgroundColor,
-                            ),
-                            child: showLogo(),
-                          ),
-                        ),
+                        child: showLogo(),
                       ),
                     ),
                   ),
-                  Container(
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width / 1.125),
-                    child: Column(
-                      children: <Widget>[
-                        showTipoDocumentoDropdownButton(),
-                        showDniInput(),
-                        showPasswordInput(),
-                        showPasswordConfirmInput(),
-                        showPrimaryButton(),
-                        showSecondaryButton(),
-                        showErrorMessage(),
-                      ],
-                    ),
-                  ),
-                  /*Container(
+                ),
+              ),
+              Container(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width / 1.125),
+                child: Column(
+                  children: <Widget>[
+                    showTipoDocumentoDropdownButton(),
+                    showDniInput(),
+                    showPasswordInput(),
+                    showPasswordConfirmInput(),
+                    showPrimaryButton(),
+                    showSecondaryButton(),
+                    showErrorMessage(),
+                  ],
+                ),
+              ),
+              /*Container(
                     padding: EdgeInsets.fromLTRB(0.0, 27.0, 0.0, 0.0),
                     color: LambThemes.light.accentColor,
                     height: 75,
                   ),*/
-                ],
-              )))
+            ],
+          ))
     ];
     List<Widget> widgets = _isLoginForm ? widgetsSignIn : widgetsSignUp;
-
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: _isLoginForm
-            ? LambThemes.dark.appBarTheme.color
-            : LambThemes.light.accentColor));
     return new Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new Form(
