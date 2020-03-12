@@ -222,7 +222,9 @@ class _OperationsListState extends State<OperationsList> {
         subtitle: Text("${operacion['fecha']}"),
         trailing: Text(
           'S/. ${operacion['total'].toString()}',
-          style: TextStyle(color: Color(int.parse(operacion['total_color']))),
+          style: TextStyle(
+              color: Color(int.parse(operacion['total_color'])),
+              fontWeight: FontWeight.bold),
         ),
         leading:
             CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),

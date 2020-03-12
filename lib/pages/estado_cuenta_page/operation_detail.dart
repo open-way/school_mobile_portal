@@ -35,7 +35,17 @@ class OperationDetail extends StatelessWidget {
                       ),
                       ListTile(
                         title: Text("Importe"),
-                        subtitle: Text("${operation['total']}"),
+                        subtitle: Text(
+                          "${operation['total']}",
+                          style: TextStyle(
+                            color: Color(
+                              int.parse(
+                                operation['total_color'],
+                              ),
+                            ),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),

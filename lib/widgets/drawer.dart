@@ -215,6 +215,7 @@ class _AppDrawerState extends State<AppDrawer> {
         icon: Icons.note,
         text: Text('Agenda'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
+        //onTap: () => Navigator.pushNamed(context, '/agenda'),
       ),
       createDrawerItem(
         icon: Icons.call_to_action,

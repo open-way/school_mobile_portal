@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
+import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:barcode_flutter/barcode_flutter.dart';
 
@@ -52,34 +53,42 @@ class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
           setState(() {});
         },
       ),
-      appBar: AppBar(
+      appBar: AppBarLamb(
         title: Text('CÓDIGO DE BARRAS'),
+        alumno: this._currentChildSelected,
       ),
-      body: Center(
+      body: Container(
+        margin: EdgeInsets.all(30),
+        alignment: Alignment.center,
+        height: 180,
         child: Card(
+          elevation: 0,
           child: Column(
             // mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new ListTile(
+              /*new ListTile(
                 // leading: Icon(Icons.album),
                 title: Text(_currentChildSelected?.numDoc ?? ''),
                 subtitle: Text(
                     '${_currentChildSelected?.nombre ?? ''} ${_currentChildSelected?.paterno ?? ''} ${_currentChildSelected?.materno ?? ''}'),
-              ),
-              new BarCodeImage(
-                params: Code39BarCodeParams(
-                  _currentChildSelected?.numDoc ?? '',
-                  lineWidth:
-                      2.0, // width for a single black/white bar (default: 2.0)
-                  barHeight:
-                      90.0, // height for the entire widget (default: 100.0)
-                  withText:
-                      true, // Render with text label or not (default: false)
+              ),*/
+              Container(
+                margin: EdgeInsets.all(30),
+                child: new BarCodeImage(
+                  params: Code39BarCodeParams(
+                    _currentChildSelected?.numDoc ?? '',
+                    lineWidth:
+                        2.0, // width for a single black/white bar (default: 2.0)
+                    barHeight:
+                        90.0, // height for the entire widget (default: 100.0)
+                    withText:
+                        true, // Render with text label or not (default: false)
+                  ),
+                  onError: (error) {
+                    // Error handler
+                    print('error bar-code = $error');
+                  },
                 ),
-                onError: (error) {
-                  // Error handler
-                  print('error bar-code = $error');
-                },
               ),
             ],
           ),

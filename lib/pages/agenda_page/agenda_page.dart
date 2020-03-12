@@ -282,7 +282,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar(List<AgendaModel> agenda) {
-    final formatoFecha = new DateFormat('yyyy-MM-dd 00:00:00.000');
     return TableCalendar(
       locale: 'es_PE',
       calendarController: _calendarController,
@@ -533,6 +532,8 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
                   title: Container(
                     //constraints: BoxConstraints(minHeight: 50),
                     child: Row(
+                      //crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Container(
                           margin: EdgeInsets.fromLTRB(0, 0, 5, 0),

@@ -17,6 +17,7 @@ import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:animated_dialog_box/animated_dialog_box.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class AsistenciaPage extends StatefulWidget {
@@ -58,6 +59,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+    initializeDateFormatting();
+    Intl.defaultLocale = 'es_PE';
     this._loadChildSelectedStorageFlow();
   }
 
@@ -156,7 +159,9 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Future newJustificacion(AsistenciaModel listaAsistencia) async {
-    ResponseDialogModel response = await animated_dialog_box.showScaleAlertBox(
+    ResponseDialogModel response = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => FormJustificacion()));
+    /*animated_dialog_box.showScaleAlertBox(
       context: context,
       icon: Icon(null),
       title: Text('Justificación'),
@@ -184,15 +189,17 @@ class _AsistenciaPageState extends State<AsistenciaPage>
               //)
               )),
       firstButton: FlatButton(onPressed: null, child: null),
-    );
+    );*/
 
     switch (response?.action) {
       case DialogActions.SUBMIT:
         if (response.data != null) {
           final Map<String, String> postParams = new Map();
-          postParams.addAll(response.data);
+          //postParams.addAll(response.data);
+          postParams['id_jmotivo'] = response.data['id_jmotivo'];
+          postParams['descripcion'] = response.data['descripcion'];
           postParams['id_asistencia'] = listaAsistencia.idAsistencia;
-          postParams['archivo'] = '';
+          postParams['archivo'] = response.data['archivo'];
           this._justificacionesService.postAll$(postParams).then((onValue) {
             print(onValue);
           }).catchError((onError) {
@@ -208,7 +215,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   final ScrollController _controllerOne = ScrollController();
   final ScrollController _controllerTwo = ScrollController();
-  final ScrollController _controllerThree = ScrollController();
+  //final ScrollController _controllerThree = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -300,6 +307,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     Map<CalendarFormat, String> _calendarFormat = new Map();
     _calendarFormat[CalendarFormat.month] = 'only month';
     return TableCalendar(
+      locale: 'es_PE',
       calendarController: _calendarController,
       startDay: DateTime(int.parse(this._idAnho), 1, 1, 0, 0),
       endDay: DateTime(int.parse(this._idAnho), 12, 31, 0, 0),
