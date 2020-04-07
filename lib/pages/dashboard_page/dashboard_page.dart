@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/dashboard_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
-import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
+import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/dashboard.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -25,18 +23,26 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardService dashboardService = new DashboardService();
   final MisHijosService misHijosService = new MisHijosService();
+  GlobalKey<RefreshIndicatorState> refreshKey;
+  DashboardModel _dashboard;
+  /* = new DashboardModel(
+    estadoCuentaResumen: [],
+    eventos: '',
+    asistencias: {},
+  );*/
 
   @override
   void initState() {
     super.initState();
-    //this._loadMaster();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
+    this._loadDashboard();
   }
 
-  //Future _loadMaster() async {
-  // Usar todos los metodos que quieran al hijo actual.
-  //}
-
-  final ScrollController _controllerOne = ScrollController();
+  void _loadDashboard() async {
+    this._dashboard = await dashboardService.getDashboard$();
+    setState(() {});
+    //await dashboardService.getDashboard$().then((onValue) {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,6 @@ class _DashboardPageState extends State<DashboardPage> {
       drawer: AppDrawer(
           storage: widget.storage,
           onChangeNewChildSelected: (HijoModel childSelected) {
-            // this._currentIdChildSelected = childSelected.idAlumno;
             setState(() {});
           }),
       appBar: AppBar(
@@ -56,195 +61,162 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget scrollWidget() {
-    return new Container(
-      child: CupertinoScrollbar(
-          controller: _controllerOne,
-          child: ListView.builder(
-            controller: _controllerOne,
-            itemCount: 1,
-            itemBuilder: (BuildContext context, int index) => Column(
-              children: <Widget>[
-                _cardEstadaCuenta(),
-                _cardEventos(),
-                _cardAsistencias(),
-              ],
-            ),
-          )),
+    return new RefreshIndicator(
+      displacement: 2,
+      key: refreshKey,
+      onRefresh: () async {
+        _loadDashboard();
+      },
+      child: Container(
+        child: ListView(
+          children: <Widget>[
+            _cardEstadoCuenta(),
+            _cardEventos(),
+            _cardAsistencias(),
+          ],
+        ),
+      ),
     );
   }
 
   Widget futureBuildEstadoCuenta(BuildContext context) {
-    return FutureBuilder(
-        future: dashboardService.getDashboard$(),
-        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          if (snapshot.hasData) {
-            DashboardModel dashboard = snapshot.data;
-            var importe = dashboard.estadoCuentaResumen[0]['importe'];
-            var texto = dashboard.estadoCuentaResumen[0]['texto'];
-            var color = dashboard.estadoCuentaResumen[0]['color'];
+    if (_dashboard != null) {
+      String importe = _dashboard?.estadoCuentaResumen[0]['importe'] ?? '';
+      String texto = _dashboard?.estadoCuentaResumen[0]['texto'] ?? '';
+      String color = _dashboard?.estadoCuentaResumen[0]['color'] ?? '0';
 
-            return _circle(importe, texto, Color(int.parse(color)));
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+      return _circle(importe, texto, Color(int.parse(color)));
+    } else {
+      return Center(child: CircularProgressIndicator());
+    }
   }
 
   Widget futureBuildEventos(BuildContext context) {
-    return FutureBuilder(
-        future: dashboardService.getDashboard$(),
-        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          if (snapshot.hasData) {
-            DashboardModel dashboard = snapshot.data;
-            var cantEventos = dashboard.eventos;
+    if (_dashboard != null) {
+      //DashboardModel dashboard = snapshot.data;
+      var cantEventos = _dashboard.eventos;
+      return Card(
+          elevation: 0,
+          child: InkWell(
+              splashColor: Colors.blue.withAlpha(30),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, Routes.agenda);
+              },
+              child: Container(
+                  child: ListTile(
+                      title: Text(
+                          'Tienes ${cantEventos ?? ''} evento(s) los siguientes 7 días',
+                          style: TextStyle(fontSize: 17))))));
+    } else {
+      return Center(child: CircularProgressIndicator());
+    }
+    //});
+  }
 
-            return Card(
-                elevation: 0,
-                child: InkWell(
-                    splashColor: Colors.blue.withAlpha(30),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  AgendaPage(storage: widget.storage)));
-                    },
-                    child: Container(
-                        child: ListTile(
-                            title: Text(
-                                'Tienes $cantEventos evento(s) los siguientes 7 días',
-                                style: TextStyle(fontSize: 17))))));
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+  Widget getLegendAsis(Color color, String estadoNombre) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
+        child: SizedBox(
+            child: Container(
+                color: color,
+                padding: EdgeInsets.all(5),
+                child: Text(estadoNombre,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800)))));
   }
 
   Widget futureBuildAsistencias(BuildContext context) {
-    return FutureBuilder(
-        future: dashboardService.getDashboard$(),
-        builder: (context, AsyncSnapshot<DashboardModel> snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          if (snapshot.hasData) {
-            DashboardModel dashboard = snapshot.data;
-            var listaAsistencia = dashboard.asistencias;
-            var childrenCard = <Widget>[];
-            var children = <Widget>[];
+    if (_dashboard != null) {
+      //DashboardModel dashboard = snapshot.data;
+      var listaAsistencia = _dashboard.asistencias;
+      var childrenCard = <Widget>[];
+      var children = <Widget>[];
 
-            Map<String, dynamic> colores = listaAsistencia['colores'];
-            List<dynamic> alumnos = listaAsistencia['alumnos'];
-            //children.add(Row(children: <Widget>[Text('Puntual: '), ],));
-            children.add(Padding(
-                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
-                child: SizedBox(
-                    child: Container(
-                        color: Color(int.parse(colores['puntual_color'])),
-                        padding: EdgeInsets.all(5),
-                        child: Text('Puntual',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800))))));
-            children.add(Padding(
-                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
-                child: SizedBox(
-                    child: Container(
-                        color: Color(int.parse(colores['tarde_color'])),
-                        padding: EdgeInsets.all(5),
-                        child: Text('Tarde',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800))))));
-            children.add(Padding(
-                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
-                child: SizedBox(
-                    child: Container(
-                        color: Color(int.parse(colores['falta_color'])),
-                        padding: EdgeInsets.all(5),
-                        child: Text('Falta',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800))))));
-            children.add(Padding(
-                padding: EdgeInsets.fromLTRB(1.5, 0, 1.5, 0),
-                child: SizedBox(
-                    child: Container(
-                        color: Color(int.parse(colores['justificado_color'])),
-                        padding: EdgeInsets.all(5),
-                        child: Text('Justificado',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800))))));
-            for (var i = 0; i < alumnos.length; i++) {
-              childrenCard.add(LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                var localWidth;
-                if (alumnos.length > 1) {
-                  localWidth = MediaQuery.of(context).size.width / 2;
-                } else {
-                  localWidth = MediaQuery.of(context).size.width / 1;
-                }
-                return Container(
-                    width: localWidth,
-                    child: Card(
-                        elevation: 0,
-                        child: InkWell(
-                            splashColor: Colors.blue.withAlpha(30),
-                            onTap: () async {
-                              try {
-                                HijoModel hijoModel = await misHijosService
-                                    .getHijoById(alumnos[i]['id_alumno']);
-                                await widget.storage
-                                    .delete(key: 'child_selected');
-                                await widget.storage.write(
-                                    key: 'child_selected',
-                                    value: hijoModel.toString());
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AsistenciaPage(
-                                              storage: widget.storage,
-                                            )));
-                              } catch (e) {
-                                print('Error: $e');
-                              }
-                            },
-                            child: PieChartAsistencia(
-                                colorList: [
-                                  Color(int.parse(colores['puntual_color'])),
-                                  Color(int.parse(colores['tarde_color'])),
-                                  Color(int.parse(colores['falta_color'])),
-                                  Color(int.parse(colores['justificado_color']))
-                                ],
-                                dataMap: {
-                                  'P':
-                                      double.parse(alumnos[i]['puntual_valor']),
-                                  'T': double.parse(alumnos[i]['tarde_valor']),
-                                  'F': double.parse(alumnos[i]['falta_valor']),
-                                  'J': double.parse(
-                                      alumnos[i]['justificada_valor'])
-                                },
-                                fontSize: 0,
-                                size: 180,
-                                text: Text(alumnos[i]['nombre'],
-                                    style: TextStyle(fontSize: 14))))));
-              }));
-            }
-            return Column(
-              children: <Widget>[
-                Row(children: children),
-                Row(children: childrenCard)
-              ],
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+      Map<String, dynamic> colores = listaAsistencia['colores'];
+      List<dynamic> alumnos = listaAsistencia['alumnos'];
+      //children.add(Row(children: <Widget>[Text('Puntual: '), ],));
+      children.add(getLegendAsis(
+        Color(int.parse(colores['puntual_color'])),
+        'Puntual',
+      ));
+      children.add(getLegendAsis(
+        Color(int.parse(colores['tarde_color'])),
+        'Tarde',
+      ));
+      children.add(getLegendAsis(
+        Color(int.parse(colores['falta_color'])),
+        'Falta',
+      ));
+      children.add(getLegendAsis(
+        Color(int.parse(colores['justificado_color'])),
+        'Justificado',
+      ));
+      var localWidth;
+      if (alumnos.length > 1) {
+        localWidth = MediaQuery.of(context).size.width / 2;
+      } else {
+        localWidth = MediaQuery.of(context).size.width / 1;
+      }
+      for (var i = 0; i < alumnos.length; i++) {
+        childrenCard.add(
+          Container(
+            width: localWidth,
+            child: Card(
+              elevation: 0,
+              child: InkWell(
+                splashColor: Colors.blue.withAlpha(30),
+                onTap: () async {
+                  try {
+                    HijoModel hijoModel = await misHijosService
+                        .getHijoById(alumnos[i]['id_alumno']);
+                    await widget.storage.delete(key: 'child_selected');
+                    await widget.storage.write(
+                        key: 'child_selected', value: hijoModel.toString());
+                    Navigator.pushReplacementNamed(context, Routes.asistencia);
+                  } catch (e) {
+                    print('Error: $e');
+                  }
+                },
+                child: PieChartAsistencia(
+                  colorList: [
+                    Color(int.parse(colores['puntual_color'])),
+                    Color(int.parse(colores['tarde_color'])),
+                    Color(int.parse(colores['falta_color'])),
+                    Color(int.parse(colores['justificado_color']))
+                  ],
+                  dataMap: {
+                    'P': double.parse(alumnos[i]['puntual_valor']),
+                    'T': double.parse(alumnos[i]['tarde_valor']),
+                    'F': double.parse(alumnos[i]['falta_valor']),
+                    'J': double.parse(alumnos[i]['justificada_valor'])
+                  },
+                  fontSize: 0,
+                  size: 180,
+                  text: Text(
+                    alumnos[i]['nombre'],
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      return Column(
+        children: <Widget>[
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: children),
+          Row(children: childrenCard)
+        ],
+      );
+    } else {
+      return Center(child: CircularProgressIndicator());
+    }
+    //});
   }
 
   /*hexStringToHexInt(String hex) {
@@ -255,7 +227,7 @@ class _DashboardPageState extends State<DashboardPage> {
     await storage.read(key: 'token') ?? ''
   }*/
 
-  Widget _cardEstadaCuenta() =>
+  Widget _cardEstadoCuenta() =>
       new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ListTile(
           title: Text('Estado de Cuenta', style: TextStyle(fontSize: 19)),
@@ -270,11 +242,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        EstadoCuentaPage(storage: widget.storage)));
+            Navigator.pushReplacementNamed(context, Routes.estado_cuenta);
           },
           child: Column(
             children: <Widget>[

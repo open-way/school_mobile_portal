@@ -27,12 +27,12 @@ class _FormJustificacionState extends State<FormJustificacion> {
   final Map<String, String> _nombreMotivo = new Map();
   String _currentDescripcionJusti;
   TextEditingController _textController;
-  ResponseDialogModel _responseDialog;
+  ResponseDialogModel _responseDialog =
+      ResponseDialogModel(action: DialogActions.CANCEL, data: {});
 
   String _fileName = '';
   String _base64Image;
 
-  //File tmpFile;
   Future<File> file;
   String status = '';
   String errMessage = 'Error cargando imagen';
@@ -74,7 +74,6 @@ class _FormJustificacionState extends State<FormJustificacion> {
     this._fileName = '';
     this._base64Image = '';
     this.file = null;
-    print('this._fileName: ${this._fileName}');
     setState(() {});
   }
 
@@ -90,14 +89,6 @@ class _FormJustificacionState extends State<FormJustificacion> {
       status = message;
     });
   }
-
-  /*startUpload() {
-    setStatus('Cargando imagen...');
-    if (null == tmpFile) {
-      return;
-    }
-    this._fileName = tmpFile.path.split('/').last;
-  }*/
 
   cancelJustificacion() {
     this._responseDialog =
@@ -115,13 +106,10 @@ class _FormJustificacionState extends State<FormJustificacion> {
           this._base64Image = base64Encode(snapshot.data.readAsBytesSync());
           return Container(
             height: 400,
-            //child: Flexible(
-            //fit: FlexFit.loose,
             child: Image.file(
               snapshot.data,
               fit: BoxFit.fitHeight,
             ),
-            //),
           );
         } else if (null != snapshot.error) {
           return const Text(
@@ -185,18 +173,23 @@ class _FormJustificacionState extends State<FormJustificacion> {
                       minLines: 1,
                       scrollController: _scrollController,
                       maxLength: 100,
-                      onSubmitted: (String newValue) =>
-                          {this._currentDescripcionJusti = newValue},
+                      onSubmitted: (String newValue) {
+                        this._currentDescripcionJusti = newValue;
+                      },
                       decoration: InputDecoration(
                           labelText: 'Descripción',
                           counterStyle:
                               TextStyle(color: LambThemes.light.primaryColor)),
-                      onChanged: (String newValue) =>
-                          {this._currentDescripcionJusti = newValue},
+                      onChanged: (String newValue) {
+                        this._currentDescripcionJusti = newValue;
+                      },
                     ),
                     new RaisedButton(
                       onPressed: () => Future.delayed(Duration.zero, () async {
-                        await (this._currentDescripcionJusti == null
+                        await (this._currentDescripcionJusti == null ||
+                                this._currentDescripcionJusti == '' ||
+                                this._idMotivo == null ||
+                                this._idMotivo == ''
                             ? Future.delayed(
                                 Duration.zero,
                                 () async {
@@ -204,18 +197,56 @@ class _FormJustificacionState extends State<FormJustificacion> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return SimpleDialog(
+                                        contentPadding: EdgeInsets.all(0),
                                         children: <Widget>[
                                           Container(
-                                            child: Text(
-                                                'La Descripción no puede estar vacía'),
                                             padding: EdgeInsets.all(15),
+                                            child: RichText(
+                                                textAlign: TextAlign.center,
+                                                text: new TextSpan(
+                                                  style: new TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: Colors.black,
+                                                  ),
+                                                  children: <TextSpan>[
+                                                    new TextSpan(
+                                                        text: 'Los campos '),
+                                                    new TextSpan(
+                                                      text: 'Selecione motivo',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic),
+                                                    ),
+                                                    new TextSpan(text: ' y '),
+                                                    new TextSpan(
+                                                      text: 'Descripción',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic),
+                                                    ),
+                                                    new TextSpan(
+                                                        text:
+                                                            ' no pueden estar vacíos',
+                                                        style: new TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold)),
+                                                  ],
+                                                )),
                                           ),
                                           ButtonBar(
+                                            buttonPadding: EdgeInsets.all(0),
                                             children: <Widget>[
-                                              RaisedButton(
+                                              FlatButton(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
-                                                child: Text('OK'),
+                                                child: Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                    color: LambThemes
+                                                        .light.primaryColor,
+                                                  ),
+                                                ),
                                               )
                                             ],
                                           )

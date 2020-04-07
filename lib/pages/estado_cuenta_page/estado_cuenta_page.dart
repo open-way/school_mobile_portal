@@ -45,7 +45,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     this.getOperations();
   }
 
-  getOperations() {
+  getOperations() async {
     var now = new DateTime.now();
     this.idAnho = this.idAnho ?? now.year.toString();
 
@@ -54,13 +54,16 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       'id_anho': this.idAnho,
       'id_alumno': this._currentChildSelected.idAlumno,
     };
-    this.portalPadresService.getEstadoCuenta$(queryParameters).then((onValue) {
+    await this
+        .portalPadresService
+        .getEstadoCuenta$(queryParameters)
+        .then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
-      setState(() {});
     }).catchError((err) {
       print(err);
     });
+    setState(() {});
   }
 
   Future _loadChildSelectedStorageFlow() async {
@@ -98,60 +101,59 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       ),
       body: new RefreshIndicator(
         onRefresh: _handleRefresh,
-        child: Container(
-          padding: new EdgeInsets.all(15),
-          child: Column(
-            children: <Widget>[
-              new Card(
-                child: Container(
-                  padding: new EdgeInsets.all(15),
-                  alignment: Alignment.center,
-                  child: new RichText(
-                      text: new TextSpan(
-                    // Note: Styles for TextSpans must be explicitly defined.
-                    // Child text spans will inherit styles from parent
-                    style: new TextStyle(
-                      color: Colors.black,
-                    ),
-                    children: <TextSpan>[
-                      new TextSpan(
-                        text: 'SU SALDO ES: ',
-                        style: new TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            letterSpacing: 3),
-                      ),
-                      new TextSpan(
-                          text: '${_operationsTotal?.total ?? ''}',
+        child: _listaOperations == null ||
+                _listaOperations == [] ||
+                _listaOperations.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : Container(
+                padding: new EdgeInsets.all(15),
+                child: Column(
+                  children: <Widget>[
+                    new Card(
+                      child: Container(
+                        padding: new EdgeInsets.all(15),
+                        alignment: Alignment.center,
+                        child: new RichText(
+                            text: new TextSpan(
                           style: new TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
                             color: Colors.black,
-                          )),
-                    ],
-                  )),
-                ),
-              ),
-              Expanded(
-                child: new Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: new Container(
-                    padding: new EdgeInsets.all(5),
-                    //child: new RefreshIndicator(
-                    child: new OperationsList(
-                      listaOperations: this._listaOperations ?? [],
+                          ),
+                          children: <TextSpan>[
+                            new TextSpan(
+                              text: 'SU SALDO ES: ',
+                              style: new TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w300,
+                                  letterSpacing: 3),
+                            ),
+                            new TextSpan(
+                                text: '${_operationsTotal?.total ?? ''}',
+                                style: new TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                )),
+                          ],
+                        )),
+                      ),
                     ),
-                    //onRefresh: _handleRefresh,
-                    //),
-                  ),
+                    Expanded(
+                      child: new Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: new Container(
+                          padding: new EdgeInsets.all(5),
+                          child: new OperationsList(
+                            listaOperations: this._listaOperations,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

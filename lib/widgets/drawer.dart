@@ -245,8 +245,6 @@ class _AppDrawerState extends State<AppDrawer> {
         icon: Icons.person,
         text: RichText(
             text: new TextSpan(
-          // Note: Styles for TextSpans must be explicitly defined.
-          // Child text spans will inherit styles from parent
           style: new TextStyle(),
           children: <TextSpan>[
             new TextSpan(

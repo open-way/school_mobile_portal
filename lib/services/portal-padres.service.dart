@@ -49,7 +49,7 @@ class PortalPadresService extends VitHttpService {
           .map<AgendaModel>((json) => AgendaModel.fromJson(json))
           .toList();
     } else {
-      print("Can't get agenda.");
+      throw("Can't get agenda. $body");
     }
   }
 }

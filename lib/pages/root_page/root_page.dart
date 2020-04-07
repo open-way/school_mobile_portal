@@ -7,6 +7,7 @@ import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
+import 'package:school_mobile_portal/widgets/info_box.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -38,11 +39,15 @@ class _RootPageState extends State<RootPage> {
   void initState() {
     super.initState();
     this._readToken();
+    WidgetsBinding.instance.addPostFrameCallback((_) => showNewDialog());
   }
 
   void _readToken() async {
     final strUserSignIn = await widget.storage.read(key: 'user_sign_in') ?? '';
+    //final strAll = await widget.storage.readAll() ?? '';
     // await storage.deleteAll();
+    //print(strUserSignIn.toString() + '??????????');
+    //print(strAll.toString() + '??????????');
     if (strUserSignIn.isNotEmpty) {
       this.userSignInModel =
           UserSignInModel.fromJson(jsonDecode(strUserSignIn));
@@ -86,13 +91,25 @@ class _RootPageState extends State<RootPage> {
     );
   }
 
+  Future showNewDialog() async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return InfoBox();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (authStatus) {
       case AuthStatus.NOT_DETERMINED:
+        //widget.storage.delete(key: 'auth_status');
+        //widget.storage.write(key: 'auth_status', value: authStatus.toString());
         return buildWaitingScreen();
         break;
       case AuthStatus.NOT_LOGGED_IN:
+        //widget.storage.delete(key: 'auth_status');
+        //widget.storage.write(key: 'auth_status', value: authStatus.toString());
         // storage.deleteAll();
         return new LoginSignupPage(
           authService: widget.authService,
@@ -102,6 +119,8 @@ class _RootPageState extends State<RootPage> {
         );
         break;
       case AuthStatus.LOGGED_IN:
+        //widget.storage.delete(key: 'auth_status');
+        //widget.storage.write(key: 'auth_status', value: authStatus.toString());
         // if (_userToken.length > 0 && _userToken != null) {
         return new DashboardPage(
           // userId: _userToken,
@@ -113,6 +132,8 @@ class _RootPageState extends State<RootPage> {
       //   return buildWaitingScreen();
       // break;
       default:
+        //widget.storage.delete(key: 'auth_status');
+        //widget.storage.write(key: 'auth_status', value: 'AuthStatus.NOT_DETERMINED');
         return buildWaitingScreen();
     }
   }
