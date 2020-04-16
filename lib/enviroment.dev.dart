@@ -7,3 +7,6 @@ final baseAllUrl = 'https://api-lamb-school-financial.upeu.edu.pe/mobile-api';
 final baseApiGeneral = 'api-lamb-school-financial.upeu.edu.pe';
 final intermediateApiGeneral = '/mobile-api';
 
+// final baseAllUrl = 'https://api-lamb-school-financial.upeu.edu.pe/mobile-api';
+// final baseApiGeneral = 'api-lamb-school-financial.upeu.edu.pe';
+// final intermediateApiGeneral = '/mobile-api';

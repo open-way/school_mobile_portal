@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
@@ -130,6 +129,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    //print('TestWidget: ${ModalRoute.of(context).isCurrent} login_signup_page');
+    //_loadAuthStatus();
     return new Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(0),
@@ -146,6 +147,17 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ),
     );
   }
+
+  /*Future _loadAuthStatus() async {
+    // Usar todos los metodos que quieran al hijo actual.
+    String strColorSignIn = LambThemes.dark.appBarTheme.color.value.toString();
+    String strColorSignUp = LambThemes.light.accentColor.value.toString();
+    await widget.storage.write(
+        key: 'color_status_bar',
+        value: _isLoginForm ? strColorSignIn : strColorSignUp);
+    var localauthStatus = await widget.storage.read(key: 'color_status_bar');
+    print(localauthStatus.toString() + 'login_signup_page');
+  }*/
 
   Widget _showCircularProgress() {
     if (_isLoading) {

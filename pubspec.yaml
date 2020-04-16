@@ -22,11 +22,12 @@ dependencies:
   http: ^0.12.0+4 # add by Vitmar
   flutter_secure_storage: ^3.3.1+1 # add by Vitmar
   table_calendar: ^2.2.2 # add by Julio
-  animated_dialog_box: ^0.0.2 # add by Julio
-  rflutter_alert: ^1.0.3 # add by Julio
   pie_chart: ^3.1.1 # add by Julio
   http_interceptor: any # add by Vitmar
   barcode_flutter: ^1.1.0 # add by Vitmar
+  image_picker: ^0.6.3+4 # add by Julio
+  package_info: ^0.4.0+16 # add by Julio
+  url_launcher: ^5.4.2 # add by Julio
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -53,7 +53,7 @@ class _AppBarLambState extends State<BarLamb> {
   String getNomDoc() {
     String nombre = widget.alumno?.nombre ?? '';
     String doc;
-    if (widget.alumno?.numDoc == null) {
+    if (widget.alumno?.numDoc == 'null' || widget.alumno?.numDoc == null) {
       doc = '';
     } else {
       doc = '(${widget.alumno?.numDoc})';

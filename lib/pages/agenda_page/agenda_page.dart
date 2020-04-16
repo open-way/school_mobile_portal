@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/agenda_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
@@ -13,6 +12,7 @@ import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
+import 'package:school_mobile_portal/widgets/custom_dialog.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -38,12 +38,10 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
       new PeriodosAcademicosService();
   GlobalKey<RefreshIndicatorState> refreshKey;
   final Map<DateTime, List> _agendaEventos = new Map();
-  List _selectedEvents;
+  List _selectedEvents = [];
   AnimationController _animationController;
   CalendarController _calendarController;
   final Map<String, String> queryParams = new Map();
-  //String _currentIdChildSelected;
-  //String _currentNameChildSelected;
   HijoModel _currentChildSelected;
   String _idPeriodoAcademico;
   String _idAnho;
@@ -88,26 +86,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    /*AppBar(
-      title: Text('AGENDA'),
-      centerTitle: true,
-      bottom: PreferredSize(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Text(
-              this._currentNameChildSelected ?? '',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          preferredSize: Size(MediaQuery.of(context).size.width - 2, 40)),
-      actions: <Widget>[
-        IconButton(
-          //alignment: CrossAxisAlignment.center,
-          icon: Icon(Icons.filter_list),
-          onPressed: _showDialog,
-        ),
-      ],
-    );*/
     return Scaffold(
       drawer: AppDrawer(
         storage: widget.storage,
@@ -139,14 +117,9 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
   }
 
   Widget _calendarBox() {
-    return //new FractionallySizedBox(
-        //heightFactor: 1,
-        //widthFactor: 1,
-        /*child:*/ ListView(
-      //shrinkWrap: true,
+    return ListView(
       padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
       controller: _controllerTwo,
-      //child: Column(
       children: <Widget>[
         Column(children: <Widget>[
           Container(
@@ -161,14 +134,7 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
             ),
           ),
         ])
-        /*Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2,
-              child: Expanded(child: _buildEventList()),
-            ),*/
       ],
-      //),
-      //),
     );
   }
 
@@ -282,7 +248,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
 
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar(List<AgendaModel> agenda) {
-    final formatoFecha = new DateFormat('yyyy-MM-dd 00:00:00.000');
     return TableCalendar(
       locale: 'es_PE',
       calendarController: _calendarController,
@@ -394,8 +359,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
         return [
           RichText(
               text: new TextSpan(
-            // Note: Styles for TextSpans must be explicitly defined.
-            // Child text spans will inherit styles from parent
             style: new TextStyle(
               fontSize: 18.0,
               color: Colors.black,
@@ -449,24 +412,6 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     rangoHoras = formatoHora.format(dayList[2]).toString() +
         ' - ' +
         formatoHora.format(dayList[3]).toString();
-
-    // Reusable alert style
-    var alertStyle = AlertStyle(
-      animationType: AnimationType.fromTop,
-      isCloseButton: false,
-      isOverlayTapDismiss: false,
-      descStyle: TextStyle(fontWeight: FontWeight.bold),
-      animationDuration: Duration(milliseconds: 400),
-      alertBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(0.0),
-        side: BorderSide(
-          color: Colors.grey,
-        ),
-      ),
-      titleStyle: TextStyle(
-        color: Colors.red,
-      ),
-    );
     var nivel = listaActividades[getId].nivel ?? '';
     var grado = listaActividades[getId].grado ?? '';
     var nivelGrado;
@@ -477,98 +422,121 @@ class _AgendaPageState extends State<AgendaPage> with TickerProviderStateMixin {
     }
     var seccion = listaActividades[getId].seccion ?? '';
     var curso = listaActividades[getId].curso ?? '';
-    return new Alert(
-        context: context,
-        style: alertStyle,
-        title: listaActividades[getId].categoriaNombre,
-        content: Column(
-          children: <Widget>[
-            Text(rangoFechas, textAlign: TextAlign.center),
-            Text(rangoHoras, textAlign: TextAlign.center),
-            Text(listaActividades[getId].nombre, textAlign: TextAlign.center),
-            Text(listaActividades[getId].descripcion,
-                textAlign: TextAlign.center),
-            Text(nivelGrado + ' ' + seccion, textAlign: TextAlign.center),
-            Text(curso, textAlign: TextAlign.center),
-          ],
-        ),
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'OK!',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
-  }
-
-  Widget _buildEventList() {
-    return new FutureBuilder(
-        future: portalPadresService.getAgenda(this.queryParams),
-        builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          if (snapshot.hasData) {
-            List<AgendaModel> agenda = snapshot.data;
-            print(_selectedEvents.toString() + '121231212312312');
-            List<Widget> eventList = [];
-            var evenText;
-            for (var i = 0; i < _selectedEvents.length; i++) {
-              evenText = _getDetalleActividad(_selectedEvents[i], agenda);
-
-              eventList.add(Container(
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: LinearGradient(
-                    colors: [LambThemes.light.primaryColor, Colors.white],
-                    begin: Alignment(1000, 0),
-                    end: Alignment(-1, 0),
-                    tileMode: TileMode.repeated,
-                  ),
-                ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: ListTile(
-                  title: Container(
-                    //constraints: BoxConstraints(minHeight: 50),
-                    child: Row(
+    Future showNewDialog() async {
+      TextAlign textAlignLocal = TextAlign.center;
+      return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialog(
+                opacity: 1,
+                width: 300,
+                title: listaActividades[getId].categoriaNombre,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
                       children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                          alignment: Alignment.center,
-                          width: 30,
-                          child: Text(
-                            '${i + 1}.',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        //Agregar LayoutBuilder
-                        Container(
-                          width: 210,
-                          child: evenText[0],
-                        ),
-
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: evenText[1],
-                        )
+                        Text(rangoFechas, textAlign: textAlignLocal),
+                        Text(rangoHoras, textAlign: textAlignLocal),
+                        Text(listaActividades[getId].nombre,
+                            textAlign: textAlignLocal),
+                        Text(listaActividades[getId].descripcion,
+                            textAlign: textAlignLocal),
+                        Text(nivelGrado + ' ' + seccion,
+                            textAlign: textAlignLocal),
+                        Text(curso, textAlign: textAlignLocal),
                       ],
                     ),
                   ),
-                  onTap: () =>
-                      _showDetalleActividadAlert(_selectedEvents[i], agenda),
-                ),
-              ));
+                ],
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'Ok',
+                      style: TextStyle(color: LambThemes.light.primaryColor),
+                    ),
+                  )
+                ]);
+          });
+    }
+
+    showNewDialog();
+  }
+
+  Widget _buildEventList() {
+    try {
+      return new FutureBuilder(
+          future: portalPadresService.getAgenda(this.queryParams),
+          builder: (context, AsyncSnapshot<List<AgendaModel>> snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+            if (snapshot.hasData || _selectedEvents.isNotEmpty) {
+              List<AgendaModel> agenda = snapshot.data;
+              print(_selectedEvents.toString() + '121231212312312');
+              List<Widget> eventList = [];
+              var evenText;
+              for (var i = 0; i < _selectedEvents?.length; i++) {
+                evenText = _getDetalleActividad(_selectedEvents[i], agenda);
+
+                eventList.add(Container(
+                  padding: EdgeInsets.all(0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    gradient: LinearGradient(
+                      colors: [LambThemes.light.primaryColor, Colors.white],
+                      begin: Alignment(1000, 0),
+                      end: Alignment(-1, 0),
+                      tileMode: TileMode.repeated,
+                    ),
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 4.0),
+                  child: ListTile(
+                    title: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                            alignment: Alignment.center,
+                            width: 30,
+                            child: Text(
+                              '${i + 1}.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          //Agregar LayoutBuilder
+                          Container(
+                            width: 210,
+                            child: evenText[0],
+                          ),
+
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child: evenText[1],
+                          )
+                        ],
+                      ),
+                    ),
+                    onTap: () =>
+                        _showDetalleActividadAlert(_selectedEvents[i], agenda),
+                  ),
+                ));
+              }
+              return ListView(children: eventList);
+            } else {
+              return Center();
             }
-            return ListView(children: eventList);
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+          });
+    } catch (e) {
+      print('Error _buildEventList(): $e');
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 
   Future _showDialog() async {

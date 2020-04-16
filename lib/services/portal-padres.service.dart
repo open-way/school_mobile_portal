@@ -43,13 +43,14 @@ class PortalPadresService extends VitHttpService {
     http.Response res =
         await httpGetByQuery('/portal-padre/agendas', queryParams);
     final body = jsonDecode(res.body);
+    print(body.toString());
     if (res.statusCode == 200) {
       final data = body['data'].cast<Map<String, dynamic>>();
       return data
           .map<AgendaModel>((json) => AgendaModel.fromJson(json))
           .toList();
     } else {
-      print("Can't get agenda.");
+      throw("Can't get agenda. $body");
     }
   }
 }

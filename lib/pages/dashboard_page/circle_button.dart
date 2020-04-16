@@ -18,17 +18,12 @@ class CircleButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: new BoxDecoration(
-          border: Border(
-            top: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            left: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            right: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
-            bottom: BorderSide(
-                style: BorderStyle.solid, color: color, width: circleWidth),
+          border: Border.all(
+            style: BorderStyle.solid,
+            color: color,
+            width: circleWidth,
           ),
-          color: Colors.white,
+          color: Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: new Center(child: txt),

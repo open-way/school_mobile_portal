@@ -215,6 +215,7 @@ class _AppDrawerState extends State<AppDrawer> {
         icon: Icons.note,
         text: Text('Agenda'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
+        //onTap: () => Navigator.pushNamed(context, '/agenda'),
       ),
       createDrawerItem(
         icon: Icons.call_to_action,
@@ -244,8 +245,6 @@ class _AppDrawerState extends State<AppDrawer> {
         icon: Icons.person,
         text: RichText(
             text: new TextSpan(
-          // Note: Styles for TextSpans must be explicitly defined.
-          // Child text spans will inherit styles from parent
           style: new TextStyle(),
           children: <TextSpan>[
             new TextSpan(

@@ -13,10 +13,11 @@ import 'package:school_mobile_portal/services/justificaciones.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
+import 'package:school_mobile_portal/widgets/custom_dialog.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:animated_dialog_box/animated_dialog_box.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class AsistenciaPage extends StatefulWidget {
@@ -58,6 +59,8 @@ class _AsistenciaPageState extends State<AsistenciaPage>
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+    initializeDateFormatting();
+    Intl.defaultLocale = 'es_PE';
     this._loadChildSelectedStorageFlow();
   }
 
@@ -99,104 +102,151 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
     if (events.isNotEmpty) {
       if (day != null) {
-        return await animated_dialog_box.showScaleAlertBox(
-            title: Text(f.format(day)),
-            context: context,
-            firstButton: MaterialButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40),
-              ),
-              color: LambThemes.light.primaryColor,
-              child: Text('Ok!'),
-              onPressed: () {
-                Future.delayed(Duration.zero, () {
-                  Navigator.of(context).pop();
-                });
-              },
-            ),
-            icon: Icon(null),
-            yourWidget: Container(
-              height: MediaQuery.of(context).size.height / 3,
-              width: 300,
-              child: CupertinoScrollbar(
-                  controller: _controllerOne,
-                  child: ListView.builder(
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialog(
+              opacity: 1,
+              width: 250,
+              title: f.format(day),
+              buttonBarPadding: 40,
+              children: <Widget>[
+                Container(
+                  height: 200,
+                  alignment: Alignment.center,
+                  child: CupertinoScrollbar(
+                    controller: _controllerOne,
+                    child: ListView.builder(
+                      shrinkWrap: true,
                       controller: _controllerOne,
                       itemCount: 1,
                       itemBuilder: (BuildContext context, int index) =>
-                          detalleAsistenciasDia(day))),
-            ));
+                          detalleAsistenciasDia(day),
+                    ),
+                  ),
+                ),
+              ],
+              floatingActionButton: Container(
+                height: 40,
+                width: 70,
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  focusElevation: 0,
+                  highlightElevation: 0,
+                  elevation: 0,
+                  isExtended: true,
+                  backgroundColor: LambThemes.light.primaryColor,
+                  child: Text('Ok!'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            );
+          },
+        );
       }
     }
   }
 
   void showJustificacion(AsistenciaModel listaAsistencia) async {
-    await animated_dialog_box.showScaleAlertBox(
+    await showDialog(
         context: context,
-        icon: Icon(null),
-        title: Text('Justificación'),
-        yourWidget: Column(
-          children: <Widget>[
-            Center(
-                child: Text(listaAsistencia.justificacionMotivo ?? '',
-                    style: TextStyle(fontSize: 17, color: Color(0x99000000)))),
-            Center(
-                child: Text(listaAsistencia.justificacionDescripcion ?? '',
-                    style: TextStyle(fontSize: 15, color: Colors.black45))),
-          ],
-        ),
-        firstButton: RaisedButton(
-          onPressed: () => Future.delayed(Duration.zero, () {
-            Navigator.of(context).pop();
-          }),
-          child: Text(
-            '  OK  ',
-          ),
-        ));
+        builder: (BuildContext context) {
+          return CustomDialog(
+              width: double.minPositive,
+              opacity: 1,
+              title: 'Justificación',
+              children: <Widget>[
+                Center(
+                    child: Text(listaAsistencia.justificacionMotivo ?? '',
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(fontSize: 17, color: Color(0x99000000)))),
+                Center(
+                    child: Text(listaAsistencia.justificacionDescripcion ?? '',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 15, color: Colors.black45))),
+              ],
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      '  Ok  ',
+                      style: TextStyle(
+                        color: LambThemes.light.primaryColor,
+                      ),
+                    ))
+              ]);
+        });
+  }
+
+  Future showResNewJustificacion(String message) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            opacity: 1,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  '$message',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+              )
+            ],
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                    color: LambThemes.light.primaryColor,
+                  ),
+                ),
+              )
+            ],
+          );
+        });
   }
 
   Future newJustificacion(AsistenciaModel listaAsistencia) async {
-    ResponseDialogModel response = await animated_dialog_box.showScaleAlertBox(
-      context: context,
-      icon: Icon(null),
-      title: Text('Justificación'),
-      yourWidget: Container(
-          height: MediaQuery.of(context).size.height / 3,
-          width: 300,
-          child: new CupertinoScrollbar(
-              controller: _controllerThree,
-              child:
-                  /*ListView.builder(
-              controller: _controllerThree,
-              itemCount: 1,
-              itemBuilder: (BuildContext context, int index) =>*/
-                  //   Container(
-                  //height: 100,
-                  //width: 100,
-                  //child:
-                  //Column(
-                  //mainAxisSize: MainAxisSize.min,
-                  //crossAxisAlignment: CrossAxisAlignment.start,
-                  //children: <Widget>[
-                  new FormJustificacion()
-              //],
-              //),
-              //)
-              )),
-      firstButton: FlatButton(onPressed: null, child: null),
-    );
+    ResponseDialogModel response = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => FormJustificacion()));
 
     switch (response?.action) {
       case DialogActions.SUBMIT:
         if (response.data != null) {
+          Navigator.of(context).pop();
           final Map<String, String> postParams = new Map();
-          postParams.addAll(response.data);
+          //postParams.addAll(response.data);
+          postParams['id_jmotivo'] = response.data['id_jmotivo'];
+          postParams['descripcion'] = response.data['descripcion'];
           postParams['id_asistencia'] = listaAsistencia.idAsistencia;
-          postParams['archivo'] = '';
-          this._justificacionesService.postAll$(postParams).then((onValue) {
+          postParams['archivo'] = response.data['archivo'];
+          await this
+              ._justificacionesService
+              .postAll$(postParams)
+              .then((onValue) async {
             print(onValue);
-          }).catchError((onError) {
-            print(onError);
+            if (int.parse(onValue).isNaN) {
+              await showResNewJustificacion(
+                  'Ocurrió un error, intentar de nuevo.');
+            } else {
+              await showResNewJustificacion(
+                  'La justificación se envió con éxito');
+            }
+          }).catchError((onError) async {
+            await showResNewJustificacion(
+                'Ocurrió un error, intentar de nuevo.');
           });
         }
         break;
@@ -208,7 +258,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
 
   final ScrollController _controllerOne = ScrollController();
   final ScrollController _controllerTwo = ScrollController();
-  final ScrollController _controllerThree = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,11 +291,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
   }
 
   Widget _calendarBox() {
-    return /*FractionallySizedBox(
-      heightFactor: 1,
-      widthFactor: 1,
-      child: */
-        ListView(
+    return ListView(
       padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
       controller: _controllerTwo,
       children: <Widget>[
@@ -259,7 +304,6 @@ class _AsistenciaPageState extends State<AsistenciaPage>
           ],
         ),
       ],
-      //),
     );
   }
 
@@ -300,6 +344,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     Map<CalendarFormat, String> _calendarFormat = new Map();
     _calendarFormat[CalendarFormat.month] = 'only month';
     return TableCalendar(
+      locale: 'es_PE',
       calendarController: _calendarController,
       startDay: DateTime(int.parse(this._idAnho), 1, 1, 0, 0),
       endDay: DateTime(int.parse(this._idAnho), 12, 31, 0, 0),
@@ -336,10 +381,17 @@ class _AsistenciaPageState extends State<AsistenciaPage>
             List<AsistenciaModel> asistencias = snapshot.data;
             final f = new DateFormat('dd/MM/yyyy');
             final children = <Widget>[];
+            Color cardColor = Colors.transparent;
+            int counter = 0;
             for (var i = 0; i < asistencias.length; i++) {
               if (f.format(DateTime.parse(asistencias[i].fechaRegistro)) ==
                   f.format(day)) {
-                children.add(buildDetalleAsistencias(asistencias[i]));
+                cardColor = counter == 0
+                    ? cardColor
+                    : LambThemes.light.backgroundColor.withOpacity(0.2);
+                counter = counter == 0 ? 1 : 0;
+                children
+                    .add(buildDetalleAsistencias(asistencias[i], cardColor));
               }
             }
             return Column(children: children);
@@ -349,7 +401,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
         });
   }
 
-  Widget buildDetalleAsistencias(AsistenciaModel asistencia) {
+  Widget buildDetalleAsistencias(AsistenciaModel asistencia, Color cardColor) {
     var getEstado = getEstadoColor(asistencia);
     String periodoNombre = asistencia.periodoNombre ?? '';
     String estado = getEstado[0];
@@ -358,33 +410,78 @@ class _AsistenciaPageState extends State<AsistenciaPage>
     String responsable = asistencia.responsable;
     String puerta = asistencia.puerta;
 
-    return Card(
+    TextStyle titTextStyle =
+        TextStyle(fontWeight: FontWeight.w700, fontSize: 14);
+    TextStyle subTextStyle =
+        TextStyle(fontWeight: FontWeight.w300, fontSize: 13);
+    return Container(
+      alignment: Alignment.center,
+      width: double.maxFinite,
+      color: cardColor,
+      child: Card(
         elevation: 0,
-        child: Column(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(0))),
+        color: Colors.transparent,
+        margin: EdgeInsets.all(0),
+        child: Container(
+          width: 200,
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(0),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.album, color: color),
-                title: Text(periodoNombre),
-                subtitle: Text(estado),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(Icons.album, color: color),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(periodoNombre, style: titTextStyle),
+                      Text(estado, style: subTextStyle),
+                    ],
+                  )
+                ],
               ),
-              ListTile(
-                leading: Icon(null),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(DateFormat('HH:mm')
-                        .format(DateTime.parse(asistencia.fechaRegistro))
-                        .toString()),
-                    Text(responsable),
-                    Text(puerta),
-                  ],
-                ),
+              SizedBox(
+                height: 10,
               ),
-              ButtonBar(children: <Widget>[buttonJustificar]),
-              Divider(),
-            ]));
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(null),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                          DateFormat('HH:mm')
+                              .format(DateTime.parse(asistencia.fechaRegistro))
+                              .toString(),
+                          style: titTextStyle),
+                      Text(responsable, style: subTextStyle),
+                      Text(puerta, style: titTextStyle),
+                    ],
+                  ),
+                ],
+              ),
+              ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  buttonPadding: EdgeInsets.all(0),
+                  children: <Widget>[buttonJustificar]),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   //Retorna estado, color y solo si es de estado tarde o falta tambien el botonJustificar [Puntual, green, null]
@@ -418,7 +515,7 @@ class _AsistenciaPageState extends State<AsistenciaPage>
                 color: LambThemes.light.primaryColor,
               )),
           onPressed: () {
-            Navigator.of(context).pop();
+            //cierra _onDaySelected Navigator.of(context).pop();
             if (listaAsistencia.justificacionEstado == '0' ||
                 listaAsistencia.justificacionEstado == '1') {
               showJustificacion(listaAsistencia);

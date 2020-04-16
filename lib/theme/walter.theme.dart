@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-double get opacity40 => 0.4 / 0xFF0063C6;
+//double get opacity40 => 0.4 / 0xFF0063C6;
 
 final ThemeData walterTheme = new ThemeData(
     primaryColor: Color(0xFF0063C6),
@@ -9,11 +9,11 @@ final ThemeData walterTheme = new ThemeData(
     accentColor: Color(0xFF003473),
     //all background color
     //canvasColor: Color(0xFFF1F2F2),
-    //backgroundColor: Color(0xFFB9BABA),
+    backgroundColor: Color(4290362042),
     scaffoldBackgroundColor: Color(0xFFF1F2F2),
     //cardTheme: CardTheme(color: Color(0xFFF1F2F2)),
     cardColor: Colors.white,
-    primaryColorDark: (Color(0xFFB9BABA)),
+    primaryColorDark: Color(0xFFB9BABA),
     textTheme: TextTheme(
       //ListTitle(title)
       subtitle: TextStyle(color: Colors.black87),
@@ -51,7 +51,7 @@ final ThemeData walterTheme = new ThemeData(
     brightness: Brightness.light,
     primaryColorBrightness: Brightness.dark,
     accentColorBrightness: Brightness.dark,
-    backgroundColor: Color(0xFFF1F2F2),
+    //backgroundColor: Color(0xFFF1F2F2),
     inputDecorationTheme: InputDecorationTheme(
       fillColor: Colors.transparent,
       filled: true,
