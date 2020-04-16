@@ -12,6 +12,7 @@ class PortalPadresService extends VitHttpService {
     http.Response res =
         await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
     final body = jsonDecode(res.body);
+    print(res.body.toString());
     if (res.statusCode == 200) {
       final data = EstadoCuentaModel.fromJson(body['data']);
       return data;
