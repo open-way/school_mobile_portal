@@ -9,10 +9,11 @@ import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart'
 class PortalPadresService extends VitHttpService {
   Future<EstadoCuentaModel> getEstadoCuenta$(
       Map<String, String> queryParams) async {
+        // print('Hola estado de cuenta');
     http.Response res =
         await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
     final body = jsonDecode(res.body);
-    print(res.body.toString());
+    // print(res.body.toString());
     if (res.statusCode == 200) {
       final data = EstadoCuentaModel.fromJson(body['data']);
       return data;
@@ -27,7 +28,7 @@ class PortalPadresService extends VitHttpService {
         await httpGetByQuery('/portal-padre/asistencias', queryParams);
 
     final body = jsonDecode(res.body);
-    print(res.body.toString());
+    // print(res.body.toString());
 
     if (res.statusCode == 200) {
       final data = body['data'].cast<Map<String, dynamic>>();

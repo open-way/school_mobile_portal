@@ -8,7 +8,8 @@ import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart'
 class MisHijosService extends VitHttpService {
   Future<List<HijoModel>> getAll$() async {
     http.Response res = await httpGetAll('/setup/mis-hijos');
-
+    // print('=============>>>> lista de hijos');
+    // print(res.body);
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = body['data'].cast<Map<String, dynamic>>();

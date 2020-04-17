@@ -30,6 +30,7 @@ class AuthService implements BaseAuth {
       '$theUrl/sign-in',
       body: {'username': username, 'password': password, 'no_caduca': 'true'},
     );
+    // print(res.body);
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = new UserSignInModel.fromJson(body['data']);

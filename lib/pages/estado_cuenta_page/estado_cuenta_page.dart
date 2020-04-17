@@ -35,6 +35,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   @override
   void initState() {
+    print('initState --------->');
     super.initState();
     this._loadMaster();
   }
