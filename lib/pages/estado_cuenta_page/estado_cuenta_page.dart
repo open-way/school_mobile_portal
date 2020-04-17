@@ -49,7 +49,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     var now = new DateTime.now();
     this.idAnho = this.idAnho ?? now.year.toString();
 
-    this._listaOperations = [];
+    //this._listaOperations = [];
     var queryParameters = {
       'id_anho': this.idAnho,
       'id_alumno': this._currentChildSelected.idAlumno,
@@ -101,9 +101,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       ),
       body: new RefreshIndicator(
         onRefresh: _handleRefresh,
-        child: _listaOperations == null ||
-                _listaOperations == [] ||
-                _listaOperations.isEmpty
+        child: _listaOperations == null
             ? Center(child: CircularProgressIndicator())
             : Container(
                 padding: new EdgeInsets.all(15),
@@ -113,29 +111,33 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                       child: Container(
                         padding: new EdgeInsets.all(15),
                         alignment: Alignment.center,
-                        child: new RichText(
-                            text: new TextSpan(
-                          style: new TextStyle(
-                            color: Colors.black,
-                          ),
-                          children: <TextSpan>[
-                            new TextSpan(
-                              text: 'SU SALDO ES: ',
-                              style: new TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w300,
-                                  letterSpacing: 3),
-                            ),
-                            new TextSpan(
-                                text: '${_operationsTotal?.total ?? ''}',
+                        child: _listaOperations == [] ||
+                                _listaOperations.isEmpty
+                            ? Text('Sin resultados',
+                                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15))
+                            : new RichText(
+                                text: new TextSpan(
                                 style: new TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
                                   color: Colors.black,
-                                )),
-                          ],
-                        )),
+                                ),
+                                children: <TextSpan>[
+                                  new TextSpan(
+                                    text: 'SU SALDO ES: ',
+                                    style: new TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w300,
+                                        letterSpacing: 3),
+                                  ),
+                                  new TextSpan(
+                                      text: '${_operationsTotal?.total ?? ''}',
+                                      style: new TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      )),
+                                ],
+                              )),
                       ),
                     ),
                     Expanded(
