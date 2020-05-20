@@ -49,7 +49,7 @@ class AuthService implements BaseAuth {
       'password': password,
       'password_confirmation': passwordConfirm,
     };
-    print(data.toString());
+    // print(data.toString());
     http.Response res = await http.post('$theUrl/sign-up', body: data);
     final body = jsonDecode(res.body);
 

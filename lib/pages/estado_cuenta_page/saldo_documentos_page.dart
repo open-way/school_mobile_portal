@@ -2,43 +2,46 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:school_mobile_portal/enums/enum.dart';
+// import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/models/operation_model.dart';
-import 'package:school_mobile_portal/models/response_dialog_model.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/saldo_documentos_page.dart';
+import 'package:school_mobile_portal/models/saldo_documento.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
+// import 'package:school_mobile_portal/models/operation_model.dart';
+// import 'package:school_mobile_portal/models/response_dialog_model.dart';
+// import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
+// import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
-import 'package:school_mobile_portal/services/visapayment.service.dart';
+// import 'package:school_mobile_portal/services/visapayment.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
-import 'package:school_mobile_portal/widgets/drawer.dart';
-import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
+// import 'package:school_mobile_portal/widgets/drawer.dart';
+// import 'package:school_mobile_portal/widgets/drawer.dart';
+// import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 
-class EstadoCuentaPage extends StatefulWidget {
-  static const String routeName = '/estado_cuenta';
+class SaldoDocumentosPage extends StatefulWidget {
+  // static const String routeName = '/estado_cuenta';
 
-  EstadoCuentaPage({Key key, @required this.storage}) : super(key: key);
+  // SaldoDocumentosPage({Key key, @required this.storage}) : super(key: key);
+  SaldoDocumentosPage({Key key, @required this.storage}) : super(key: key);
   final FlutterSecureStorage storage;
 
   @override
-  _EstadoCuentaPageState createState() => _EstadoCuentaPageState();
+  _SaldoDocumentosPageState createState() => _SaldoDocumentosPageState();
 }
 
-class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
+class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
-  final VisapaymentService visapaymentService = new VisapaymentService();
-  List<dynamic> _listaOperations;
-  OperationTotalModel _operationsTotal;
+  // final VisapaymentService visapaymentService = new VisapaymentService();
+  List<dynamic> _listaOperationsSaldo;
+  // OperationTotalModel _operationsTotal;
 
   HijoModel _currentChildSelected;
+  String _totalPagar = '0';
 
   String idAnho;
 
   @override
   void initState() {
-    print('initState --------->');
     super.initState();
     this._loadMaster();
   }
@@ -46,24 +49,27 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   Future _loadMaster() async {
     await this._loadChildSelectedStorageFlow();
     // Usar todos los metodos que quieran al hijo actual.
-    this.getOperations();
+    this.getOperationSaldos();
   }
 
-  getOperations() async {
+  getOperationSaldos() async {
     var now = new DateTime.now();
     this.idAnho = this.idAnho ?? now.year.toString();
 
-    //this._listaOperations = [];
     var queryParameters = {
       'id_anho': this.idAnho,
       'id_alumno': this._currentChildSelected.idAlumno,
     };
     await this
         .portalPadresService
-        .getEstadoCuenta$(queryParameters)
+        .getSaldoDocumentos$(queryParameters)
         .then((onValue) {
-      _listaOperations = onValue?.movements ?? [];
-      _operationsTotal = onValue.movementsTotal;
+      // _listaOperationsSaldo = onValue?.movements ?? [];
+      print('_listaOperationsSaldo.toString()====>>');
+      _listaOperationsSaldo = onValue ?? [];
+      print('_listaOperationsSaldo.toString()====>>');
+      print(_listaOperationsSaldo[0].checked);
+      // _operationsTotal = onValue.movementsTotal;
     }).catchError((err) {
       print(err);
     });
@@ -78,34 +84,34 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   }
 
   Future<Null> _handleRefresh() async {
-    this.getOperations();
+    this.getOperationSaldos();
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: AppDrawer(
-        storage: widget.storage,
-        onChangeNewChildSelected: (HijoModel childSelected) {
-          this._currentChildSelected = childSelected;
-          this.getOperations();
-          setState(() {});
-        },
-      ),
+      // drawer: AppDrawer(
+      //   storage: widget.storage,
+      //   onChangeNewChildSelected: (HijoModel childSelected) {
+      //     this._currentChildSelected = childSelected;
+      //     // this.getOperations();
+      //     setState(() {});
+      //   },
+      // ),
       appBar: AppBarLamb(
-        title: Text('ESTADO DE CUENTA'),
+        title: Text('PAGO DE MENSUALIDADES'),
         alumno: this._currentChildSelected,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: _showDialog,
-          ),
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.filter_list),
+        //     onPressed: _showDialog,
+        //   ),
+        // ],
       ),
       body: new RefreshIndicator(
         onRefresh: _handleRefresh,
-        child: _listaOperations == null
+        child: _listaOperationsSaldo == null
             ? Center(child: CircularProgressIndicator())
             : Container(
                 padding: new EdgeInsets.all(15),
@@ -115,8 +121,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                       child: new Container(
                         padding: new EdgeInsets.all(15),
                         alignment: Alignment.center,
-                        child: _listaOperations == [] ||
-                                _listaOperations.isEmpty
+                        child: _listaOperationsSaldo == [] ||
+                                _listaOperationsSaldo.isEmpty
                             ? Text('Sin resultados',
                                 style: TextStyle(
                                     fontStyle: FontStyle.italic, fontSize: 15))
@@ -127,7 +133,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                                 ),
                                 children: <TextSpan>[
                                   new TextSpan(
-                                    text: 'SU SALDO ES: ',
+                                    text: 'IMPORTE A PAGAR: ',
                                     style: new TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -135,7 +141,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                                         letterSpacing: 3),
                                   ),
                                   new TextSpan(
-                                      text: '${_operationsTotal?.total ?? ''}',
+                                      // text: '${_operationsTotal?.total ?? ''}',
+                                      text: _totalPagar,
                                       style: new TextStyle(
                                         fontSize: 20.0,
                                         fontWeight: FontWeight.bold,
@@ -152,8 +159,16 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                         ),
                         child: new Container(
                           padding: new EdgeInsets.all(5),
-                          child: new OperationsList(
-                            listaOperations: this._listaOperations,
+                          child: new OperationsListSaldo(
+                            listaOperations: this
+                                ._listaOperationsSaldo
+                                // .map((oper) => oper)
+                                .toList(),
+                            onChangeTotal: (total) {
+                              setState(() {
+                                this._totalPagar = total.toString();
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -167,25 +182,13 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                           children: <Widget>[
                             new RaisedButton(
                               child: new Text(
-                                'PAGAR',
+                                'VISA',
                               ),
-                              // onPressed: () => Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //       builder: (context) => VisapaymentPage()
-                              //       // builder: (context) => OperationDetail(
-                              //       //   operation: operacion,
-                              //       // ),
-                              //       ),
-                              // ),
                               onPressed: () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => SaldoDocumentosPage(
-                                    storage: widget.storage,
+                                  builder: (context) => VisapaymentPage(
+                                    // storage: widget.storage,
                                   ),
-                                  // builder: (context) => VisapaymentPage(),
-                                  // builder: (context) => OperationDetail(
-                                  //   operation: operacion,
-                                  // ),
                                 ),
                               ),
                             ),
@@ -200,6 +203,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     );
   }
 
+/*
   Future _showDialog() async {
     if (this._currentChildSelected?.idAlumno != null) {
       ResponseDialogModel response = await showDialog(
@@ -226,17 +230,24 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       }
     }
   }
+  */
+
 }
 
-class OperationsList extends StatefulWidget {
+class OperationsListSaldo extends StatefulWidget {
   final List<dynamic> listaOperations;
+  final Function(int) onChangeTotal;
 
-  OperationsList({Key key, @required this.listaOperations}) : super(key: key);
+  OperationsListSaldo(
+      {Key key, @required this.listaOperations, @required this.onChangeTotal})
+      : super(key: key);
   @override
-  _OperationsListState createState() => _OperationsListState();
+  _OperationsListSaldoState createState() => _OperationsListSaldoState();
 }
 
-class _OperationsListState extends State<OperationsList> {
+class _OperationsListSaldoState extends State<OperationsListSaldo> {
+  // List<bool> inputs = new List<bool>();
+
   @override
   void initState() {
     super.initState();
@@ -252,34 +263,73 @@ class _OperationsListState extends State<OperationsList> {
       ),
       child: new ListView(
         children: widget.listaOperations
-            .map((dynamic operacion) => getOperation(operacion))
+            .map((dynamic operacion) => getOperationSaldo(operacion))
             .toList(),
       ),
+      // child: new ListView(
+      //   children: <Widget>[],
+      // ),
     );
   }
 
-  Widget getOperation(operacion) {
-    return Container(
-      color: operacion['fila_color'] == '0' ? zero : null,
-      child: ListTile(
-        title: Text(operacion['glosa']),
-        subtitle: Text("${operacion['fecha']}"),
-        trailing: Text(
-          'S/. ${operacion['total'].toString()}',
-          style: TextStyle(
-              color: Color(int.parse(operacion['total_color'])),
-              fontWeight: FontWeight.bold),
-        ),
-        leading:
-            CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => OperationDetail(
-              operation: operacion,
-            ),
-          ),
+  Widget getOperationSaldo(operacion) {
+    String glosa = operacion.idVenta != null || operacion.idVenta != ''
+        ? '[${operacion.serie}-${operacion.numero}] - ${operacion.glosa}'
+            .toString()
+        : operacion.glosa.toString();
+
+    return CheckboxListTile(
+      title: Text(glosa),
+      value: operacion.checked,
+      subtitle: Text('Fecha venc: ${operacion.fechaVencimiento}'),
+      controlAffinity: ListTileControlAffinity.leading,
+      onChanged: (bool val) {
+        setState(() {
+          operacion.checked = val;
+          this.actualizarImporteTotal();
+        });
+      },
+      secondary: Text(
+        'S/. ${operacion.total}',
+        style: TextStyle(
+          color: null,
+          fontWeight: FontWeight.bold,
         ),
       ),
+      // activeColor: LambThemes.light.primaryColor,
+      // checkColor: LambThemes.light.primaryColor,
+      dense: true,
+      // trailing: Text(
+      //   // 'S/. ${operacion['total'].toString()}',
+      //   'S/. ${operacion.total}',
+      //   style: TextStyle(
+      //       // color: Color(int.parse(operacion['total_color'])),
+      //       color: null,
+      //       fontWeight: FontWeight.bold),
+      // ),
+      // leading:
+      //     CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
+      // onTap: () => Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (context) => OperationDetail(
+      //       operation: operacion,
+      //     ),
+      //   ),
+      // ),
+      // ),
     );
+  }
+
+  void actualizarImporteTotal() {
+    int total = 0;
+    for (final oper in widget.listaOperations) {
+      if (oper.checked) {
+        total = total + int.parse(oper.total);
+      }
+      //  else {
+      //   total = total - int.parse(oper.total);
+      // }
+    }
+    this.widget.onChangeTotal(total);
   }
 }
