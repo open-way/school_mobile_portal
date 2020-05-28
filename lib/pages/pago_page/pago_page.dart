@@ -6,30 +6,26 @@ import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
-import 'package:school_mobile_portal/models/user_signin_model.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
-import 'package:school_mobile_portal/pages/estado_cuenta_page/saldo_documentos_page.dart';
-import 'package:school_mobile_portal/pages/pago_page/pago_page.dart';
+//import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
-import 'package:school_mobile_portal/services/visapayment.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
 import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 
-class EstadoCuentaPage extends StatefulWidget {
-  static const String routeName = '/estado_cuenta';
+class PagoPage extends StatefulWidget {
+  //static const String routeName = '/estado_cuenta';
 
-  EstadoCuentaPage({Key key, @required this.storage}) : super(key: key);
+  PagoPage({Key key, @required this.storage}) : super(key: key);
   final FlutterSecureStorage storage;
 
   @override
-  _EstadoCuentaPageState createState() => _EstadoCuentaPageState();
+  _PagoPageState createState() => _PagoPageState();
 }
 
-class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
+class _PagoPageState extends State<PagoPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
-  final VisapaymentService visapaymentService = new VisapaymentService();
+
   List<dynamic> _listaOperations;
   OperationTotalModel _operationsTotal;
 
@@ -39,7 +35,6 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   @override
   void initState() {
-    // print('initState --------->');
     super.initState();
     this._loadMaster();
   }
@@ -65,6 +60,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         .then((onValue) {
       _listaOperations = onValue?.movements ?? [];
       _operationsTotal = onValue.movementsTotal;
+      print(_listaOperations);
     }).catchError((err) {
       print(err);
     });
@@ -86,34 +82,36 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: AppDrawer(
+      /*drawer: AppDrawer(
         storage: widget.storage,
         onChangeNewChildSelected: (HijoModel childSelected) {
           this._currentChildSelected = childSelected;
           this.getOperations();
           setState(() {});
         },
-      ),
+      ),*/
       appBar: AppBarLamb(
-        title: Text('ESTADO DE CUENTA'),
+        title: Text('PAGO'),
         alumno: this._currentChildSelected,
         actions: <Widget>[
-          IconButton(
+          /*IconButton(
             icon: Icon(Icons.filter_list),
             onPressed: _showDialog,
-          ),
+          ),*/
         ],
       ),
       body: new RefreshIndicator(
         onRefresh: _handleRefresh,
         child: _listaOperations == null
             ? Center(child: CircularProgressIndicator())
-            : Container(
+            : Padding(
                 padding: new EdgeInsets.all(15),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     new Card(
-                      child: new Container(
+                      child: Container(
                         padding: new EdgeInsets.all(15),
                         alignment: Alignment.center,
                         child: _listaOperations == [] ||
@@ -128,11 +126,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                                 ),
                                 children: <TextSpan>[
                                   new TextSpan(
-                                    text: double.parse(
-                                                _operationsTotal?.total ?? 0) >
-                                            0
-                                        ? 'SU SALDO A FAVOR ES: '
-                                        : 'SU DEUDA ES: ',
+                                    text: 'IMPORTE A PAGAR: ',
                                     style: new TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -150,7 +144,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                               )),
                       ),
                     ),
-                    new Expanded(
+                    Expanded(
                       child: new Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -163,38 +157,33 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                         ),
                       ),
                     ),
-                    // RaisedButton(
-                    //   child: Center(child: Text('DEPOSITAR')),
-                    //   onPressed: () => Navigator.of(context).push(
-                    //     MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           PagoPage(storage: widget.storage),
-                    //     ),
-                    //   ),
-                    // )
-                    new Card(
-                      child: new Container(
-                        padding: new EdgeInsets.all(1),
-                        alignment: Alignment.center,
-                        child: new ButtonBar(
-                          mainAxisSize: MainAxisSize.min,
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: Colors.blue[800],
+                          borderRadius: BorderRadius.circular(10)),
+                      //onPressed: null,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new RaisedButton(
-                              child: new Text(
-                                'PAGAR',
+                            Container(
+                                margin: EdgeInsets.all(10),
+                                child: Text('PAGA CON',
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.white))),
+                            Container(
+                              child: Image.network(
+                                'http://www.rrhhdigital.com/userfiles/Logo-empresa-Visa-fuera.jpg',
+                                scale: 9,
                               ),
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SaldoDocumentosPage(
-                                    storage: widget.storage,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            )
                           ],
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -202,7 +191,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
     );
   }
 
-  Future _showDialog() async {
+  /*Future _showDialog() async {
     if (this._currentChildSelected?.idAlumno != null) {
       ResponseDialogModel response = await showDialog(
         context: context,
@@ -227,7 +216,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
           print('default');
       }
     }
-  }
+  }*/
 }
 
 class OperationsList extends StatefulWidget {
@@ -239,10 +228,15 @@ class OperationsList extends StatefulWidget {
 }
 
 class _OperationsListState extends State<OperationsList> {
+  //_OperationsListState(this.onChanged, this.value);
+
   @override
   void initState() {
     super.initState();
   }
+
+  bool value = true;
+  //Function onChanged;
 
   Color zero = LambThemes.light.primaryColorLight;
 
@@ -260,26 +254,40 @@ class _OperationsListState extends State<OperationsList> {
     );
   }
 
+  //Widget getOperation(operacion, String isChecked) {
   Widget getOperation(operacion) {
     return Container(
       color: operacion['fila_color'] == '0' ? zero : null,
-      child: ListTile(
-        title: Text(operacion['glosa']),
-        subtitle: Text("${operacion['fecha']}"),
-        trailing: Text(
-          'S/. ${operacion['total'].toString()}',
-          style: TextStyle(
-              color: Color(int.parse(operacion['total_color'])),
-              fontWeight: FontWeight.bold),
-        ),
-        leading:
-            CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
-        onTap: () => Navigator.of(context).push(
+      child: InkWell(
+        onTap: () {
+          value = value ? false : true;
+          print(value);
+          setState(() {});
+          //onChanged(!value);
+        },
+        child: ListTile(
+          title: Text(operacion['glosa']),
+          subtitle: Text("${operacion['fecha']}"),
+          trailing: Text(
+            'S/. ${operacion['total'].toString()}',
+            style: TextStyle(
+                color: Color(int.parse(operacion['total_color'])),
+                fontWeight: FontWeight.bold),
+          ),
+          leading: Checkbox(
+            value: value,
+            onChanged: (bool newvalue) {
+              //onChanged(newvalue);
+            },
+          ),
+          //CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
+          /*onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => OperationDetail(
               operation: operacion,
             ),
           ),
+        ),*/
         ),
       ),
     );

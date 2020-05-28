@@ -24,6 +24,7 @@ class SaldoDocumentoModel {
   final String numero;
   final String idVenta;
   final String idArticulo;
+  final String nombre;
   bool checked;
 
   SaldoDocumentoModel({
@@ -37,6 +38,7 @@ class SaldoDocumentoModel {
     @required this.idVenta,
     @required this.idArticulo,
     @required this.checked,
+    @required this.nombre,
   });
 
   factory SaldoDocumentoModel.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class SaldoDocumentoModel {
       idVenta: json['id_venta'] as String,
       idArticulo: json['id_articulo'] as String,
       checked: false,
+      nombre: json['nombre'] as String,
     );
   }
 }

@@ -26,11 +26,13 @@ class AuthService implements BaseAuth {
   final String theUrl = '$baseAllUrl/auth';
 
   Future<UserSignInModel> signIn(String username, String password) async {
+    print(username);
+    print(password);
     http.Response res = await http.post(
       '$theUrl/sign-in',
       body: {'username': username, 'password': password, 'no_caduca': 'true'},
     );
-    // print(res.body);
+    print(res.body);
     final body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       final data = new UserSignInModel.fromJson(body['data']);

@@ -47,6 +47,9 @@ class _DrawerHeaderState extends State<DrawerHeader> {
       this.userSignInModel =
           UserSignInModel.fromJson(jsonDecode(strUserSignIn));
     }
+    print('=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><');
+    print(userSignInModel.imagenUrl);
+    print('=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><');
     setState(() {});
   }
 
@@ -73,9 +76,9 @@ class _DrawerHeaderState extends State<DrawerHeader> {
               print('Click en principal');
             },
           ),
-          // backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/46.jpg'),
-          // backgroundImage: NetworkImage('https://api-lamb.upeu.edu.pe/setup_files/users/7677.JPEG'),
-          backgroundImage: ExactAssetImage('assets/images/man.png'),
+          // https://api-lamb.upeu.edu.pe/setup_files/users/20145.PNG
+          // backgroundImage: NetworkImage(userSignInModel?.imagenUrl ?? ''),
+          backgroundImage: NetworkImage(userSignInModel?.imagenUrl ?? ''),
 
           // backgroundColor: Color.
           // backgroundColor: Color.blue,

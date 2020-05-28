@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/saldo_documento.dart';
+import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 // import 'package:school_mobile_portal/models/operation_model.dart';
 // import 'package:school_mobile_portal/models/response_dialog_model.dart';
@@ -37,6 +38,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
 
   HijoModel _currentChildSelected;
   String _totalPagar = '0';
+  UserSignInModel _currentUserLogged;
 
   String idAnho;
 
@@ -48,6 +50,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
 
   Future _loadMaster() async {
     await this._loadChildSelectedStorageFlow();
+    await this._loadUserStorage();
     // Usar todos los metodos que quieran al hijo actual.
     this.getOperationSaldos();
   }
@@ -65,10 +68,10 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
         .getSaldoDocumentos$(queryParameters)
         .then((onValue) {
       // _listaOperationsSaldo = onValue?.movements ?? [];
-      print('_listaOperationsSaldo.toString()====>>');
-      _listaOperationsSaldo = onValue ?? [];
-      print('_listaOperationsSaldo.toString()====>>');
-      print(_listaOperationsSaldo[0].checked);
+      // print('_listaOperationsSaldo.toString()====>>');
+      this._listaOperationsSaldo = onValue ?? [];
+      // print('_listaOperationsSaldo.toString()====>>');
+      // print(this._listaOperationsSaldo[0].checked);
       // _operationsTotal = onValue.movementsTotal;
     }).catchError((err) {
       print(err);
@@ -83,9 +86,21 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
     setState(() {});
   }
 
+  Future _loadUserStorage() async {
+    var userStorage = await widget.storage.read(key: 'user_sign_in');
+    this._currentUserLogged =
+        new UserSignInModel.fromJson(jsonDecode(userStorage));
+    setState(() {});
+  }
+
   Future<Null> _handleRefresh() async {
     this.getOperationSaldos();
     return null;
+  }
+
+  bool get _isDisabled {
+    var valor = (double.parse(_totalPagar) <= 0) ? true : false;
+    return valor;
   }
 
   @override
@@ -180,17 +195,53 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                         child: new ButtonBar(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
+                            // GestureDetector(
+                            //   child: Container(
+                            //     width: 120,
+                            //     height: 40,
+                            //     decoration: BoxDecoration(
+                            //       color: LambThemes.light.primaryColor,
+                            //       image: DecorationImage(
+                            //           image: NetworkImage(
+                            //               'https://static-content.vnforapps.com/v1/img/bottom/visa.png')
+                            //           // image: AssetImage(
+                            //           //     "assets/background_button.png"),
+                            //           // fit: BoxFit.cover),
+                            //           // child: Text("clickMe") // button text
+                            //           // )
+                            //           ),
+                            //     ),
+                            //   ),
+                            //   onTap: () {
+                            //     print("you clicked my");
+                            //   },
+                            // ),
                             new RaisedButton(
                               child: new Text(
-                                'VISA',
+                                'PAGAR CON VISA',
                               ),
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => VisapaymentPage(
-                                    // storage: widget.storage,
-                                  ),
-                                ),
-                              ),
+                              onPressed: () => _isDisabled
+                                  ? null
+                                  : Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => VisapaymentPage(
+                                          idAlumno: this
+                                                  ._currentChildSelected
+                                                  ?.idAlumno ??
+                                              null,
+                                          idPersona:
+                                              _currentUserLogged?.idPersona ??
+                                                  null,
+                                          totalPagar: _totalPagar ?? 0,
+                                          listaOperationsSaldo: this
+                                                  ._listaOperationsSaldo
+                                                  .where(
+                                                      (item) => item?.checked)
+                                                  .toList() ??
+                                              [],
+                                        ),
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
@@ -273,10 +324,16 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
   }
 
   Widget getOperationSaldo(operacion) {
-    String glosa = operacion.idVenta != null || operacion.idVenta != ''
-        ? '[${operacion.serie}-${operacion.numero}] - ${operacion.glosa}'
+    // print('===>>>');
+    // print('===>>> ${operacion.idVenta}');
+    // print('===>>> ${operacion.nombre}');
+    // print('===>>>');
+    String glosa = operacion.idVenta != null ??
+            operacion.idVenta != '' ??
+            operacion.idVenta != 'null'
+        ? '[${operacion.serie}-${operacion.numero}] - ${operacion.nombre}'
             .toString()
-        : operacion.glosa.toString();
+        : operacion.nombre.toString();
 
     return CheckboxListTile(
       title: Text(glosa),
@@ -326,9 +383,6 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       if (oper.checked) {
         total = total + int.parse(oper.total);
       }
-      //  else {
-      //   total = total - int.parse(oper.total);
-      // }
     }
     this.widget.onChangeTotal(total);
   }

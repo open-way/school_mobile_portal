@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:school_mobile_portal/enviroment.dev.dart';
 import 'package:school_mobile_portal/services/info.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/custom_dialog.dart';
@@ -38,9 +39,24 @@ class InfoBoxState extends State<InfoBox> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         print('connected info_box');
-        await this._infoService.getVersion().then((onValue) {
+
+        var platform = '';
+        if (Platform.isAndroid) {
+          platform = 'ANDROID';
+        }
+        if (Platform.isIOS) {
+          platform = 'IOS';
+        }
+        var queryParameters = {
+          'code_aplicacion': codeAppVerion,
+          'platform': platform,
+        };
+        await this
+            ._infoService
+            .getVersion$(queryParameters)
+            .then((onValue) {
           //if (onValue == info.version && Platform.isIOS) {
-          if (onValue == info.version) {
+          if (onValue.version != info.version) {
             this._newVersion =
                 _infoContainer('Descarga la nueva versión que tenemos para ti');
             this._childrenInfo.add(this._newVersion);
