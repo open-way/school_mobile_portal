@@ -6,9 +6,12 @@ import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/operation_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
+import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
+import 'package:school_mobile_portal/pages/estado_cuenta_page/saldo_documentos_page.dart';
 import 'package:school_mobile_portal/pages/pago_page/pago_page.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
+import 'package:school_mobile_portal/services/visapayment.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -26,7 +29,7 @@ class EstadoCuentaPage extends StatefulWidget {
 
 class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
-
+  final VisapaymentService visapaymentService = new VisapaymentService();
   List<dynamic> _listaOperations;
   OperationTotalModel _operationsTotal;
 
@@ -36,6 +39,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
 
   @override
   void initState() {
+    // print('initState --------->');
     super.initState();
     this._loadMaster();
   }
@@ -109,7 +113,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                 child: Column(
                   children: <Widget>[
                     new Card(
-                      child: Container(
+                      child: new Container(
                         padding: new EdgeInsets.all(15),
                         alignment: Alignment.center,
                         child: _listaOperations == [] ||
@@ -124,7 +128,11 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                                 ),
                                 children: <TextSpan>[
                                   new TextSpan(
-                                    text: 'SU SALDO ES: ',
+                                    text: double.parse(
+                                                _operationsTotal?.total ?? 0) >
+                                            0
+                                        ? 'SU SALDO A FAVOR ES: '
+                                        : 'SU DEUDA ES: ',
                                     style: new TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -142,7 +150,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                               )),
                       ),
                     ),
-                    Expanded(
+                    new Expanded(
                       child: new Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -155,15 +163,38 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                         ),
                       ),
                     ),
-                    RaisedButton(
-                      child: Center(child: Text('DEPOSITAR')),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PagoPage(storage: widget.storage),
+                    // RaisedButton(
+                    //   child: Center(child: Text('DEPOSITAR')),
+                    //   onPressed: () => Navigator.of(context).push(
+                    //     MaterialPageRoute(
+                    //       builder: (context) =>
+                    //           PagoPage(storage: widget.storage),
+                    //     ),
+                    //   ),
+                    // )
+                    new Card(
+                      child: new Container(
+                        padding: new EdgeInsets.all(1),
+                        alignment: Alignment.center,
+                        child: new ButtonBar(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            new RaisedButton(
+                              child: new Text(
+                                'PAGAR',
+                              ),
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => SaldoDocumentosPage(
+                                    storage: widget.storage,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

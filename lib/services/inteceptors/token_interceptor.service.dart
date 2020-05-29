@@ -7,6 +7,8 @@ class TokenInterceptor implements InterceptorContract {
     try {
       final storage = new FlutterSecureStorage();
       final token = await storage.read(key: 'token') ?? '';
+      // print('token =====> ');
+      // print(token);
       data.headers['Authorization'] = token;
       // data.headers['Content-Type'] = 'application/json';
     } catch (e) {
