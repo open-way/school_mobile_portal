@@ -40,6 +40,7 @@ class _GenerateBarcodePageState extends State<GenerateBarcodePage> {
     var childSelected = await widget.storage.read(key: 'child_selected');
     this._currentChildSelected =
         new HijoModel.fromJson(jsonDecode(childSelected));
+    print(this._currentChildSelected);
     setState(() {});
   }
 
