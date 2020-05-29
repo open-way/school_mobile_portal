@@ -78,7 +78,7 @@ class _DrawerHeaderState extends State<DrawerHeader> {
           ),
           // https://api-lamb.upeu.edu.pe/setup_files/users/20145.PNG
           // backgroundImage: NetworkImage(userSignInModel?.imagenUrl ?? ''),
-          backgroundImage: NetworkImage(userSignInModel?.imagenUrl ?? ''),
+          backgroundImage: NetworkImage(userSignInModel?.imagenUrl ?? '', scale: 1.0),
 
           // backgroundColor: Color.
           // backgroundColor: Color.blue,

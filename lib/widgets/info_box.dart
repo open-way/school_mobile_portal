@@ -48,7 +48,7 @@ class InfoBoxState extends State<InfoBox> {
           platform = 'IOS';
         }
         var queryParameters = {
-          'code_aplicacion': codeAppVerion,
+          'code_aplicacion': codeAppVersion,
           'platform': platform,
         };
         await this
