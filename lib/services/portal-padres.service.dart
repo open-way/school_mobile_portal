@@ -14,7 +14,7 @@ class PortalPadresService extends VitHttpService {
     http.Response res =
         await httpGetByQuery('/portal-padre/mi-estado-cuenta', queryParams);
     final body = jsonDecode(res.body);
-    // print(res.body.toString());
+    print(res.body.toString());
     if (res.statusCode == 200) {
       final data = EstadoCuentaModel.fromJson(body['data']);
       return data;
@@ -27,8 +27,9 @@ class PortalPadresService extends VitHttpService {
       Map<String, String> queryParams) async {
     http.Response res =
         await httpGetByQuery('/portal-padre/saldo-documentos', queryParams);
-        print(res.body);
+    print(res.body.toString());
     final body = jsonDecode(res.body);
+
     if (res.statusCode == 200) {
        final data = body['data'].cast<Map<String, dynamic>>();
       return data

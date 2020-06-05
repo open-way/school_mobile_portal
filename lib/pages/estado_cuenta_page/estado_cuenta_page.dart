@@ -31,7 +31,9 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
   final VisapaymentService visapaymentService = new VisapaymentService();
   List<dynamic> _listaOperations;
-  OperationTotalModel _operationsTotal;
+  // OperationTotalModel _operationsTotal;
+  String _infoTotalSaldo;
+  double _totalSaldo;
 
   HijoModel _currentChildSelected;
 
@@ -64,7 +66,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
         .getEstadoCuenta$(queryParameters)
         .then((onValue) {
       _listaOperations = onValue?.movements ?? [];
-      _operationsTotal = onValue.movementsTotal;
+      _infoTotalSaldo = onValue.movementsInfoTotal;
+      _totalSaldo = onValue.movementsTotal;
     }).catchError((err) {
       print(err);
     });
@@ -116,38 +119,35 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                       child: new Container(
                         padding: new EdgeInsets.all(15),
                         alignment: Alignment.center,
-                        child: _listaOperations == [] ||
-                                _listaOperations.isEmpty
-                            ? Text('Sin resultados',
-                                style: TextStyle(
-                                    fontStyle: FontStyle.italic, fontSize: 15))
-                            : new RichText(
-                                text: new TextSpan(
-                                style: new TextStyle(
-                                  color: Colors.black,
-                                ),
-                                children: <TextSpan>[
-                                  new TextSpan(
-                                    text: double.parse(
-                                                _operationsTotal?.total ?? 0) >
-                                            0
-                                        ? 'SU SALDO A FAVOR ES: '
-                                        : 'SU DEUDA ES: ',
+                        child:
+                            _listaOperations == [] || _listaOperations.isEmpty
+                                ? Text('Sin resultados',
+                                    style: TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 15))
+                                : new RichText(
+                                    text: new TextSpan(
                                     style: new TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w300,
-                                        letterSpacing: 3),
-                                  ),
-                                  new TextSpan(
-                                      text: '${_operationsTotal?.total ?? ''}',
-                                      style: new TextStyle(
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      )),
-                                ],
-                              )),
+                                      color: Colors.black,
+                                    ),
+                                    children: <TextSpan>[
+                                      new TextSpan(
+                                        text: _infoTotalSaldo,
+                                        style: new TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w300,
+                                            letterSpacing: 3),
+                                      ),
+                                      new TextSpan(
+                                          text: 'S/. ${_totalSaldo.toString()}',
+                                          style: new TextStyle(
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          )),
+                                    ],
+                                  )),
                       ),
                     ),
                     new Expanded(

@@ -70,7 +70,11 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
       // _listaOperationsSaldo = onValue?.movements ?? [];
       // print('_listaOperationsSaldo.toString()====>>');
       this._listaOperationsSaldo = onValue ?? [];
-      // print('_listaOperationsSaldo.toString()====>>');
+      // print('====>>');
+      // print('====>>');
+      // print('====>>');
+      // print('====>>');
+      // print(this._listaOperationsSaldo);
       // print(this._listaOperationsSaldo[0].checked);
       // _operationsTotal = onValue.movementsTotal;
     }).catchError((err) {
@@ -156,8 +160,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                                         letterSpacing: 3),
                                   ),
                                   new TextSpan(
-                                      // text: '${_operationsTotal?.total ?? ''}',
-                                      text: _totalPagar,
+                                      text: 'S/. ${_totalPagar.toString()}',
                                       style: new TextStyle(
                                         fontSize: 20.0,
                                         fontWeight: FontWeight.bold,
@@ -179,9 +182,9 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                                 ._listaOperationsSaldo
                                 // .map((oper) => oper)
                                 .toList(),
-                            onChangeTotal: (total) {
+                            onChangeTotal: (saldo) {
                               setState(() {
-                                this._totalPagar = total.toString();
+                                this._totalPagar = saldo.toString();
                               });
                             },
                           ),
@@ -287,7 +290,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
 
 class OperationsListSaldo extends StatefulWidget {
   final List<dynamic> listaOperations;
-  final Function(int) onChangeTotal;
+  final Function(double) onChangeTotal;
 
   OperationsListSaldo(
       {Key key, @required this.listaOperations, @required this.onChangeTotal})
@@ -324,16 +327,19 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
   }
 
   Widget getOperationSaldo(operacion) {
-    // print('===>>>');
-    // print('===>>> ${operacion.idVenta}');
+    // print('===>>> ${operacion.toString()}');
     // print('===>>> ${operacion.nombre}');
-    // print('===>>>');
-    String glosa = operacion.idVenta != null ??
-            operacion.idVenta != '' ??
-            operacion.idVenta != 'null'
-        ? '[${operacion.serie}-${operacion.numero}] - ${operacion.nombre}'
-            .toString()
-        : operacion.nombre.toString();
+    print('===>>>ojo');
+    print(operacion.idVenta);
+    print('===>>>ojo');
+    String glosa = (operacion.idVenta == null ??
+            operacion.idVenta == '' ??
+            operacion.idVenta == '0' ??
+            operacion.idVenta == 0 ??
+            operacion.idVenta == 'null')
+        ? operacion.nombre.toString()
+        : '[${operacion.serie}-${operacion.numero}] - ${operacion.nombre}'
+            .toString();
 
     return CheckboxListTile(
       title: Text(glosa),
@@ -347,7 +353,7 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
         });
       },
       secondary: Text(
-        'S/. ${operacion.total}',
+        'S/. ${operacion.saldo}',
         style: TextStyle(
           color: null,
           fontWeight: FontWeight.bold,
@@ -378,12 +384,12 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
   }
 
   void actualizarImporteTotal() {
-    int total = 0;
+    double saldo = 0;
     for (final oper in widget.listaOperations) {
       if (oper.checked) {
-        total = total + int.parse(oper.total);
+        saldo = saldo + double.parse(oper.saldo);
       }
     }
-    this.widget.onChangeTotal(total);
+    this.widget.onChangeTotal(saldo);
   }
 }
