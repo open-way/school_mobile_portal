@@ -59,7 +59,7 @@ class _PagoPageState extends State<PagoPage> {
         .getEstadoCuenta$(queryParameters)
         .then((onValue) {
       _listaOperations = onValue?.movements ?? [];
-      _operationsTotal = onValue.movementsTotal;
+      // _operationsTotal = onValue.movementsTotal;
       print(_listaOperations);
     }).catchError((err) {
       print(err);
