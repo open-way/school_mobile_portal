@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/models/saldo_documento.dart';
+//import 'package:school_mobile_portal/models/saldo_documento.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 // import 'package:school_mobile_portal/models/operation_model.dart';
@@ -13,7 +13,7 @@ import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.d
 // import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 // import 'package:school_mobile_portal/services/visapayment.service.dart';
-import 'package:school_mobile_portal/theme/lamb_themes.dart';
+//import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 // import 'package:school_mobile_portal/widgets/drawer.dart';
 // import 'package:school_mobile_portal/widgets/drawer.dart';
@@ -218,7 +218,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                             // ),
                             new RaisedButton(
                               child: new Text(
-                                'PAGAR CON VISA',
+                                'PAGAR CON',
                               ),
                               onPressed: () => _isDisabled
                                   ? null
@@ -304,7 +304,7 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
     super.initState();
   }
 
-  Color zero = LambThemes.light.primaryColorLight;
+  //Color zero = LambThemes.light.primaryColorLight;
 
   @override
   Widget build(BuildContext context) {
@@ -314,16 +314,16 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       ),
       child: new ListView(
         children: widget.listaOperations
-            .map((dynamic operacion) => getOperationSaldo(operacion))
+            .asMap()
+            .entries
+            .map((dynamic entry) =>
+                getOperationSaldo(entry.value, entry.key + 1))
             .toList(),
       ),
-      // child: new ListView(
-      //   children: <Widget>[],
-      // ),
     );
   }
 
-  Widget getOperationSaldo(operacion) {
+  Widget getOperationSaldo(operacion, int count) {
     // print('===>>>');
     // print('===>>> ${operacion.idVenta}');
     // print('===>>> ${operacion.nombre}');
@@ -342,7 +342,8 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (bool val) {
         setState(() {
-          operacion.checked = val;
+          //operacion.checked = val;
+          updateCheckList(count, val);
           this.actualizarImporteTotal();
         });
       },
@@ -375,6 +376,18 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       // ),
       // ),
     );
+  }
+
+  void updateCheckList(int count, bool val) {
+    if (val) {
+      for (final oper in widget.listaOperations.take(count)) {
+        oper.checked = val;
+      }
+    } else {
+      for (final oper in widget.listaOperations.skip(count - 1)) {
+        oper.checked = val;
+      }
+    }
   }
 
   void actualizarImporteTotal() {
