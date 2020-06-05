@@ -7,6 +7,8 @@ import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page
 import 'package:school_mobile_portal/pages/generate_barcode_page/generate_barcode_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
+import 'package:school_mobile_portal/pages/page_buzon/buzon_page.dart';
+import 'package:school_mobile_portal/pages/page_notas/notas_page.dart';
 
 import 'package:school_mobile_portal/pages/root_page/root_page.dart';
 import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
         Routes.dashboard: (context) => DashboardPage(
             // authService: AuthService(),
             storage: storage),
+        Routes.buzon: (context) => BuzonPage(storage: storage),
         Routes.estado_cuenta: (context) => EstadoCuentaPage(storage: storage),
         Routes.login_signup: (context) => LoginSignupPage(
               authService: AuthService(),
@@ -52,6 +55,7 @@ class MyApp extends StatelessWidget {
         Routes.agenda: (context) => AgendaPage(storage: storage),
         Routes.generate_barcode: (context) =>
             GenerateBarcodePage(storage: storage),
+        Routes.notas: (context) => NotasdPage(storage: storage),
         Routes.test_https: (context) => TestHttpsPage(
               storage: storage,
               testHttpsService: TestHttpsService(),

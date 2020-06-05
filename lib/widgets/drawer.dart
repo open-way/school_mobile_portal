@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
+import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
+import 'package:school_mobile_portal/pages/profile_page/profile_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 
@@ -204,6 +207,11 @@ class _AppDrawerState extends State<AppDrawer> {
         onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
       ),
       createDrawerItem(
+        icon: Icons.mail_outline,
+        text: Text('Buzón'),
+        onTap: () => Navigator.pushReplacementNamed(context, Routes.buzon),
+      ),
+      createDrawerItem(
         icon: Icons.view_agenda,
         text: Text('Estado de cuenta'),
         onTap: () =>
@@ -215,7 +223,7 @@ class _AppDrawerState extends State<AppDrawer> {
         onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
       ),
       createDrawerItem(
-        icon: Icons.note,
+        icon: Icons.event_note,
         text: Text('Agenda'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
         //onTap: () => Navigator.pushNamed(context, '/agenda'),
@@ -225,6 +233,11 @@ class _AppDrawerState extends State<AppDrawer> {
         text: Text('Generar barcode'),
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.generate_barcode),
+      ),
+      createDrawerItem(
+        icon: Icons.speaker_notes,
+        text: Text('Notas'),
+        onTap: () => Navigator.pushNamed(context, Routes.notas),
       ),
       // createDrawerItem(
       //     icon: Icons.note,

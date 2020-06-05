@@ -8,6 +8,8 @@ import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/pages/generate_barcode_page/generate_barcode_page.dart';
 import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
+import 'package:school_mobile_portal/pages/page_buzon/buzon_page.dart';
+import 'package:school_mobile_portal/pages/page_notas/notas_page.dart';
 import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 
 class Routes {
@@ -18,6 +20,8 @@ class Routes {
   static const String agenda = AgendaPage.routeName;
   static const String test_https = TestHttpsPage.routeName;
   static const String generate_barcode = GenerateBarcodePage.routeName;
+  static const String notas = NotasdPage.routeName;
+  static const String buzon = BuzonPage.routeName;
   // static const String events = EventsPage.routeName;
   // static const String notes = NotesPage.routeName;
 }
