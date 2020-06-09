@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //double get opacity40 => 0.4 / 0xFF0063C6;
-
+final Color opositePrimary = Color(4292299776);
 final ThemeData walterTheme = new ThemeData(
     primaryColor: Color(0xFF0063C6),
     primaryColorLight: Color(0xFF0063C6).withOpacity(0.1),

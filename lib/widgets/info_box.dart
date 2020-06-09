@@ -33,7 +33,7 @@ class InfoBoxState extends State<InfoBox> {
     buildContainers();
   }
 
-  void buildContainers() async {
+  Future<void> buildContainers() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -51,12 +51,14 @@ class InfoBoxState extends State<InfoBox> {
           'code_aplicacion': codeAppVersion,
           'platform': platform,
         };
-        await this
-            ._infoService
-            .getVersion$(queryParameters)
-            .then((onValue) {
+        await this._infoService.getVersion$(queryParameters).then((onValue) {
           //if (onValue == info.version && Platform.isIOS) {
-          if (onValue.version != info.version) {
+          var cleanStr = RegExp(r"[.]");
+          int dbVersionInt =
+              int.parse(onValue.version.replaceAll(cleanStr, ''));
+          int localVersionInt =
+              int.parse(info.version.replaceAll(cleanStr, ''));
+          if (dbVersionInt > localVersionInt) {
             this._newVersion =
                 _infoContainer('Descarga la nueva versión que tenemos para ti');
             this._childrenInfo.add(this._newVersion);
@@ -137,18 +139,20 @@ class InfoBoxState extends State<InfoBox> {
     );
   }
 
-  _bodyBuild() {
-    this._body = CustomDialog(
-      title: 'Información',
-      children: this._childrenInfo,
-      actions: this._actionButtons,
-      isDivider: true,
-      width: 200,
-    );
-    setState(() {});
+  Future<void> _bodyBuild() async {
     if (this._childrenInfo.isEmpty) {
       Navigator.of(context).pop();
     }
+    this._body = this._childrenInfo.isEmpty
+        ? Center()
+        : CustomDialog(
+            title: 'Información',
+            children: this._childrenInfo,
+            actions: this._actionButtons,
+            isDivider: true,
+            width: 200,
+          );
+    setState(() {});
   }
 
   @override

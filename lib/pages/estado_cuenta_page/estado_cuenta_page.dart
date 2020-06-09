@@ -114,6 +114,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
             : Container(
                 padding: new EdgeInsets.all(15),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     new Card(
                       child: new Container(
@@ -163,35 +164,28 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                         ),
                       ),
                     ),
-                    // RaisedButton(
-                    //   child: Center(child: Text('DEPOSITAR')),
-                    //   onPressed: () => Navigator.of(context).push(
-                    //     MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           PagoPage(storage: widget.storage),
-                    //     ),
-                    //   ),
-                    // )
-                    new Card(
-                      child: new Container(
-                        padding: new EdgeInsets.all(1),
-                        alignment: Alignment.center,
-                        child: new ButtonBar(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            new RaisedButton(
-                              child: new Text(
-                                'PAGAR',
-                              ),
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SaldoDocumentosPage(
-                                    storage: widget.storage,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                    SizedBox(height: 5),
+                    new FloatingActionButton.extended(
+                      isExtended: true,
+                      autofocus: false,
+                      elevation: 0,
+                      focusElevation: 0,
+                      highlightElevation: 0,
+                      hoverElevation: 0,
+                      disabledElevation: 0,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SaldoDocumentosPage(
+                            storage: widget.storage,
+                          ),
+                        ),
+                      ),
+                      label: Text(
+                        'PAGAR',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          letterSpacing: 2.5,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
