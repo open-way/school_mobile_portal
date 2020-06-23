@@ -9,6 +9,8 @@ import 'package:school_mobile_portal/enviroment.dev.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/saldo_documento.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
+import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
+import 'package:school_mobile_portal/widgets/custom_dialog.dart';
 
 class VisapaymentPage extends StatefulWidget {
   final String idAlumno;
@@ -28,79 +30,105 @@ class VisapaymentPage extends StatefulWidget {
 
 class _VisapaymentPageState extends State<VisapaymentPage> {
   // InAppWebViewController webView;
+  final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
   String url = "";
 
   double progress = 0;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // title: Text(operation['glosa']),
-        // title: Text('Pago con VISA'),
-        title: Padding(
-            padding: EdgeInsets.fromLTRB(0, 16, 0, 10),
-            child: Text('PAGO CON VISA')),
-        centerTitle: true,
-        bottom: PreferredSize(
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      '¡ALERTA!',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Text(
-                      'No regrese hacia atrás si aún no ha terminado con la operación',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                )),
-            preferredSize: Size(MediaQuery.of(context).size.width - 2, 45)),
-        // actions: widget.actions,
-      ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            // Container(
-            //   padding: EdgeInsets.all(20.0),
-            //   child: Text(
-            //       "CURRENT URL\n${(url.length > 50) ? url.substring(0, 50) + "..." : url}"),
-            // ),
-            // Container(
-            //   padding: EdgeInsets.all(10.0),
-            //   child: progress < 1.0
-            //       ? LinearProgressIndicator(value: progress)
-            //       : Container(),
-            // ),
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.all(10.0),
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-                child: WebviewScaffold(
-                  withJavascript: true,
-                  appCacheEnabled: true,
-                  hidden: true,
-                  initialChild: Container(
-                    color: LambThemes.light.backgroundColor,
-                    child: const Center(
-                      child: Text('Cargando.....'),
-                    ),
-                  ),
-                  url:
-                      new Uri.dataFromString(_loadHTML(), mimeType: 'text/html')
-                          .toString(),
+  Future<bool> _onWillPop() async {
+    flutterWebviewPlugin.hide();
+
+    bool response = (await showDialog(
+          context: context,
+          builder: (context) => new CustomDialog(
+            title: '¡ALERTA!',
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                width: double.infinity,
+                child: Text(
+                  'No regrese hacia atrás si aún no ha terminado con la operación\n¿Desea regresar?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
                 ),
               ),
-            ),
-          ],
+            ],
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: new Text('No',
+                    style: TextStyle(color: LambThemes.light.primaryColor)),
+              ),
+              new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: new Text('Sí',
+                    style: TextStyle(color: LambThemes.light.primaryColor)),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+    if (response == false) flutterWebviewPlugin.show();
+    return response;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBarLamb(
+          /*leading: IconButton(
+          icon: new Icon(Icons.arrow_back),
+          onPressed: _onWillPop,
+        ),*/
+          title: Text('Pago con VISA'),
+          bottomTitle: '¡ALERTA!',
+          bottomSubtitle:
+              'No regrese hacia atrás si aún no ha terminado con la operación',
+        ),
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              // Container(
+              //   padding: EdgeInsets.all(20.0),
+              //   child: Text(
+              //       "CURRENT URL\n${(url.length > 50) ? url.substring(0, 50) + "..." : url}"),
+              // ),
+              // Container(
+              //   padding: EdgeInsets.all(10.0),
+              //   child: progress < 1.0
+              //       ? LinearProgressIndicator(value: progress)
+              //       : Container(),
+              // ),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blueAccent)),
+                  child: WebviewScaffold(
+                    withJavascript: true,
+                    appCacheEnabled: true,
+                    hidden: false,
+                    //  initialChild: Container(
+                    //     color: LambThemes.light.backgroundColor,
+                    //     child: const Center(
+                    //       child: Text('Cargando.....'),
+                    //     ),
+                    //   ),
+                    url: new Uri.dataFromString(_loadHTML(),
+                            mimeType: 'text/html')
+                        .toString(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -99,6 +99,44 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
     return valor;
   }
 
+  Future _showVisaPayment() async {
+    //await this._loadMaster();
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => VisapaymentPage(
+          idAlumno: this._currentChildSelected?.idAlumno ?? null,
+          idPersona: _currentUserLogged?.idPersona ?? null,
+          totalPagar: _totalPagar ?? 0,
+          listaOperationsSaldo: this
+                  ._listaOperationsSaldo
+                  .where((item) => item?.checked)
+                  .toList() ??
+              [],
+        ),
+      ),
+    );
+    _listaOperationsSaldo = null;
+    _totalPagar = '0';
+    await this._loadMaster();
+    //this.getOperationSaldos();
+    // .reset()
+    //this.getOperationSaldos();
+    /*return (await showDialog(
+          context: context,
+          builder: (context) => VisapaymentPage(
+            idAlumno: this._currentChildSelected?.idAlumno ?? null,
+            idPersona: _currentUserLogged?.idPersona ?? null,
+            totalPagar: _totalPagar ?? 0,
+            listaOperationsSaldo: this
+                    ._listaOperationsSaldo
+                    .where((item) => item?.checked)
+                    .toList() ??
+                [],
+          ),
+        )) ??
+        false;*/
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -183,25 +221,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                       //backgroundColor: Color(4293915128),
                       backgroundColor:
                           LambThemes.light.accentColor.withOpacity(.1),
-                      onPressed: () => _isDisabled
-                          ? null
-                          : Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => VisapaymentPage(
-                                  idAlumno:
-                                      this._currentChildSelected?.idAlumno ??
-                                          null,
-                                  idPersona:
-                                      _currentUserLogged?.idPersona ?? null,
-                                  totalPagar: _totalPagar ?? 0,
-                                  listaOperationsSaldo: this
-                                          ._listaOperationsSaldo
-                                          .where((item) => item?.checked)
-                                          .toList() ??
-                                      [],
-                                ),
-                              ),
-                            ),
+                      onPressed: () => _isDisabled ? null : _showVisaPayment(),
                       label: new SingleChildScrollView(
                         padding: EdgeInsets.all(15),
                         scrollDirection: Axis.horizontal,
