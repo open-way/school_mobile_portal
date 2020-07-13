@@ -31,9 +31,10 @@ class PortalPadresService extends VitHttpService {
     final body = jsonDecode(res.body);
 
     if (res.statusCode == 200) {
-       final data = body['data'].cast<Map<String, dynamic>>();
+      final data = body['data'].cast<Map<String, dynamic>>();
       return data
-          .map<SaldoDocumentoModel>((json) => SaldoDocumentoModel.fromJson(json))
+          .map<SaldoDocumentoModel>(
+              (json) => SaldoDocumentoModel.fromJson(json))
           .toList();
     } else {
       throw "Can't get sado de documentos.";
@@ -58,6 +59,7 @@ class PortalPadresService extends VitHttpService {
     }
   }
 
+  // get agenda por alumno, periodo
   Future<List<AgendaModel>> getAgenda(Map<String, String> queryParams) async {
     http.Response res =
         await httpGetByQuery('/portal-padre/agendas', queryParams);
