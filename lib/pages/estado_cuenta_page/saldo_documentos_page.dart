@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/models/saldo_documento.dart';
+//import 'package:school_mobile_portal/models/saldo_documento.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 // import 'package:school_mobile_portal/models/operation_model.dart';
@@ -12,17 +12,15 @@ import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.d
 // import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 // import 'package:school_mobile_portal/pages/estado_cuenta_page/visapayment_page.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
-// import 'package:school_mobile_portal/services/visapayment.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
+// import 'package:school_mobile_portal/services/visapayment.service.dart';
+//import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 // import 'package:school_mobile_portal/widgets/drawer.dart';
 // import 'package:school_mobile_portal/widgets/drawer.dart';
 // import 'package:school_mobile_portal/widgets/filter_anho_dialog.dart';
 
 class SaldoDocumentosPage extends StatefulWidget {
-  // static const String routeName = '/estado_cuenta';
-
-  // SaldoDocumentosPage({Key key, @required this.storage}) : super(key: key);
   SaldoDocumentosPage({Key key, @required this.storage}) : super(key: key);
   final FlutterSecureStorage storage;
 
@@ -32,9 +30,12 @@ class SaldoDocumentosPage extends StatefulWidget {
 
 class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
   final PortalPadresService portalPadresService = new PortalPadresService();
-  // final VisapaymentService visapaymentService = new VisapaymentService();
   List<dynamic> _listaOperationsSaldo;
-  // OperationTotalModel _operationsTotal;
+  List<String> imagesUrl = [
+    'https://static-content.vnforapps.com/v1/img/bottom/visa.png',
+    'https://static-content.vnforapps.com/v1/img/bottom/mc.png',
+    'https://static-content.vnforapps.com/v1/img/bottom/dc.png'
+  ];
 
   HijoModel _currentChildSelected;
   String _totalPagar = '0';
@@ -67,16 +68,7 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
         .portalPadresService
         .getSaldoDocumentos$(queryParameters)
         .then((onValue) {
-      // _listaOperationsSaldo = onValue?.movements ?? [];
-      // print('_listaOperationsSaldo.toString()====>>');
       this._listaOperationsSaldo = onValue ?? [];
-      // print('====>>');
-      // print('====>>');
-      // print('====>>');
-      // print('====>>');
-      // print(this._listaOperationsSaldo);
-      // print(this._listaOperationsSaldo[0].checked);
-      // _operationsTotal = onValue.movementsTotal;
     }).catchError((err) {
       print(err);
     });
@@ -107,26 +99,50 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
     return valor;
   }
 
+  Future _showVisaPayment() async {
+    //await this._loadMaster();
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => VisapaymentPage(
+          idAlumno: this._currentChildSelected?.idAlumno ?? null,
+          idPersona: _currentUserLogged?.idPersona ?? null,
+          totalPagar: _totalPagar ?? 0,
+          listaOperationsSaldo: this
+                  ._listaOperationsSaldo
+                  .where((item) => item?.checked)
+                  .toList() ??
+              [],
+        ),
+      ),
+    );
+    _listaOperationsSaldo = null;
+    _totalPagar = '0';
+    await this._loadMaster();
+    //this.getOperationSaldos();
+    // .reset()
+    //this.getOperationSaldos();
+    /*return (await showDialog(
+          context: context,
+          builder: (context) => VisapaymentPage(
+            idAlumno: this._currentChildSelected?.idAlumno ?? null,
+            idPersona: _currentUserLogged?.idPersona ?? null,
+            totalPagar: _totalPagar ?? 0,
+            listaOperationsSaldo: this
+                    ._listaOperationsSaldo
+                    .where((item) => item?.checked)
+                    .toList() ??
+                [],
+          ),
+        )) ??
+        false;*/
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      // drawer: AppDrawer(
-      //   storage: widget.storage,
-      //   onChangeNewChildSelected: (HijoModel childSelected) {
-      //     this._currentChildSelected = childSelected;
-      //     // this.getOperations();
-      //     setState(() {});
-      //   },
-      // ),
       appBar: AppBarLamb(
         title: Text('PAGO DE MENSUALIDADES'),
         alumno: this._currentChildSelected,
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.filter_list),
-        //     onPressed: _showDialog,
-        //   ),
-        // ],
       ),
       body: new RefreshIndicator(
         onRefresh: _handleRefresh,
@@ -135,6 +151,8 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
             : Container(
                 padding: new EdgeInsets.all(15),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     new Card(
                       child: new Container(
@@ -191,62 +209,43 @@ class _SaldoDocumentosPageState extends State<SaldoDocumentosPage> {
                         ),
                       ),
                     ),
-                    new Card(
-                      child: new Container(
-                        padding: new EdgeInsets.all(1),
-                        alignment: Alignment.center,
-                        child: new ButtonBar(
-                          mainAxisSize: MainAxisSize.min,
+                    SizedBox(height: 5),
+                    new FloatingActionButton.extended(
+                      isExtended: true,
+                      autofocus: false,
+                      elevation: 0,
+                      focusElevation: 0,
+                      highlightElevation: 0,
+                      hoverElevation: 0,
+                      disabledElevation: 0,
+                      //backgroundColor: Color(4293915128),
+                      backgroundColor:
+                          LambThemes.light.accentColor.withOpacity(.1),
+                      onPressed: () => _isDisabled ? null : _showVisaPayment(),
+                      label: new SingleChildScrollView(
+                        padding: EdgeInsets.all(15),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            // GestureDetector(
-                            //   child: Container(
-                            //     width: 120,
-                            //     height: 40,
-                            //     decoration: BoxDecoration(
-                            //       color: LambThemes.light.primaryColor,
-                            //       image: DecorationImage(
-                            //           image: NetworkImage(
-                            //               'https://static-content.vnforapps.com/v1/img/bottom/visa.png')
-                            //           // image: AssetImage(
-                            //           //     "assets/background_button.png"),
-                            //           // fit: BoxFit.cover),
-                            //           // child: Text("clickMe") // button text
-                            //           // )
-                            //           ),
-                            //     ),
-                            //   ),
-                            //   onTap: () {
-                            //     print("you clicked my");
-                            //   },
-                            // ),
-                            new RaisedButton(
-                              child: new Text(
-                                'PAGAR CON VISA',
-                              ),
-                              onPressed: () => _isDisabled
-                                  ? null
-                                  : Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => VisapaymentPage(
-                                          idAlumno: this
-                                                  ._currentChildSelected
-                                                  ?.idAlumno ??
-                                              null,
-                                          idPersona:
-                                              _currentUserLogged?.idPersona ??
-                                                  null,
-                                          totalPagar: _totalPagar ?? 0,
-                                          listaOperationsSaldo: this
-                                                  ._listaOperationsSaldo
-                                                  .where(
-                                                      (item) => item?.checked)
-                                                  .toList() ??
-                                              [],
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                          ],
+                                Text(
+                                  'PAGAR CON',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ] +
+                              imagesUrl
+                                  .map((imgUrl) => Image.network(
+                                        imgUrl,
+                                        fit: BoxFit.contain,
+                                        width: 65,
+                                        height: 35,
+                                      ))
+                                  .toList(),
                         ),
                       ),
                     ),
@@ -307,7 +306,7 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
     super.initState();
   }
 
-  Color zero = LambThemes.light.primaryColorLight;
+  //Color zero = LambThemes.light.primaryColorLight;
 
   @override
   Widget build(BuildContext context) {
@@ -317,18 +316,16 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       ),
       child: new ListView(
         children: widget.listaOperations
-            .map((dynamic operacion) => getOperationSaldo(operacion))
+            .asMap()
+            .entries
+            .map((dynamic entry) =>
+                getOperationSaldo(entry.value, entry.key + 1))
             .toList(),
       ),
-      // child: new ListView(
-      //   children: <Widget>[],
-      // ),
     );
   }
 
-  Widget getOperationSaldo(operacion) {
-    // print('===>>> ${operacion.toString()}');
-    // print('===>>> ${operacion.nombre}');
+  Widget getOperationSaldo(operacion, int count) {
     print('===>>>ojo');
     print(operacion.idVenta);
     print('===>>>ojo');
@@ -348,7 +345,7 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (bool val) {
         setState(() {
-          operacion.checked = val;
+          updateCheckList(count, val);
           this.actualizarImporteTotal();
         });
       },
@@ -359,28 +356,25 @@ class _OperationsListSaldoState extends State<OperationsListSaldo> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      // activeColor: LambThemes.light.primaryColor,
-      // checkColor: LambThemes.light.primaryColor,
+      selected:
+          operacion.idVenta == null || operacion.idVenta == '' ? false : true,
+      activeColor: operacion.idVenta == null || operacion.idVenta == ''
+          ? LambThemes.light.primaryColor
+          : Color(4292299776),
       dense: true,
-      // trailing: Text(
-      //   // 'S/. ${operacion['total'].toString()}',
-      //   'S/. ${operacion.total}',
-      //   style: TextStyle(
-      //       // color: Color(int.parse(operacion['total_color'])),
-      //       color: null,
-      //       fontWeight: FontWeight.bold),
-      // ),
-      // leading:
-      //     CircleAvatar(child: Icon(Icons.check_box, size: 15), radius: 15),
-      // onTap: () => Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => OperationDetail(
-      //       operation: operacion,
-      //     ),
-      //   ),
-      // ),
-      // ),
     );
+  }
+
+  void updateCheckList(int count, bool val) {
+    if (val) {
+      for (final oper in widget.listaOperations.take(count)) {
+        oper.checked = val;
+      }
+    } else {
+      for (final oper in widget.listaOperations.skip(count - 1)) {
+        oper.checked = val;
+      }
+    }
   }
 
   void actualizarImporteTotal() {

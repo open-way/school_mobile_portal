@@ -5,7 +5,7 @@ import 'package:school_mobile_portal/pages/agenda_page/agenda_page.dart';
 import 'package:school_mobile_portal/pages/asistencia_page/asistencia_page.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/estado_cuenta_page.dart';
 import 'package:school_mobile_portal/pages/generate_barcode_page/generate_barcode_page.dart';
-import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
+import 'package:school_mobile_portal/pages/auth/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/page_buzon/buzon_page.dart';
 import 'package:school_mobile_portal/pages/page_notas/notas_page.dart';

@@ -3,10 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 
 class AppBarLamb extends StatelessWidget implements PreferredSizeWidget {
-  AppBarLamb({Key key, @required this.title, this.alumno, this.actions})
+  AppBarLamb(
+      {Key key,
+      this.leading,
+      @required this.title,
+      this.bottomTitle,
+      this.bottomSubtitle,
+      this.alumno,
+      this.actions})
       : preferredSize = Size.fromHeight(100),
         super(key: key);
+  final Widget leading;
   final Widget title;
+  final String bottomTitle;
+  final String bottomSubtitle;
   final HijoModel alumno;
   final List<Widget> actions;
 
@@ -15,14 +25,30 @@ class AppBarLamb extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BarLamb(title: title, alumno: alumno, actions: actions);
+    return BarLamb(
+        leading: leading,
+        title: title,
+        bottomTitle: bottomTitle,
+        bottomSubtitle: bottomSubtitle,
+        alumno: alumno,
+        actions: actions);
   }
 }
 
 class BarLamb extends StatefulWidget {
-  BarLamb({Key key, @required this.title, this.alumno, this.actions})
+  BarLamb(
+      {Key key,
+      this.leading,
+      @required this.title,
+      this.bottomTitle,
+      this.bottomSubtitle,
+      this.alumno,
+      this.actions})
       : super(key: key);
+  final Widget leading;
   final Widget title;
+  final String bottomTitle;
+  final String bottomSubtitle;
   final HijoModel alumno;
   final List<Widget> actions;
   @override
@@ -30,13 +56,31 @@ class BarLamb extends StatefulWidget {
 }
 
 class _AppBarLambState extends State<BarLamb> {
-  String nombreDoc;
-  String institucion;
+  //String _bottomTitle;
+  //String _bottomSubtitle;
 
   @override
   void initState() {
     super.initState();
-    this.getMasters();
+    this.customValidator();
+  }
+
+  customValidator() {
+    //_isTitle = widget.title == null ? _isTitle : true;
+    //_alumno = widget.alumno == null ? _alumno : widget.alumno;
+
+    //if (_alumno == null) {}
+    /*_bottomTitle =
+        widget.alumno == null ? getNomDoc() : widget.bottomTitle ?? '';
+    _bottomSubtitle =
+        widget.alumno == null ? getInstitucion() : widget.bottomSubtitle ?? '';
+*/
+    /*_floatingActionButton = widget.floatingActionButton == null
+        ? _floatingActionButton
+        : widget.floatingActionButton;
+    _buttonBarPadding = widget.buttonBarPadding == null
+        ? _buttonBarPadding
+        : widget.buttonBarPadding;*/
   }
 
   @override
@@ -44,13 +88,7 @@ class _AppBarLambState extends State<BarLamb> {
     super.dispose();
   }
 
-  void getMasters() {
-    this.getNomDoc();
-    this.getInstitucion();
-    setState(() {});
-  }
-
-  String getNomDoc() {
+  String _getNomDoc() {
     String nombre = widget.alumno?.nombre ?? '';
     String doc;
     if (widget.alumno?.numDoc == 'null' || widget.alumno?.numDoc == null) {
@@ -58,18 +96,13 @@ class _AppBarLambState extends State<BarLamb> {
     } else {
       doc = '(${widget.alumno?.numDoc})';
     }
-    this.nombreDoc = '$nombre $doc';
-    return this.nombreDoc;
-  }
-
-  String getInstitucion() {
-    this.institucion = widget.alumno?.institucionNombre ?? '';
-    return this.institucion;
+    return '$nombre $doc';
   }
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      leading: widget.leading,
       title: Padding(
           padding: EdgeInsets.fromLTRB(0, 16, 0, 10), child: widget.title),
       centerTitle: true,
@@ -79,11 +112,15 @@ class _AppBarLambState extends State<BarLamb> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    this.getNomDoc(),
+                    widget.alumno != null
+                        ? this._getNomDoc()
+                        : widget.bottomTitle ?? '',
                     style: TextStyle(color: Colors.white),
                   ),
                   Text(
-                    widget.alumno?.institucionNombre ?? '',
+                    widget.alumno != null
+                        ? widget.alumno?.institucionNombre ?? ''
+                        : widget.bottomSubtitle ?? '',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,

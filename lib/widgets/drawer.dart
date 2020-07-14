@@ -206,11 +206,11 @@ class _AppDrawerState extends State<AppDrawer> {
         text: Text('Dashboard'),
         onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
       ),
-      createDrawerItem(
-        icon: Icons.mail_outline,
-        text: Text('Buzón'),
-        onTap: () => Navigator.pushReplacementNamed(context, Routes.buzon),
-      ),
+      // createDrawerItem(
+      //   icon: Icons.mail_outline,
+      //   text: Text('Buzón'),
+      //   onTap: () => Navigator.pushReplacementNamed(context, Routes.buzon),
+      // ),
       createDrawerItem(
         icon: Icons.view_agenda,
         text: Text('Estado de cuenta'),
@@ -234,11 +234,11 @@ class _AppDrawerState extends State<AppDrawer> {
         onTap: () =>
             Navigator.pushReplacementNamed(context, Routes.generate_barcode),
       ),
-      createDrawerItem(
-        icon: Icons.speaker_notes,
-        text: Text('Notas'),
-        onTap: () => Navigator.pushNamed(context, Routes.notas),
-      ),
+      // createDrawerItem(
+      //   icon: Icons.speaker_notes,
+      //   text: Text('Notas'),
+      //   onTap: () => Navigator.pushNamed(context, Routes.notas),
+      // ),
       // createDrawerItem(
       //     icon: Icons.note,
       //     text: 'Test https',

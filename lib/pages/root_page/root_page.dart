@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
-import 'package:school_mobile_portal/pages/login_signup_page/login_signup_page.dart';
+import 'package:school_mobile_portal/pages/auth/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
 import 'package:school_mobile_portal/widgets/info_box.dart';

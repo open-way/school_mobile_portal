@@ -9,7 +9,6 @@ import 'package:school_mobile_portal/models/response_dialog_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/operation_detail.dart';
 import 'package:school_mobile_portal/pages/estado_cuenta_page/saldo_documentos_page.dart';
-import 'package:school_mobile_portal/pages/pago_page/pago_page.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/services/visapayment.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
@@ -33,7 +32,8 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
   List<dynamic> _listaOperations;
   // OperationTotalModel _operationsTotal;
   String _infoTotalSaldo;
-  double _totalSaldo;
+  dynamic _totalSaldo;
+  dynamic _colorSaldo;
 
   HijoModel _currentChildSelected;
 
@@ -68,6 +68,7 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
       _listaOperations = onValue?.movements ?? [];
       _infoTotalSaldo = onValue.movementsInfoTotal;
       _totalSaldo = onValue.movementsTotal;
+      _colorSaldo = onValue.saldoColor;
     }).catchError((err) {
       print(err);
     });
@@ -114,19 +115,28 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
             : Container(
                 padding: new EdgeInsets.all(15),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    new Card(
-                      child: new Container(
-                        padding: new EdgeInsets.all(15),
-                        alignment: Alignment.center,
-                        child:
-                            _listaOperations == [] || _listaOperations.isEmpty
-                                ? Text('Sin resultados',
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 15))
-                                : new RichText(
-                                    text: new TextSpan(
+                    new Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        /*new Card(
+                          child:*/
+                        new Container(
+                          //width: double.infinity,
+                          padding: new EdgeInsets.all(15),
+                          alignment: Alignment.center,
+                          child: _listaOperations == [] ||
+                                  _listaOperations.isEmpty
+                              ? Text('Sin resultados',
+                                  style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 15))
+                              : new RichText(
+                                  textAlign: TextAlign.center,
+                                  text: new TextSpan(
                                     style: new TextStyle(
                                       color: Colors.black,
                                     ),
@@ -134,21 +144,52 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                                       new TextSpan(
                                         text: _infoTotalSaldo,
                                         style: new TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 15,
                                             color: Colors.black,
-                                            fontWeight: FontWeight.w300,
+                                            fontWeight: FontWeight.w400,
                                             letterSpacing: 3),
                                       ),
                                       new TextSpan(
                                           text: 'S/. ${_totalSaldo.toString()}',
                                           style: new TextStyle(
-                                            fontSize: 20.0,
+                                            fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.black,
+                                            color: Color(_colorSaldo),
                                           )),
                                     ],
                                   )),
-                      ),
+                        ),
+                        //),
+                        _listaOperations == [] || _listaOperations.isEmpty
+                            ? Text('Sin resultados',
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic, fontSize: 15))
+                            : new FloatingActionButton.extended(
+                                isExtended: true,
+                                autofocus: false,
+                                elevation: 0,
+                                focusElevation: 0,
+                                highlightElevation: 0,
+                                hoverElevation: 0,
+                                disabledElevation: 0,
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SaldoDocumentosPage(
+                                      storage: widget.storage,
+                                    ),
+                                  ),
+                                ),
+                                label: Text(
+                                  'PAGAR',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    letterSpacing: 2.5,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                      ],
                     ),
                     new Expanded(
                       child: new Card(
@@ -163,38 +204,32 @@ class _EstadoCuentaPageState extends State<EstadoCuentaPage> {
                         ),
                       ),
                     ),
-                    // RaisedButton(
-                    //   child: Center(child: Text('DEPOSITAR')),
-                    //   onPressed: () => Navigator.of(context).push(
-                    //     MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           PagoPage(storage: widget.storage),
-                    //     ),
-                    //   ),
-                    // )
-                    new Card(
-                      child: new Container(
-                        padding: new EdgeInsets.all(1),
-                        alignment: Alignment.center,
-                        child: new ButtonBar(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            new RaisedButton(
-                              child: new Text(
-                                'PAGAR',
-                              ),
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SaldoDocumentosPage(
-                                    storage: widget.storage,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                    /*SizedBox(height: 5),
+                    new FloatingActionButton.extended(
+                      isExtended: false,
+                      autofocus: false,
+                      elevation: 0,
+                      focusElevation: 0,
+                      highlightElevation: 0,
+                      hoverElevation: 0,
+                      disabledElevation: 0,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SaldoDocumentosPage(
+                            storage: widget.storage,
+                          ),
                         ),
                       ),
-                    ),
+                      label: Text(
+                        'PAGAR',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 10,
+                          letterSpacing: 2.5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),*/
                   ],
                 ),
               ),

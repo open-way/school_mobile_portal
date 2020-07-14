@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/models/user_signup_model.dart';
+import 'package:school_mobile_portal/pages/auth/recovery_password_page/recovery_password_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
@@ -59,6 +60,15 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     setState(() {
       _isLoginForm = !_isLoginForm;
     });
+  }
+
+  void goToRecoveryPassword() {
+    resetForm();
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => RecoveryPassworyPage()));
+    // setState(() {
+    //   _isLoginForm = !_isLoginForm;
+    // });
   }
 
   // Check if form is valid before perform login or signup
@@ -194,6 +204,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   showPasswordInput(),
                   showPrimaryButton(),
                   showSecondaryButton(),
+                  showRecoveryPasswordButton(),
                   showErrorMessage(),
                 ],
               ),
@@ -360,7 +371,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   Widget showDniInput() {
-    var margin1 = MediaQuery.of(context).size.height / 2.125;
+    // var margin1 = MediaQuery.of(context).size.height / 2.125;
+    var margin1 = MediaQuery.of(context).size.height / 2.6;
     var margin2 = 30.0;
     var width1 = MediaQuery.of(context).size.width / 2;
     var width2 = double.infinity;
@@ -448,6 +460,19 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               fontWeight: FontWeight.w400,
             )),
         onPressed: toggleFormMode);
+  }
+
+  Widget showRecoveryPasswordButton() {
+    return new FlatButton(
+        child: new Text('Recuperar contraseña',
+            // _isLoginForm
+            //     ? 'Recuperar contraseña'
+            //     : '¿Ya tienes un usuario? Iniciar sesión',
+            style: new TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w400,
+            )),
+        onPressed: goToRecoveryPassword);
   }
 
   Widget showPrimaryButton() {

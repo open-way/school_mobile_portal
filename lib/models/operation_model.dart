@@ -46,13 +46,15 @@ class OperationModel {
 class EstadoCuentaModel {
   final List<dynamic> movements;
   // final OperationTotalModel movementsTotal;
-  final double movementsTotal;
+  final dynamic movementsTotal;
   final String movementsInfoTotal;
+  final int saldoColor;
 
   EstadoCuentaModel({
     @required this.movements,
     @required this.movementsTotal,
     @required this.movementsInfoTotal,
+    @required this.saldoColor,
   });
 
   factory EstadoCuentaModel.fromJson(Map<String, dynamic> json) {
@@ -63,7 +65,8 @@ class EstadoCuentaModel {
       // movementsTotal: json['movements_total'] as OperationTotalModel,
       // movementsTotal: new OperationTotalModel.fromJson(json['movements_total']),
       movementsInfoTotal: json['movements_info_total'] as String,
-      movementsTotal: json['movements_total'] as double,
+      movementsTotal: json['movements_total'] as dynamic,
+      saldoColor: json['saldo_color'] as int,
     );
   }
 }

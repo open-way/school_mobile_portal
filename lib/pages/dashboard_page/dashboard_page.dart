@@ -84,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
       String importe = _dashboard?.estadoCuentaResumen[0]['importe'] ?? '';
       String texto = _dashboard?.estadoCuentaResumen[0]['texto'] ?? '';
       String color = _dashboard?.estadoCuentaResumen[0]['color'] ?? '0';
-
+      print(importe);
       return _circle(importe, texto, Color(int.parse(color)));
     } else {
       return Center(child: CircularProgressIndicator());
