@@ -47,7 +47,8 @@ class _FilterPeriodoAcaDialogState extends State<FilterPeriodoAcaDialog> {
         this._listaPeriodosAca = listSnap.map((PeriodoAcademicoModel snap) {
           return DropdownMenuItem(
             value: snap.idPeriodo,
-            child: Text('${snap.nombre} ${snap.anhoPeriodo}'),
+            // child: Text('${snap.nombre} ${snap.anhoPeriodo}'),
+            child: Text('${snap.nombre ?? ''}'),
           );
         }).toList();
         setState(() {});

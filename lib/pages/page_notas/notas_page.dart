@@ -356,7 +356,7 @@ class _NotasdPageState extends State<NotasdPage>
                           padding: EdgeInsets.all(5),
                           width: MediaQuery.of(context).size.width - 100,
                           child: Text(
-                            comp['descripcion_competencia'],
+                            comp['descripcion_competencia'] ?? '',
                             style: TextStyle(
                               //color: LambThemes.light.primaryColorDark,
                               //color: Colors.blueGrey,
@@ -387,7 +387,7 @@ class _NotasdPageState extends State<NotasdPage>
                           padding: EdgeInsets.only(left: 12.5),
                           width: 30,
                           child: Text(
-                            comp['nota_competencia'],
+                            comp['nota_competencia'] ?? '',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
@@ -425,7 +425,7 @@ class _NotasdPageState extends State<NotasdPage>
                   backgroundColor: Colors.transparent,
                   //key: PageStorageKey<String>(notCurso['nombre_curso']),
                   title: Text(
-                    '${notCurso['nombre_curso']}',
+                    '${notCurso['nombre_curso'] ?? ''}',
                     style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
@@ -588,7 +588,7 @@ class _NotasdPageState extends State<NotasdPage>
       //padding: EdgeInsets.only(top: 30, bottom: 10),
       padding: EdgeInsets.all(0),
       child: Text(
-        text,
+        text ?? '',
         style: TextStyle(
           fontWeight: FontWeight.w600,
           letterSpacing: 2,
@@ -673,7 +673,7 @@ class _NotasdPageState extends State<NotasdPage>
                         padding: EdgeInsets.only(
                             bottom: 50, top: 40, left: 30, right: 30),
                         child: Text(
-                          '${comp['conclusion_descriptiva']}',
+                          '${comp['conclusion_descriptiva'] ?? ''}',
                           textAlign: textAlignLocal,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
