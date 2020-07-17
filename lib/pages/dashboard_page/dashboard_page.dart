@@ -162,6 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
       for (var i = 0; i < alumnos.length; i++) {
         childrenCard.add(
           Container(
+            //color: Colors.blue,
             width: localWidth,
             child: Card(
               elevation: 0,
@@ -204,14 +205,30 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         );
       }
+      List<Widget> listaRows = [];
+      if (childrenCard.length > 1) {
+        Widget localWidget;
+        print(childrenCard.length);
+        for (var i = 0; i < childrenCard.length; i++) {
+          if (i.isOdd) {
+            listaRows.add(Row(
+              children: <Widget>[localWidget, childrenCard[i]],
+            ));
+          } else {
+            localWidget = childrenCard[i];
+          }
+        }
+      } else {
+        listaRows = childrenCard;
+      }
       return Column(
         children: <Widget>[
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: children),
-          Row(children: childrenCard)
-        ],
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: children),
+            ] +
+            listaRows,
       );
     } else {
       return Center(child: CircularProgressIndicator());
