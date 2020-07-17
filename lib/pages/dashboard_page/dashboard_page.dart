@@ -216,6 +216,9 @@ class _DashboardPageState extends State<DashboardPage> {
             ));
           } else {
             localWidget = childrenCard[i];
+            if (i == childrenCard.length - 1) {
+              listaRows.add(localWidget);
+            }
           }
         }
       } else {
