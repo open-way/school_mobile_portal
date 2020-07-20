@@ -343,7 +343,7 @@ class _NotasdPageState extends State<NotasdPage>
                 await showNewDialog(notCurso, comp);
               },
               child: Container(
-                margin: EdgeInsets.only(left: 10, top: 0, bottom: 5),
+                margin: EdgeInsets.only(left: 5, top: 0, bottom: 5),
                 child: Column(
                   children: <Widget>[
                     Divider(
@@ -351,17 +351,19 @@ class _NotasdPageState extends State<NotasdPage>
                       thickness: 0.3,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.all(5),
+                          padding: EdgeInsets.only(left: 5, right: 0),
                           width: MediaQuery.of(context).size.width - 100,
+                          // color: LambThemes.light.primaryColorDark,
                           child: Text(
-                            comp['descripcion_competencia'],
+                            comp['descripcion_competencia'] ?? '',
                             style: TextStyle(
                               //color: LambThemes.light.primaryColorDark,
                               //color: Colors.blueGrey,
                               fontWeight: FontWeight.w400,
-                              letterSpacing: 0.25,
+                              letterSpacing: 00,
                             ),
                           ),
                         ),
@@ -373,7 +375,7 @@ class _NotasdPageState extends State<NotasdPage>
                       ),*/
                         Padding(
                           //padding:EdgeInsets.symmetric(horizontal: 2, vertical: 0),
-                          padding: EdgeInsets.only(left: 20, right: 0),
+                          padding: EdgeInsets.only(left: 0, right: 0),
                           child: SizedBox(
                             width: 0.5,
                             height: 40,
@@ -383,11 +385,13 @@ class _NotasdPageState extends State<NotasdPage>
                           ),
                         ),
                         Container(
+                          // color: Colors.amber,
                           //alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(left: 12.5),
-                          width: 30,
+                          padding: EdgeInsets.only(left: 0, right: 0),
+                          width: 32.5,
                           child: Text(
-                            comp['nota_competencia'],
+                            comp['nota_competencia'] ?? '',
+                            // '99',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
@@ -425,7 +429,7 @@ class _NotasdPageState extends State<NotasdPage>
                   backgroundColor: Colors.transparent,
                   //key: PageStorageKey<String>(notCurso['nombre_curso']),
                   title: Text(
-                    '${notCurso['nombre_curso']}',
+                    '${notCurso['nombre_curso'] ?? ''}',
                     style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
@@ -588,7 +592,7 @@ class _NotasdPageState extends State<NotasdPage>
       //padding: EdgeInsets.only(top: 30, bottom: 10),
       padding: EdgeInsets.all(0),
       child: Text(
-        text,
+        text ?? '',
         style: TextStyle(
           fontWeight: FontWeight.w600,
           letterSpacing: 2,
@@ -673,7 +677,7 @@ class _NotasdPageState extends State<NotasdPage>
                         padding: EdgeInsets.only(
                             bottom: 50, top: 40, left: 30, right: 30),
                         child: Text(
-                          '${comp['conclusion_descriptiva']}',
+                          '${comp['conclusion_descriptiva'] ?? ''}',
                           textAlign: textAlignLocal,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
