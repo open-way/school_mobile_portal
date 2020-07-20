@@ -7,7 +7,7 @@ import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/agenda_model.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
-import 'package:school_mobile_portal/pages/agenda_page/filter_periodo_aca_dialog.dart';
+import 'package:school_mobile_portal/widgets/filter_periodo_aca_dialog.dart';
 import 'package:school_mobile_portal/services/periodos-academicos.service.dart';
 import 'package:school_mobile_portal/services/portal-padres.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';

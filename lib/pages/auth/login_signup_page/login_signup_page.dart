@@ -204,7 +204,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   showPasswordInput(),
                   showPrimaryButton(),
                   showSecondaryButton(),
-                  showRecoveryPasswordButton(),
+                  // showRecoveryPasswordButton(),
                   showErrorMessage(),
                 ],
               ),

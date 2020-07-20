@@ -6,8 +6,8 @@ final codeAppVersion = 'LAMB_SCHOOL';
 // final intermediateApiGeneral = '/lamb-financial-school-api/public/mobile-api';
 // final paymentVisaId = '13';
 
-// final baseAllUrl = 'http://vitmar.adventistas.pe/lamb-school-financial-api/public/mobile-api';
-// final baseApiGeneral = 'vitmar.adventistas.pe';
+// final baseAllUrl = 'http://app01.vitmar.adventistas.pe/lamb-school-financial-api/public/mobile-api';
+// final baseApiGeneral = 'app01.vitmar.adventistas.pe';
 // final baseAllUrl = 'http://app02.julio.adventistas.pe/lamb-school-financial-api/public/mobile-api';
 // final baseApiGeneral = 'app02.julio.adventistas.pe';
 // final intermediateApiGeneral = '/lamb-school-financial-api/public/mobile-api';
