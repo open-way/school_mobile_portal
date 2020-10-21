@@ -56,32 +56,13 @@ class BarLamb extends StatefulWidget {
 }
 
 class _AppBarLambState extends State<BarLamb> {
-  //String _bottomTitle;
-  //String _bottomSubtitle;
-
   @override
   void initState() {
     super.initState();
     this.customValidator();
   }
 
-  customValidator() {
-    //_isTitle = widget.title == null ? _isTitle : true;
-    //_alumno = widget.alumno == null ? _alumno : widget.alumno;
-
-    //if (_alumno == null) {}
-    /*_bottomTitle =
-        widget.alumno == null ? getNomDoc() : widget.bottomTitle ?? '';
-    _bottomSubtitle =
-        widget.alumno == null ? getInstitucion() : widget.bottomSubtitle ?? '';
-*/
-    /*_floatingActionButton = widget.floatingActionButton == null
-        ? _floatingActionButton
-        : widget.floatingActionButton;
-    _buttonBarPadding = widget.buttonBarPadding == null
-        ? _buttonBarPadding
-        : widget.buttonBarPadding;*/
-  }
+  customValidator() {}
 
   @override
   void dispose() {

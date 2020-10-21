@@ -9,12 +9,14 @@ import 'package:school_mobile_portal/pages/auth/login_signup_page/login_signup_p
 import 'package:school_mobile_portal/pages/dashboard_page/dashboard_page.dart';
 import 'package:school_mobile_portal/pages/page_buzon/buzon_page.dart';
 import 'package:school_mobile_portal/pages/page_notas/notas_page.dart';
+import 'package:school_mobile_portal/pages/reserva_matricula_page/reserva_matricula_page.dart';
 
 import 'package:school_mobile_portal/pages/root_page/root_page.dart';
 import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
 import 'package:school_mobile_portal/services/auth.service.dart';
 import 'package:school_mobile_portal/services/mis-hijos.service.dart';
+import 'package:school_mobile_portal/services/portal.service.dart';
 import 'package:school_mobile_portal/services/test-https.service.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 
@@ -53,6 +55,10 @@ class MyApp extends StatelessWidget {
             // auth: AuthService(),
             storage: storage),
         Routes.agenda: (context) => AgendaPage(storage: storage),
+        Routes.reserva_matricula: (context) => ReservaMatriculaPage(
+              storage: storage,
+              portalService: PortalService(),
+            ),
         Routes.generate_barcode: (context) =>
             GenerateBarcodePage(storage: storage),
         Routes.notas: (context) => NotasdPage(storage: storage),

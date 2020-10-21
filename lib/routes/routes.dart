@@ -10,6 +10,7 @@ import 'package:school_mobile_portal/pages/generate_barcode_page/generate_barcod
 import 'package:school_mobile_portal/pages/auth/login_signup_page/login_signup_page.dart';
 import 'package:school_mobile_portal/pages/page_buzon/buzon_page.dart';
 import 'package:school_mobile_portal/pages/page_notas/notas_page.dart';
+import 'package:school_mobile_portal/pages/reserva_matricula_page/reserva_matricula_page.dart';
 import 'package:school_mobile_portal/pages/test_https_page/test_https_page.dart';
 
 class Routes {
@@ -22,6 +23,7 @@ class Routes {
   static const String generate_barcode = GenerateBarcodePage.routeName;
   static const String notas = NotasdPage.routeName;
   static const String buzon = BuzonPage.routeName;
+  static const String reserva_matricula = ReservaMatriculaPage.routeName;
   // static const String events = EventsPage.routeName;
   // static const String notes = NotesPage.routeName;
 }

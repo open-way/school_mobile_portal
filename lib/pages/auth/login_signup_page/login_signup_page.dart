@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
+import 'package:school_mobile_portal/models/user_module.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/models/user_signup_model.dart';
 import 'package:school_mobile_portal/pages/auth/recovery_password_page/recovery_password_page.dart';
@@ -96,6 +97,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     await widget.storage.write(key: 'hijos', value: hijos.toString());
   }
 
+  _saveUserModulesLogged(List<UserModuleModel> userModules) async {
+    print('Todo lo que estoy guardando');
+    print(userModules.toString());
+    print('Todo lo que estoy guardando');
+    await widget.storage
+        .write(key: 'user_modules', value: userModules.toString());
+  }
+
   // Perform login or signup
   void validateAndSubmit() async {
     if (validateAndSave()) {
@@ -110,8 +119,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
           if (userSignIn.accessToken.isNotEmpty && _isLoginForm) {
             await _saveInfoUserLogged(userSignIn);
+
             List<HijoModel> hijos = await widget.misHijosService.getAll$();
             await _saveChildsUserLogged(hijos);
+
+            List<UserModuleModel> userModulos =
+                await widget.authService.getUserModules$({});
+            await _saveUserModulesLogged(userModulos);
+
             Navigator.pushReplacementNamed(context, Routes.dashboard);
           }
         } else {

@@ -1,40 +1,44 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:school_mobile_portal/enviroment.dev.dart';
-import 'package:school_mobile_portal/models/hijo_model.dart';
-import 'package:school_mobile_portal/models/saldo_documento.dart';
+import 'package:school_mobile_portal/pages/reserva_matricula_page/reserva_matricula_page.dart';
+import 'package:school_mobile_portal/routes/routes.dart';
+import 'package:school_mobile_portal/services/portal.service.dart';
+// import 'package:school_mobile_portal/models/saldo_documento.dart';
 import 'package:school_mobile_portal/theme/lamb_themes.dart';
 import 'package:school_mobile_portal/widgets/app_bar_lamb.dart';
 import 'package:school_mobile_portal/widgets/custom_dialog.dart';
 
-class VisapaymentPage extends StatefulWidget {
+class VisapaymentReservaPage extends StatefulWidget {
   final String idAlumno;
   final int idPersona;
   final String totalPagar;
-  final List<SaldoDocumentoModel> listaOperationsSaldo;
+  final String idReserva;
+  final FlutterSecureStorage storage;
+  // final List<SaldoDocumentoModel> listaOperationsSaldo;
 
-  VisapaymentPage({
+  VisapaymentReservaPage({
     @required this.idAlumno,
     @required this.idPersona,
     @required this.totalPagar,
-    @required this.listaOperationsSaldo,
+    @required this.idReserva,
+    @required this.storage,
+    // @required this.listaOperationsSaldo,
   });
   @override
-  _VisapaymentPageState createState() => _VisapaymentPageState();
+  _VisapaymentReservaPageState createState() => _VisapaymentReservaPageState();
 }
 
-class _VisapaymentPageState extends State<VisapaymentPage> {
-  // InAppWebViewController webView;
+class _VisapaymentReservaPageState extends State<VisapaymentReservaPage> {
   final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final PortalService portalService = new PortalService();
+  // String url = "";
 
-  String url = "";
-
-  double progress = 0;
+  // double progress = 0;
 
   Future<bool> _onWillPop() async {
     flutterWebviewPlugin.hide();
@@ -65,6 +69,21 @@ class _VisapaymentPageState extends State<VisapaymentPage> {
               new FlatButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
+                  Navigator.pushReplacementNamed(context, Routes.reserva_matricula);
+                  // Navigator.pop(context);
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return ReservaMatriculaPage(
+                  //         storage: widget.storage,
+                  //         portalService: portalService,
+                  //       );
+                  //     },
+                  //   ),
+                  // );
+                 
+
                 },
                 child: new Text('Sí',
                     style: TextStyle(color: LambThemes.light.primaryColor)),
@@ -104,12 +123,13 @@ class _VisapaymentPageState extends State<VisapaymentPage> {
                     withJavascript: true,
                     appCacheEnabled: true,
                     hidden: false,
-                    //  initialChild: Container(
-                    //     color: LambThemes.light.backgroundColor,
-                    //     child: const Center(
-                    //       child: Text('Cargando.....'),
-                    //     ),
-                    //   ),
+                    withZoom: true,
+                    initialChild: Container(
+                      // color: Colors.redAccent,
+                      child: const Center(
+                        child: Text("Cargando...."),
+                      ),
+                    ),
                     url: new Uri.dataFromString(_loadHTML(),
                             mimeType: 'text/html')
                         .toString(),
@@ -125,38 +145,47 @@ class _VisapaymentPageState extends State<VisapaymentPage> {
 
   String _loadHTML() {
     var baseUrlWeb = baseAllUrl.substring(0, baseAllUrl.length - 10);
-    var payUrl = '${baseUrlWeb}visapayment/tokens';
-    var idAplication = paymentVisaId;
-    var idComprobante = '03';
-    var idsVentas =
-        this.widget.listaOperationsSaldo.map((item) => item.idVenta ?? '0').join('|');
-    var importes =
-        this.widget.listaOperationsSaldo.map((item) => item.saldo ?? '0').join('|');
-    var idsArticulos = this
-        .widget
-        .listaOperationsSaldo
-        .map((item) => item.idArticulo)
-        .join('|');
+    var payUrl = '${baseUrlWeb}visapayment/tokens-reserva';
+    var idAplication = paymentReservaVisaId;
+    print('----------------------------->');
+    print(payUrl);
+    print(idAplication);
+    print('----------------------------->');
+    // var idComprobante = '03';
+    // var idsVentas =
+    //     this.widget.listaOperationsSaldo.map((item) => item.idVenta ?? '0').join('|');
+    // var importes =
+    //     this.widget.listaOperationsSaldo.map((item) => item.saldo ?? '0').join('|');
+    // var idsArticulos = this
+    //     .widget
+    //     .listaOperationsSaldo
+    //     .map((item) => item.idArticulo)
+    //     .join('|');
 
     var idAlumno = this.widget.idAlumno;
     var idClienteLegal = this.widget.idPersona;
+    var idReserva = this.widget.idReserva;
     var importeTotal = this.widget.totalPagar;
 
     // <form id="f" name="f" method="post" action="">
     // return r'''
+    // <input type="hidden" name="importe_total" value="$importeTotal" />
+    // <input type="hidden" name="cod_transaccion" value="DA" />
+    // <input type="hidden" name="id_comprobante" value="$idComprobante" />
+    // <input type="hidden" name="ids_venta" value="$idsVentas" />
+    // <input type="hidden" name="importes" value="$importes" />
+    // <input type="hidden" name="ids_articulos" value="$idsArticulos" />
+    // <input type="hidden" name="id_alumno" value="$idAlumno" />
+    // <input type="hidden" name="id_cliente_legal" value="$idClienteLegal" />
     return '''
       <html>
         <body onload="document.f.submit();">
           <form id="f" name="f" method="post" action="$payUrl">
-            <input type="hidden" name="importe" value="$importeTotal" />
-            <input type="hidden" name="cod_transaccion" value="DA" />
-            <input type="hidden" name="id_aplicacion" value="$idAplication" />
-            <input type="hidden" name="id_comprobante" value="$idComprobante" />
-            <input type="hidden" name="ids_ventas" value="$idsVentas" />
-            <input type="hidden" name="importes" value="$importes" />
-            <input type="hidden" name="ids_articulos" value="$idsArticulos" />
+            <input type="hidden" name="id_reserva" value="$idReserva" />
             <input type="hidden" name="id_alumno" value="$idAlumno" />
             <input type="hidden" name="id_cliente_legal" value="$idClienteLegal" />
+            <input type="hidden" name="id_aplicacion" value="$idAplication" />
+            <input type="hidden" name="importe" value="$importeTotal" />
           </form>
         </body>
       </html>

@@ -5,6 +5,13 @@ final codeAppVersion = 'LAMB_SCHOOL';
 // final baseApiGeneral = 'app08.vitmar.lamb-dev.upeu';
 // final intermediateApiGeneral = '/lamb-financial-school-api/public/mobile-api';
 // final paymentVisaId = '13';
+// final paymentReservaVisaId = '15';
+
+// DESARROLLO JOSE
+// final baseAllUrl = 'http://app18.jose.lamb-dev.upeu/lamb-school-financial-api/public/mobile-api';
+// final baseApiGeneral = 'app18.jose.lamb-dev.upeu';
+// final intermediateApiGeneral = '/lamb-school-financial-api/public/mobile-api';
+// final paymentVisaId = '13';
 
 // final baseAllUrl = 'http://app01.vitmar.adventistas.pe/lamb-school-financial-api/public/mobile-api';
 // final baseApiGeneral = 'app01.vitmar.adventistas.pe';
@@ -18,3 +25,4 @@ final baseAllUrl = 'https://api-lamb-school-financial.upeu.edu.pe/mobile-api';
 final baseApiGeneral = 'api-lamb-school-financial.upeu.edu.pe';
 final intermediateApiGeneral = '/mobile-api';
 final paymentVisaId = '23';
+final paymentReservaVisaId = '33';

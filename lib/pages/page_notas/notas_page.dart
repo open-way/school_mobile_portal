@@ -414,11 +414,12 @@ class _NotasdPageState extends State<NotasdPage>
             padding: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
             //height: 50,
             decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                border: Border.all(
-                  color: LambThemes.light.primaryColor,
-                )),
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+              border: Border.all(
+                color: LambThemes.light.primaryColor,
+              ),
+            ),
             child: Column(
               children: <Widget>[
                 Divider(

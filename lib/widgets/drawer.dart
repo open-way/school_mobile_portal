@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:school_mobile_portal/enums/enum.dart';
 import 'package:school_mobile_portal/models/hijo_model.dart';
 import 'package:school_mobile_portal/models/response_dialog_model.dart';
+import 'package:school_mobile_portal/models/user_module.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/pages/profile_page/profile_page.dart';
 import 'package:school_mobile_portal/routes/routes.dart';
@@ -129,6 +130,7 @@ class AppDrawer extends StatefulWidget {
 class _AppDrawerState extends State<AppDrawer> {
   MENUS myMenu = MENUS.MENU_PRINCIPAL;
   List<HijoModel> _misHijos = [];
+  List<UserModuleModel> _userModules = [];
 
   HijoModel _chilSelected;
 
@@ -162,7 +164,16 @@ class _AppDrawerState extends State<AppDrawer> {
   void initState() {
     super.initState();
     this._getHijos();
+    this._getUserModules();
   }
+
+  // 8700
+
+  // 9632
+  // 9976
+  // 12832
+  // 9152
+  // 11532
 
   void _getHijos() async {
     this._misHijos = [];
@@ -172,6 +183,27 @@ class _AppDrawerState extends State<AppDrawer> {
       final hijos =
           body.map<HijoModel>((json) => HijoModel.fromJson(json)).toList();
       this._misHijos = hijos;
+      setState(() {});
+    }
+  }
+
+  void _getUserModules() async {
+    // print('_getUserModules');
+
+    this._userModules = [];
+    // print('=================================>');
+    final userModulesString =
+        await widget.storage.read(key: 'user_modules') ?? '';
+    // print(userModulesString);
+    // print('=================================>');
+    if (userModulesString.isNotEmpty) {
+      final body = jsonDecode(userModulesString) ?? [];
+      // print('=================================>');
+      // print(body);
+      final userModules = body
+          .map<UserModuleModel>((json) => UserModuleModel.fromJson(json))
+          .toList();
+      this._userModules = userModules ?? [];
       setState(() {});
     }
   }
@@ -201,59 +233,83 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   List<Widget> getMenuPrincipal(BuildContext context) {
-    return [
-      createDrawerItem(
-        icon: Icons.dashboard,
-        text: Text('Dashboard'),
-        onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
-      ),
-      // createDrawerItem(
-      //   icon: Icons.mail_outline,
-      //   text: Text('Buzón'),
-      //   onTap: () => Navigator.pushReplacementNamed(context, Routes.buzon),
-      // ),
-      createDrawerItem(
-        icon: Icons.view_agenda,
-        text: Text('Estado de cuenta'),
-        onTap: () =>
-            Navigator.pushReplacementNamed(context, Routes.estado_cuenta),
-      ),
-      createDrawerItem(
-        icon: Icons.calendar_today,
-        text: Text('Asistencia'),
-        onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
-      ),
-      createDrawerItem(
-        icon: Icons.event_note,
-        text: Text('Agenda'),
-        onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
-        //onTap: () => Navigator.pushNamed(context, '/agenda'),
-      ),
-      createDrawerItem(
-        icon: Icons.call_to_action,
-        text: Text('Generar barcode'),
-        onTap: () =>
-            Navigator.pushReplacementNamed(context, Routes.generate_barcode),
-      ),
-      createDrawerItem(
-        icon: Icons.speaker_notes,
-        text: Text('Evaluación'),
-        onTap: () => Navigator.pushNamed(context, Routes.notas),
-      ),
-      // createDrawerItem(
-      //     icon: Icons.note,
-      //     text: 'Test https',
-      //     onTap: () =>
-      //         Navigator.pushReplacementNamed(context, Routes.test_https)),
-      // createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
-      // createDrawerItem(icon: Icons.info, text: 'Acerca'),
-      createDrawerItem(
-        icon: Icons.power_settings_new,
-        text: Text('Cerrar sesión'),
-        onTap: () =>
-            Navigator.pushReplacementNamed(context, Routes.login_signup),
-      ),
-    ];
+    print('Este es mi título.');
+    print(_userModules.length);
+    return _userModules.map((UserModuleModel userModule) {
+      return createDrawerItem(
+        // icon: Icons.dashboard,
+        icon: IconData(int.parse(userModule.icon), fontFamily: 'MaterialIcons'),
+        text: Text(userModule.title),
+        hasBadge: userModule.hasBadge,
+        badgeText: userModule.badgeText,
+        onTap: () => Navigator.pushReplacementNamed(context, userModule.link),
+      );
+    }).toList();
+
+    // return [
+    //   createDrawerItem(
+    //     // icon: Icons.dashboard,
+    //     icon: IconData(59035, fontFamily: 'MaterialIcons'),
+    //     text: Text('Dashboard'),
+    //     // isNew: false,
+    //     onTap: () => Navigator.pushReplacementNamed(context, Routes.dashboard),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.view_agenda,
+    //     text: Text('Estado de cuenta'),
+    //     // isNew: false,
+    //     onTap: () =>
+    //         Navigator.pushReplacementNamed(context, Routes.estado_cuenta),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.calendar_today,
+    //     text: Text('Asistencia'),
+    //     // isNew: false,
+    //     onTap: () => Navigator.pushReplacementNamed(context, Routes.asistencia),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.event_note,
+    //     text: Text('Agenda'),
+    //     // isNew: false,
+    //     onTap: () => Navigator.pushReplacementNamed(context, Routes.agenda),
+    //     //onTap: () => Navigator.pushNamed(context, '/agenda'),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.call_to_action,
+    //     text: Text('Generar barcode'),
+    //     // isNew: false,
+    //     onTap: () =>
+    //         Navigator.pushReplacementNamed(context, Routes.generate_barcode),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.speaker_notes,
+    //     text: Text('Evaluación'),
+    //     // isNew: false,
+    //     onTap: () => Navigator.pushNamed(context, Routes.notas),
+    //   ),
+    //   createDrawerItem(
+    //     icon: Icons.archive_outlined,
+    //     text: Text('Reserva Matrícula'),
+    //     // isNew: true,
+    //     hasBadge: '1',
+    //     badgeText: 'Nuevo',
+    //     onTap: () => Navigator.pushNamed(context, Routes.reserva_matricula),
+    //   ),
+    //   // createDrawerItem(
+    //   //     icon: Icons.note,
+    //   //     text: 'Test https',
+    //   //     onTap: () =>
+    //   //         Navigator.pushReplacementNamed(context, Routes.test_https)),
+    //   // createDrawerItem(icon: Icons.account_circle, text: 'Perfil'),
+    //   // createDrawerItem(icon: Icons.info, text: 'Acerca'),
+    //   createDrawerItem(
+    //     icon: Icons.power_settings_new,
+    //     text: Text('Cerrar sesión'),
+    //     // isNew: false,
+    //     onTap: () =>
+    //         Navigator.pushReplacementNamed(context, Routes.login_signup),
+    //   ),
+    // ];
   }
 
   List<Widget> getMenuChildrens(BuildContext context) {
@@ -283,7 +339,11 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Widget createDrawerItem(
-      {IconData icon, Widget text, GestureTapCallback onTap}) {
+      {IconData icon,
+      Widget text,
+      String hasBadge = 'N',
+      String badgeText = '',
+      GestureTapCallback onTap}) {
     return Column(
       children: <Widget>[
         ListTile(
@@ -293,6 +353,24 @@ class _AppDrawerState extends State<AppDrawer> {
             color: LambThemes.light.textTheme.body2.color,
           ),
           onTap: onTap,
+          trailing: hasBadge == '1'
+              ? Container(
+                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: Text(
+                    badgeText,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(100),
+                    ),
+                  ),
+                )
+              : null,
         ),
         Divider(),
       ],

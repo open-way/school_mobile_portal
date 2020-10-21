@@ -2,9 +2,11 @@ import 'dart:convert';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:school_mobile_portal/models/response_model.dart';
+import 'package:school_mobile_portal/models/user_module.dart';
 import 'package:school_mobile_portal/models/user_signin_model.dart';
 import 'package:school_mobile_portal/enviroment.dev.dart';
 import 'package:school_mobile_portal/models/user_signup_model.dart';
+import 'package:school_mobile_portal/services/inteceptors/vit_http.service.dart';
 
 abstract class BaseAuth {
   Future<UserSignInModel> signIn(String email, String password);
@@ -65,6 +67,20 @@ class AuthService implements BaseAuth {
     //     email: email, password: password);
     // FirebaseUser user = result.user;
     // return user.uid;
+  }
+
+  Future<List<UserModuleModel>> getUserModules$(
+      Map<String, String> queryParams) async {
+    http.Response res = await http.get('$theUrl/user-modules');
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+      final data = body['data'].cast<Map<String, dynamic>>();
+      return data
+          .map<UserModuleModel>((json) => UserModuleModel.fromJson(json))
+          .toList();
+    } else {
+      throw "Can't get user modules.";
+    }
   }
 
   Future<dynamic> getCurrentUser() async {}
